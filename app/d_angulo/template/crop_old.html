@@ -1,0 +1,49 @@
+<%include file="header.html" />
+
+<form action="${app.base_url + 'crop'}" method="get">
+    <input type="hidden" name="key" value="${app.key}" />    
+
+   	%if x0 and y0 and x1 and y1 and x2 and y2:
+	<input type="hidden" name="x0" value="${x0}" />
+    <input type="hidden" name="y0" value="${y0}" />
+    <input type="hidden" name="x1" value="${x1}" />
+    <input type="hidden" name="y1" value="${y1}" />
+    <input type="hidden" name="x2" value="${x2}" />
+    <input type="hidden" name="y2" value="${y2}" />
+    <p>The algorithm will run on the two selected subimages:</p>
+    <img src="${app.work_url + 'input_0_selection.png'}" alt="" />
+    <img src="${app.work_url + 'input_1_selection.png'}" alt="" />
+	<p>Choose the parameters: <input type="submit" 
+    name="action" value="Set Parameters" /><p/>
+	
+	%elif x0 and y0 and x1 and y1:
+    <input type="hidden" name="x0" value="${x0}" />
+    <input type="hidden" name="y0" value="${y0}" />
+    <input type="hidden" name="x1" value="${x1}" />
+    <input type="hidden" name="y1" value="${y1}" />
+    <p>Please select a subimage in the second image, by clicking on the top
+	left corner of the desired patch. This position will have its ordinate modified in order to
+	to be on the epipolar line:</p>
+    <img src="${app.work_url + 'input_0_selection.png'}" alt="" />
+    <input type="image" style="cursor:crosshair;" name=""
+              src="${app.work_url + 'input_1.png'}" />
+    
+	%elif x0 and y0:
+    <input type="hidden" name="x0" value="${x0}" />
+    <input type="hidden" name="y0" value="${y0}" />
+    <p>Please select the second corner of the subimage:</p>
+    <input type="image" style="cursor:crosshair;" name=""
+              src="${app.work_url + 'input_0_corner.png'}" />
+	<img src="${app.work_url + 'input_1.png'}" alt="" />
+    
+	%else:
+    <p>Please select a subimage by clicking on two 
+      opposite corners of the desired subimage in the first image.</p>
+    <input type="image" style="cursor:crosshair;" name=""
+              src="${app.work_url + 'input_0.png'}" />
+	<img src="${app.work_url + 'input_1.png'}" alt="" />
+    %endif
+</form>
+
+
+<%include file="footer.html" />

@@ -1,0 +1,44 @@
+<html>
+   <body>
+      <a href="http://cvlab.epfl.ch/~strecha/multiview/denseMVS.html">Fountain from: C. Strecha dense multiview stereo dataset.</a><br/>
+      Real scene, laser scan ground truth? high b/h (must compute) . <br/>
+      Factor 4 subsampling of frames 03 and 02 of the "fountain" sequence. <br/>
+      Rectification computed using the gound truth data, applying the Fusiello-Irsara method. <br/>
+      Points re-projected with the known camera matrices, and applying to the points the homografies from the rectification. 
+      (Notice that the displacement of the points should be only horizontal, however we observe a small displacement in the vertical 
+      axis. )<br/>
+      Unknown noise level, probably very low after resampling, error due to quantization noise with standard deviation 0.2887.<br/>
+      Unknown MTF but original images are band limited <br/>
+      Evaluation masks excludes boundaries and occluded areas. <br/>
+
+      Procedure : subsample, rectify, apply transformations to the point clouds (camera, scaling and homografy), compute occlusions
+
+      <br/>
+      <a href=data.zip>download dataset 768x512</a>
+      <br/>
+
+      <img src="0003s.hom.png" width=200/>
+      <img src="0002s.hom.png" width=200/>
+      <img src="0003s.dx_icon.png" width=200/>
+      <img src="0003s.msk2.png" width=200/>
+
+
+      <br/>
+
+      Reprojection displacement in the vertical axis, the value of this displacement generally is between [-.06, .25] pixels.
+      <br/>
+      <img src="0003s.dy_icon.png" width=250/>
+
+
+      <h3> See Notes:</h3>
+      <pre>
+* Generating the ground truth map from a point cloud
+
+* Computation of the occlusions of a disparity map
+
+* Subsampling the images
+      <pre>
+
+
+   </body>
+</html>

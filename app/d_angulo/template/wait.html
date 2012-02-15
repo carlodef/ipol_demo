@@ -1,0 +1,38 @@
+<%include file="header.html" />
+
+<%include file="wait_info.html" />
+
+<%
+    max_size = max(sizeY,2*30)
+%>
+
+<h2>Input Images</h2>
+
+<div class="gallery" style="height:${max_size}px;">
+    <ul class="index">
+
+     <li>
+      <a href="#">
+	Left
+	<span>
+	  <table><tr><td style="vertical-align:top;">
+	  <img src="${app.work_url + 'input_0.png'}" alt="" />
+	  </td></tr></table>
+	</span>
+      </a>
+     </li>
+
+     <li>
+      <a href="#">
+	Right
+	<span>
+	  <table><tr><td style="vertical-align:top;">
+	  <img src="${app.work_url + 'input_1.png'}" alt="" />
+	  </td></tr></table>
+	</span>
+      </a>
+     </li>
+    </ul>
+</div>
+
+<%include file="footer.html" />

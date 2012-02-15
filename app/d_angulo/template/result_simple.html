@@ -1,0 +1,89 @@
+<%include file="header.html" />
+
+<p>
+The algorithm result is displayed hereafter. It ran in ${"%0.2f" % app.cfg['info']['run_time']} seconds.
+</p>
+
+<h2>Results</h2>
+<div class="gallery" style="height:${sizeY}px;">
+    <ul class="index">
+
+     <li>
+      <a href="#">
+	Input images
+	<span>
+	  <table><tr><td style="vertical-align:top;">
+	  <img src="${app.work_url + 'input_0.png'}" alt="" />
+	  </td><td style="vertical-align:top;">
+	  <img src="${app.work_url + 'input_1.png'}" alt="" />
+	  </td></tr></table>
+	</span>
+      </a>
+     </li>
+
+     <li>
+      <a href="#">
+	Transformed images
+	<span>
+	  <table><tr><td style="vertical-align:top;">
+	  <img src="${app.work_url + 'input_0.png'}" alt="" />
+	  </td><td style="vertical-align:top;">
+	  <img src="${app.work_url + 'input_1_transformed.png'}" alt="" />
+	  </td></tr></table>
+	</span>
+      </a>
+     </li>
+     
+     <li>
+      <a href="#">
+	Disp normal
+	<span>
+	  <table><tr><td style="vertical-align:top;">
+	  <img style="background:url(${app.work_url + 'disp_n.png'})" 
+	  		src="${app.work_url + 'filt_n.png'}" alt="" />
+	  </td><td style="vertical-align:top;">
+	  <img src="${app.work_url + 'corr_n.png'}" alt="" />
+	  </td></tr></table>
+	</span>
+      </a>
+     </li>
+     
+     <li>
+      <a href="#">
+	Disp transformed
+	<span>
+	  <table><tr><td style="vertical-align:top;">
+	  <img style="background:url(${app.work_url + 'disp.png'})" 
+	  		src="${app.work_url + 'filt.png'}" alt="" />
+	  </td><td style="vertical-align:top;">
+	  <img src="${app.work_url + 'corr.png'}" alt="" />
+	  </td></tr></table>
+	</span>
+      </a>
+     </li>
+
+    </ul>
+</div>
+<br><br><br><br><br><br>
+
+<form action="${app.base_url + 'run'}" method="get">
+<input type="hidden" name="key" value="${app.key}">
+Debug tool: <input type="submit" value="Rerun"/>
+</form>
+
+<p>
+You can change images or parameters to make a new experiment:
+<form action="${app.base_url + 'index'}" method="get">
+<input type="submit" value="New input images"/>
+</form>
+
+<form action="${app.base_url + 'crop'}" method="get">
+<input type="hidden" name="key" value="${app.key}">
+<input type="hidden" name="newrun" value="1">
+<input type="submit" value="New parameters"/>
+</form>
+</p>
+
+<%include file="archive_info.html" />
+
+<%include file="footer.html" />

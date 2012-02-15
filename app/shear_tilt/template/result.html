@@ -1,0 +1,48 @@
+<%include file="header.html" />
+
+<p>
+The algorithm result is displayed hereafter. It ran in ${"%0.2f" % app.cfg['info']['run_time']} seconds.
+</p>
+
+  <div class="gallery" style="height:${sizeY}px;">
+    <ul class="index">
+
+     <li>
+      <a href="#">
+	Input
+	<span>
+	  <table><tr><td style="vertical-align:top;">
+	       <img src="${app.work_url + 'input_0.png'}" alt="Input">
+	  </td></tr></table>
+	</span>
+      </a>
+     </li>
+
+     <li>
+      <a href="#">
+	Output
+	<span>
+	  <table><tr><td style="vertical-align:top;">
+	       <img src="${app.work_url + 'input_1.png'}" alt="Output">
+	  </td></tr></table>
+	</span>
+      </a>
+     </li>
+
+    </ul>
+  </div>
+
+
+<p>
+You can change images or parameters to make a new experiment:
+<form action="${app.base_url + 'index'}" method="get">
+<input type="submit" value="New input images"/>
+</form>
+
+<form action="${app.base_url + 'params'}" method="get">
+<input type="hidden" name="key" value="${app.key}">
+<input type="submit" value="New parameters"/>
+</form>
+</p>
+
+<%include file="footer.html" />

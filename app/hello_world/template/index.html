@@ -1,0 +1,12 @@
+<%include file="header.html" />
+
+   <p>
+   The first stuff is ${thing}
+    </p>
+    
+	<form action="${app.base_url + 'thing'}" method="get">
+    Send a number to the server: <input type="text" name="number" value="42" />
+    <input type="submit" value="run" />
+    </form>
+
+<%include file="footer.html" />

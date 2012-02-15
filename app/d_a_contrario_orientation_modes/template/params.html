@@ -1,0 +1,32 @@
+<%include file="header.html" />
+
+<a name="p" href=#p></a>
+
+<p>
+You can choose a point of interest by clicking on the image, and specify its scale <i>r</i>. It is the radius of the disc taken into account to build the orientation histogram. For the a contrario orientation assignement method, the modes and associated orientations will be computed from this histogram. For the Lowe's orientation assignment method, the histogram is different: each sample added to the histogram is weighted by its gradient norm and by a Gaussian-weighted circular window with a standard deviation that is 1.5 times that of the scale, <i>r</i>, of the keypoint.
+</p>
+
+<p>
+To demonstrate the robustness to noise of the a contrario detector, you may add some Gaussian white noise on the RGB channels of the input image. The Gaussian noise has standard deviation σ, which you can choose in the algorithm parameters.
+</p>
+
+<form action="${app.base_url + 'wait#p'}" method="get">
+  <div class="action">
+    <label for="r">Radius (or scale) <i>r</i>:</label>
+    <input type="text" name="r" value="15." size="4" />
+    </br>
+     <label for="n_bins">Number of bins:</label>
+    <input type="text" name="n_bins" value="36" size="4" />
+    </br>
+    <label for="sigma">Noise standard deviation σ:</label>
+    <input type="text" name="sigma" value="0." size="4" />
+    </br>
+    <input type="hidden" name="key" value="${app.key}">
+    <input type="image"  name="" src="${app.work_url + 'input_0.png'}" alt="input_0">
+  </div>
+</form>
+
+<hr />
+
+
+<%include file="footer.html" />

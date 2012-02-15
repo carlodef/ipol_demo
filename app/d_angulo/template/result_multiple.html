@@ -1,0 +1,287 @@
+<%include file="header.html" />
+
+<%
+    def text2list(text):
+       if text !='' and text[0] == '[':
+          #  list= str(text).split() 
+          list = eval(text)
+       else:
+          if text !='':
+              list = [ text  ]
+          else:
+              list = []
+       return list
+       
+    tilt_list = text2list(app.cfg['param']['tilt_list'])
+    shear_list = text2list(app.cfg['param']['shear_list']) 
+    
+    first_list_max_size = max(sizeY,8*30)
+    sec_list_max_size = max(sizeY,(len(tilt_list) * len(shear_list)+2)*30) 
+%>
+
+<h2>Input parameters</h2>
+<form action="${app.base_url + 'wait_multiple_values'}" method="get">
+    <input type="hidden" name="key" value="${app.key}">
+    
+    <label for="shear_min">Horizontal shear range: [</label>
+    <input type="text" name="shear_min" value="${str(app.cfg['param']['shear_min'])}" size="4" />
+    <label for="shear_max"> , </label>
+    <input type="text" name="shear_max" value="${str(app.cfg['param']['shear_max'])}" size="4" />
+	], with 
+    
+    <label for="shear_nb"></label>
+    <input type="text" name="shear_nb" value="${str(app.cfg['param']['shear_nb'])}" size="4" />
+    quantized values.
+    </br>
+    
+    <label for="tilt_min">Horizontal tilt range: [</label>
+    <input type="text" name="tilt_min" value="${str(app.cfg['param']['tilt_min'])}" size="4" />
+    <label for="tilt_max"> , </label>
+    <input type="text" name="tilt_max" value="${str(app.cfg['param']['tilt_max'])}" size="4" />
+	], with
+    
+    <label for="tilt_nb"></label>
+    <input type="text" name="tilt_nb" value="${str(app.cfg['param']['tilt_nb'])}" size="4" />
+    quantized values.
+    </br>
+    
+    <label for="win">Window size:</label>
+    <input type="text" name="win" value="${str(app.cfg['param']['win_w'])}" size="4" />
+    </br>
+	
+	<label for="disp_min">Disparity range: [</label>
+    <input type="text" name="disp_min" value="${str(app.cfg['param']['disp_min'])}" size="4" />
+    <label for="disp_max"> , </label>
+    <input type="text" name="disp_max" value="${str(app.cfg['param']['disp_max'])}" size="4" />
+	] pixels
+	</br>
+	
+	<label for="subpixel">Subpixel:</label>
+	<input type="radio" name="subpixel" value="1" checked >1 &nbsp;
+	<input type="radio" name="subpixel" value="2">&frac12;&nbsp;
+	<input type="radio" name="subpixel" value="4">&frac14;&nbsp;
+	<input type="radio" name="subpixel" value="8">&frac18;&nbsp;
+    </br>
+	<p><input type="submit" value="Run with new parameters" /></p>
+</form>
+<form action="${app.base_url + 'index'}" method="get">
+<input type="submit" value="Change images"/>
+</form>
+<br>
+     
+
+<p>
+The algorithm result is displayed hereafter. It ran in ${"%0.2f" % app.cfg['info']['run_time']} seconds.
+</p>
+
+
+
+<h2>Results synthesis</h2>
+<div class="gallery" style="height:${first_list_max_size}px;">
+    <ul class="index">
+
+     <li>
+      <a href="#">
+	Right image
+	<span>
+	  <table><tr><td style="vertical-align:top;">
+	  <img src="${app.work_url + 'input_1.png'}" alt="" />
+	  </td></tr></table>
+	</span>
+      </a>
+     </li>
+     
+    <li>
+      <a href="#">
+	Left image
+	<span>
+	  <table><tr><td style="vertical-align:top;">
+	  <img src="${app.work_url + 'input_0.png'}" alt="" />
+	  </td></tr></table>
+	</span>
+      </a>
+     </li>
+     
+     <li>
+      <a href="#">
+	Disparity
+	<span>
+	  <table><tr>
+	  <td style="vertical-align:top;">
+	  <img style="background:url(${app.work_url + 'out_render.png'})" 
+	  		src="${app.work_url + 'out_filt.png'}" alt="" /><br>
+	  3D Rendering
+	  </td><td style="vertical-align:top;">
+	  <img style="background:url(${app.work_url + 'out_disp.png'})" 
+	  		src="${app.work_url + 'out_filt.png'}" alt="" /><br>
+	  Disparity
+	  </td>
+	  </tr></table>
+	</span>
+      </a>
+     </li>
+     
+      <li>
+      <a href="#">
+	Disparity (minfiltered 1)
+	<span>
+	  <table><tr>
+	  <td style="vertical-align:top;">
+	  <img style="background:url(${app.work_url + 'out_render_minfiltered.png'})" 
+	  		src="${app.work_url + 'out_filt.png'}" alt="" /><br>
+	  3D Rendering
+	  </td><td style="vertical-align:top;">
+	  <img style="background:url(${app.work_url + 'out_disp_minfiltered.png'})" 
+	  		src="${app.work_url + 'out_filt.png'}" alt="" /><br>
+	  Disparity
+	  </td>
+	  </tr></table>
+	</span>
+      </a>
+     </li>
+     
+     <li>
+      <a href="#">
+	Disparity (minfiltered 2)
+	<span>
+	  <table><tr>
+	  <td style="vertical-align:top;">
+	  <img style="background:url(${app.work_url + 'out_render_minfiltered2.png'})" 
+	  		src="${app.work_url + 'out_filt.png'}" alt="" /><br>
+	  3D Rendering
+	  </td><td style="vertical-align:top;">
+	  <img style="background:url(${app.work_url + 'out_disp_minfiltered2.png'})" 
+	  		src="${app.work_url + 'out_filt.png'}" alt="" /><br>
+	  Disparity
+	  </td>
+	  </tr></table>
+	</span>
+      </a>
+     </li>
+     
+     <li>
+      <a href="#">
+	Argmin
+	<span>
+	  <table><tr><td style="vertical-align:top;">
+	   <img style="background:url(${app.work_url + 'out_argmin.png'})" 
+	  		src="${app.work_url + 'out_filt.png'}" alt="" /><br>
+	  Argmin
+	  </td>
+	  <td style="vertical-align:top;">
+	   <img style="background:url(${app.work_url + 'out_cost.png'})" 
+	  		src="${app.work_url + 'out_filt.png'}" alt="" /><br>
+	 Minimal matching Cost
+	  </td></tr></table>
+	</span>
+      </a>
+     </li>
+     
+     <li>
+      <a href="#">
+	Argmin (minfiltered)
+	<span>
+	  <table><tr><td style="vertical-align:top;">
+	   <img style="background:url(${app.work_url + 'out_argmin_minfiltered.png'})" 
+	  		src="${app.work_url + 'out_filt.png'}" alt="" /><br>
+	  Argmin
+	  </td>
+	  <td style="vertical-align:top;">
+	   <img style="background:url(${app.work_url + 'out_cost_minfiltered.png'})" 
+	  		src="${app.work_url + 'out_filt.png'}" alt="" /><br>
+	 Minimal matching Cost
+	  </td></tr></table>
+	</span>
+      </a>
+     </li>
+     
+     <li>
+      <a href="#">
+	Argmin (minfiltered 2)
+	<span>
+	  <table><tr><td style="vertical-align:top;">
+	   <img style="background:url(${app.work_url + 'out_argmin_minfiltered2.png'})" 
+	  		src="${app.work_url + 'out_filt.png'}" alt="" /><br>
+	  Argmin
+	  </td>
+	  <td style="vertical-align:top;">
+	   <img style="background:url(${app.work_url + 'out_cost_minfiltered2.png'})" 
+	  		src="${app.work_url + 'out_filt.png'}" alt="" /><br>
+	 Minimal matching Cost
+	  </td></tr></table>
+	</span>
+      </a>
+     </li>
+     
+    </ul>
+</div>
+
+
+<h2>All the results</h2>
+<p>
+The first two images are those from the input pair. Then are displayed the disparity
+map and the cost map for each simulated set of parameters, ie for each pair (tilt, shear).
+</p>
+
+
+<div class="gallery" style="height:${sec_list_max_size}px;">
+    <ul class="index">
+
+     <li>
+      <a href="#">
+	Right image
+<!--  	<span style="position:fixed; top:220px; padding-left:56px;  padding-top:415px;"> -->
+	  <span>
+	  <table><tr><td style="vertical-align:top;">
+	  <img src="${app.work_url + 'input_1.png'}" alt="" />
+	  </td></tr></table>
+	</span>
+      </a>
+     </li>
+     
+    <li>
+      <a href="#">
+	Left image
+<!--	<span style="position:fixed;  top:220px; padding-left:56px;  padding-top:415px;"> -->
+	<span>
+	  <table><tr><td style="vertical-align:top;">
+	  <img src="${app.work_url + 'input_0.png'}" alt="" />
+	  </td></tr></table>
+	</span>
+      </a>
+     </li>
+     
+          
+%for t in tilt_list:
+	%for s in shear_list:
+     <li>
+      <a href="#">
+	${'%.2f' % t} ; ${'%.2f' % s}
+<!--	<span style="position:fixed; top:220px; padding-left:56px; padding-top:415px;"> -->
+	<span>
+	  <table><tr><td style="vertical-align:top;">
+	  Disparity <br>
+	  <img style="background:url(${app.work_url + 'disp_t%.2f_s%.2f.png' % (t,s)})" 
+	  		src="${app.work_url + 'filt_t%.2f_s%.2f.png' % (t,s)}" alt="" />
+	  </td><td style="vertical-align:top;">
+	  Matching cost <br>
+	  <img src="${app.work_url + 'cost_t%.2f_s%.2f.png' % (t,s)}" alt="" />
+	  </td></tr></table>
+	</span>
+      </a>
+     </li>
+	%endfor
+%endfor   
+     
+    </ul>
+</div>
+
+<form action="${app.base_url + 'run'}" method="get">
+<input type="hidden" name="key" value="${app.key}">
+<input type="submit" value="Run Debug"/>
+</form>
+
+<%include file="archive_info.html" />
+
+<%include file="footer.html" />
+
