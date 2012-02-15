@@ -27,6 +27,17 @@ class app(base_app):
     is_listed = True
 
 
+    def build(self):
+	"""
+        program build/update
+        """
+	# link all the scripts to the bin dir
+        import glob
+        for file in glob.glob( os.path.join( self.base_dir, 'scripts/*')):
+            os.symlink(file, os.path.join( self.bin_dir , os.path.basename(file)))
+
+	return
+
     def __init__(self):
         """
         App setup
