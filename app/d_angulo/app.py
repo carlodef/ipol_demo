@@ -31,6 +31,11 @@ class app(base_app):
 	"""
         program build/update
         """
+        # Create bin dir (delete the previous one if exists)
+        if os.path.isdir(self.bin_dir):
+            shutil.rmtree(self.bin_dir)
+        os.mkdir(self.bin_dir)
+
 	# link all the scripts to the bin dir
         import glob
         for file in glob.glob( os.path.join( self.base_dir, 'scripts/*')):
