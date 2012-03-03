@@ -188,13 +188,13 @@ class app(base_app):
         str(n_bins), '0'])
         self.wait_proc(p_1, timeout=self.timeout)
 
-	# Draw circle and arrows in a transparent layer, for AC and then for Lowe
+	# Draw circle and arrows on the input_1 images, for AC and then for Lowe
         from plot_orientations import *
-        plot_orientations(self.work_dir + 'input_0.png', x, y, r,\
+        plot_orientations(self.work_dir + 'input_1.png', x, y, r,\
         self.work_dir + 'modes_ac.txt', self.work_dir + 'output_ac.png')
 
         from plot_orientations import *
-        plot_orientations(self.work_dir + 'input_0.png', x, y, r,\
+        plot_orientations(self.work_dir + 'input_1.png', x, y, r,\
         self.work_dir + 'modes_lowe.txt', self.work_dir + 'output_lowe.png')
 
 	# Plot modes, AC and then Lowe
