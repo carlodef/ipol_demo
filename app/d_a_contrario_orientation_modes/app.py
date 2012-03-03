@@ -118,6 +118,7 @@ class app(base_app):
         msg = self.process_input()
         self.log("input selected : %s" % input_id)
         self.cfg['meta']['original'] = False
+        self.cfg['meta']['input_id'] = input_id
         self.cfg.save()
         
         # jump to the wait page

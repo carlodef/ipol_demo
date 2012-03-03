@@ -97,4 +97,11 @@ To select a different input image for a new experiment:
 </form>
 </p>
 
+<p>
+Rerun link:
+<input type="text" value="
+${app.base_url}get_params_from_url?input_id=${str(app.cfg['meta']['input_id'])}&x=${str(app.cfg['param']['x'])}&y=${str(app.cfg['param']['y'])}&r=${str(app.cfg['param']['r'])}&n_bins=${str(app.cfg['param']['n_bins'])}&sigma=${str(app.cfg['param']['sigma'])}
+"/>
+
+</p>
 <%include file="footer.html" />
