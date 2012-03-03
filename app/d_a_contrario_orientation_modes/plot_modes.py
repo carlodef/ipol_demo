@@ -44,7 +44,7 @@ def plot_modes(file_histo, file_modes, output_name, n_bins):
 
 
    plt.grid(True)
-   plt.xlabel('Orientation, given by bin number (from -180 to 180 degrees)')
-   plt.ylabel('Weight of pixels')
+#   plt.xlabel('Orientation, given by bin number (from -180 to 180 degrees)')
+#   plt.ylabel('Weight of pixels')
 
    fig.savefig(output_name)
