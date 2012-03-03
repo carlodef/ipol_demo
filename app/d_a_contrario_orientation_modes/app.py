@@ -2,7 +2,7 @@
 demo A contrario detection of modes in orientation histogram
 """
 
-from lib import base_app, build, http, image
+from lib import base_app, build, http, image, config
 from lib.misc import app_expose, ctime
 from lib.base_app import init_app
 import cherrypy
@@ -99,6 +99,30 @@ class app(base_app):
             shutil.rmtree(self.src_dir)
 
         return
+    
+    @cherrypy.expose
+    def get_params_from_url(self, input_id=None, x=None, y=None, r=None, n_bins= None, sigma=None):
+        """
+        redirects to the wait method with the provided parameters
+        This method was made only to be able to launch one precise experiment from one url
+        """
+        self.new_key()
+        self.init_cfg()
+        
+        # get the images
+        input_dict = config.file_dict(self.input_dir)
+        fnames = input_dict[input_id]['files'].split()
+        for i in range(len(fnames)):
+            shutil.copy(self.input_dir + fnames[i],
+                        self.work_dir + 'input_%i' % i)
+        msg = self.process_input()
+        self.log("input selected : %s" % input_id)
+        self.cfg['meta']['original'] = False
+        self.cfg.save()
+        
+        # jump to the wait page
+        return self.wait(key=self.key, newrun=False, xold="0", yold="0",
+                          x=x, y=y, r=r, sigma=sigma, n_bins=n_bins)
 
     @cherrypy.expose
     @init_app
