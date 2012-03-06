@@ -11,6 +11,8 @@ import os.path
 import shutil
 import time
 from collections import deque
+import matplotlib.pyplot as plt
+
 
 class app(base_app):
     """ Tilt quantization tests"""
@@ -149,7 +151,7 @@ class app(base_app):
         for t in tilt_list:
             self.wait_proc(p[t], timeout=self.timeout)
         
-        # Do the block-matching and filtering on all the simulated pairs
+        # Do the block-matching, filtering and compute statistics on all the simulated pairs
         for t in tilt_list:
             t_str = '%1.2f' % t
             (d_m,d_M) = disp_bounds[t]
@@ -157,21 +159,21 @@ class app(base_app):
         for t in tilt_list:
             self.wait_proc(p[t], timeout=self.timeout)
     
-    
-#    # Tilt
-#        width = self.cfg['param']['width']
-#        new_width = int(tilt*width)
-#        p_0 = self.run_proc(['zoom_1d', 'input_0.png', 'input_1.png', str(new_width)])
-#        self.wait_proc(p_0, timeout=self.timeout)
-#        
-#    # Shear
-#        width = self.cfg['param']['width']
-#        new_width = int(tilt*width)
-#        p_0 = self.run_proc(['zoom_1d', 'input_0.png', 'input_1.png', str(new_width)])
-#        self.wait_proc(p_0, timeout=self.timeout)
-#        p_transform = self.run_proc(['/bin/bash', 'run_transform.sh', str(new_width)])
-
-
+        
+        # Plot the graph of RMSE
+        rmse = []
+        i=0
+        for t in tilt_list:
+            t_str = '%1.2f' % t
+            disperror = open(self.work_dir+"/"+"stat_t"+t_str+".txt","r").read().split()
+            rmse.append(disperror[2])
+        print rmse
+        
+        fig = plt.figure()
+        plt.grid(True)
+        plt.plot(tilt_list, rmse)
+        fig.savefig(self.work_dir+"rmse.png")
+        
         return
 
     @cherrypy.expose
