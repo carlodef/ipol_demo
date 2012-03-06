@@ -1,0 +1,26 @@
+<%include file="header.html" />
+
+<a name="p" href=#p></a>
+
+<p>
+Choose a tilt parameter t to apply to the input image, and an integer n. Angulo will be run with 2*n+1 values of tilts uniformly sampled between t/2 and 2*t.
+</p>
+
+<img src="${app.work_url + 'input_0.png'}" alt="Input">
+<br>
+
+<form action="${app.base_url + 'wait'}" method="get">
+    <label for="tilt">t:</label>
+    <input type="text" name="tilt" value="1" size="4" />
+    </br>
+    <label for="tilts_half_nb">n:</label>
+    <input type="text" name="tilts_half_nb" value="0" size="4" />
+    </br>
+    <input type="hidden" name="key" value="${app.key}">
+    <input type="submit" value="Run"/>
+</form>
+
+<hr />
+
+
+<%include file="footer.html" />
