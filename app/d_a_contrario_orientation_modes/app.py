@@ -189,10 +189,10 @@ class app(base_app):
             ar = self.make_archive()
             ar.add_file("input_0.orig.png", "original.png", info="uploaded image")
             ar.add_file("input_0.png", "input.png", info="input image")
-	    ar.add_file("histo_ac.png", info="a contrario detected modes")
- 	    ar.add_file("histo_lowe.png", info="lowe's maxima")
+            ar.add_file("histo_ac.png", info="a contrario detected modes")
+            ar.add_file("histo_lowe.png", info="lowe's maxima")
             ar.add_file("output_ac.png", info="a contrario orientations")
-	    ar.add_file("output_lowe.png", info="lowe's orientations")
+            ar.add_file("output_lowe.png", info="lowe's orientations")
             ar.add_info({"x": x, "y": y, "r": r, "n_bins": n_bins, "sigma":sigma})
             ar.save()
 

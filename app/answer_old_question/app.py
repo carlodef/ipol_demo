@@ -11,6 +11,8 @@ import os.path
 import shutil
 import time
 from collections import deque
+import matplotlib as mpl
+mpl.use('Agg')
 import matplotlib.pyplot as plt
 
 
@@ -30,37 +32,37 @@ class app(base_app):
         program build/update
         """
         # store common file path in variables
-        tgz_file = self.dl_dir + "all.tgz"
-        prog_file = self.bin_dir + "stereoSSD-mean"
-        log_file = self.base_dir + "build.log"
-
-        # get the latest source code
-        # TODO : download only if the date of the latest source archive is newer
-#        build.download("http://dev.ipol.im/git/?p=facciolo/stereo.git;a=snapshot;h=HEAD;sf=tgz",
-#             tgz_file)
-
-        # test if one of the binaries ("prog_file") is missing, or too old
-        if (os.path.isfile(prog_file)
-            and ctime(tgz_file) < ctime(prog_file)):
-            cherrypy.log("not rebuild needed", context='BUILD', traceback=False)
-        else:
-            # Create bin dir (delete the previous one if exists)
-            if os.path.isdir(self.bin_dir):
-                shutil.rmtree(self.bin_dir)
-            os.mkdir(self.bin_dir)
-
-            # extract the archive
-            build.extract(tgz_file, self.bin_dir)
-#            # ammend the source
-#            onlypath = os.listdir(self.src_dir)[0]
-#            print ( str(onlypath) )
-#            self.src_dir = self.src_dir+'/'+onlypath;
-#            # build the program
-#            build.run("make -C %s %s" % (self.src_dir, "all"), stdout=log_file)
+#        tgz_file = self.dl_dir + "all.tgz"
+#        prog_file = self.bin_dir + "stereoSSD-mean"
+#        log_file = self.base_dir + "build.log"
 #
-#            # cleanup the source dir
-#            shutil.rmtree(self.src_dir)
-#            os.remove(tgz_file)
+#        # get the latest source code
+#        # TODO : download only if the date of the latest source archive is newer
+##        build.download("http://dev.ipol.im/git/?p=facciolo/stereo.git;a=snapshot;h=HEAD;sf=tgz",
+##             tgz_file)
+#
+#        # test if one of the binaries ("prog_file") is missing, or too old
+#        if (os.path.isfile(prog_file)
+#            and ctime(tgz_file) < ctime(prog_file)):
+#            cherrypy.log("not rebuild needed", context='BUILD', traceback=False)
+#        else:
+#            # Create bin dir (delete the previous one if exists)
+#            if os.path.isdir(self.bin_dir):
+#                shutil.rmtree(self.bin_dir)
+#            os.mkdir(self.bin_dir)
+#
+#            # extract the archive
+#            build.extract(tgz_file, self.bin_dir)
+##            # ammend the source
+##            onlypath = os.listdir(self.src_dir)[0]
+##            print ( str(onlypath) )
+##            self.src_dir = self.src_dir+'/'+onlypath;
+##            # build the program
+##            build.run("make -C %s %s" % (self.src_dir, "all"), stdout=log_file)
+##
+##            # cleanup the source dir
+##            shutil.rmtree(self.src_dir)
+##            os.remove(tgz_file)
         
         # link all the scripts to the bin dir
         import glob
