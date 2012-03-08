@@ -31,38 +31,24 @@ class app(base_app):
         """
         program build/update
         """
-        # store common file path in variables
-#        tgz_file = self.dl_dir + "all.tgz"
-#        prog_file = self.bin_dir + "stereoSSD-mean"
-#        log_file = self.base_dir + "build.log"
-#
-#        # get the latest source code
-#        # TODO : download only if the date of the latest source archive is newer
-##        build.download("http://dev.ipol.im/git/?p=facciolo/stereo.git;a=snapshot;h=HEAD;sf=tgz",
-##             tgz_file)
-#
-#        # test if one of the binaries ("prog_file") is missing, or too old
-#        if (os.path.isfile(prog_file)
-#            and ctime(tgz_file) < ctime(prog_file)):
-#            cherrypy.log("not rebuild needed", context='BUILD', traceback=False)
-#        else:
-#            # Create bin dir (delete the previous one if exists)
-#            if os.path.isdir(self.bin_dir):
-#                shutil.rmtree(self.bin_dir)
-#            os.mkdir(self.bin_dir)
-#
-#            # extract the archive
-#            build.extract(tgz_file, self.bin_dir)
-##            # ammend the source
-##            onlypath = os.listdir(self.src_dir)[0]
-##            print ( str(onlypath) )
-##            self.src_dir = self.src_dir+'/'+onlypath;
-##            # build the program
-##            build.run("make -C %s %s" % (self.src_dir, "all"), stdout=log_file)
-##
-##            # cleanup the source dir
-##            shutil.rmtree(self.src_dir)
-##            os.remove(tgz_file)
+        # useful file paths
+        log_file = self.base_dir + "build.log"
+        self.src_dir = self.src_dir + "stereo";
+        
+        # Import the code from git repository
+        import os
+        os.system("git clone ssh://fuchsia/home/facciolo/code/stereo.git "+self.src_dir)
+                
+        # Create bin dir (delete the previous one if exists)
+        if os.path.isdir(self.bin_dir):
+            shutil.rmtree(self.bin_dir)
+        os.mkdir(self.bin_dir)
+        
+        # build the program
+        build.run("make -C %s %s" % (self.src_dir, "all"), stdout=log_file)
+
+        # cleanup the source dir
+        shutil.rmtree(self.src_dir)
         
         # link all the scripts to the bin dir
         import glob
@@ -135,6 +121,12 @@ class app(base_app):
 
         return self.tmpl_out("run.html")
 
+    def print_debug(self,string):
+        print ""
+        print ""
+        print "***********************"+string+"***********************"
+
+          
     def run_algo(self):
         """
         the core algo runner
@@ -156,15 +148,18 @@ class app(base_app):
         f.close();
         
         # Computes tilt on the image
+        self.print_debug("First tilt")
         new_width = int(tilt*width)
         p_first_tilt = self.run_proc(['zoom_1d', 'input_0.png', 'input_1.png', str(new_width)])
         self.wait_proc(p_first_tilt, timeout=self.timeout)
         
         # Generate ground truth for the matching of input_1 (as left image) with input_0 (as right image)
+        self.print_debug("Generate GT")
         p_gt = self.run_proc(['/bin/bash', 'run_generate_gt.sh', 'input_1.png'])
         self.wait_proc(p_gt, timeout=self.timeout)
         
         # list of tilts
+        self.print_debug("List of tilts")
         k = pow(2,1./tilts_half_nb)
         tilt_list = deque([tilt])
         i = 1
@@ -177,19 +172,32 @@ class app(base_app):
             i += 1
         self.cfg['param']['tilt_list'] = tilt_list
         self.cfg.save()
+        print tilt_list
+        
+        
+        # disp range for the input pair :
+        self.print_debug("List of disp ranges")
+        if tilt < 1:
+                    disp_min = 0
+                    disp_max = width-new_width
+        else:
+                    disp_min = width-new_width
+                    disp_max = 0
         
         # List of disparity range needed
         disp_bounds = {}
         for t in tilt_list:
-            if t < tilt:
-                d_m = (t-tilt)*width
-                d_M = 0
+            if t < 1:
+                    d_m = (t-1)*new_width+t*disp_min
+                    d_M = t*disp_max
             else:
-                d_m = 0
-                d_M = (t-tilt)*width
+                    d_m = t*disp_min
+                    d_M = (t-1)*new_width+t*disp_max
             disp_bounds[t] = (d_m, d_M)
+        print disp_bounds
         
         # Compute all the tilted right images
+        self.print_debug("Compute all the tilts")
         p = {}
         for t in tilt_list:
             t_str = '%1.2f' % t
@@ -198,6 +206,7 @@ class app(base_app):
             self.wait_proc(p[t], timeout=self.timeout)
         
         # Do the block-matching, filtering and compute statistics on all the simulated pairs
+        self.print_debug("Compute the block-matchings")
         for t in tilt_list:
             t_str = '%1.2f' % t
             (d_m,d_M) = disp_bounds[t]
@@ -207,6 +216,7 @@ class app(base_app):
     
         
         # Plot the graph of RMSE
+        self.print_debug("Plot the rmse graph")
         rmse = []
         i=0
         for t in tilt_list:
