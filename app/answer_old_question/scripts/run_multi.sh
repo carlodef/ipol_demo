@@ -27,6 +27,8 @@ correction_disp.sh $1
 
 # 4. Compute RMSE
 echo "disp_statistics disp_t$1_corrected.tif gt.tif 1 > stat_t$1.txt"
-disp_statistics disp_t$1_corrected.tif gt.tif 1 > stat_t$1.txt
+plambda filt_t$1.tif disp_t$1_corrected.tif "x[0] 0 > y[0] nan if" > disp_t$1_filtered.tif 2> /dev/null
+disp_statistics disp_t$1_filtered.tif gt.tif 1 > stat_t$1.txt
+#disp_statistics disp_t$1_corrected.tif gt.tif 1 > stat_t$1.txt
 
 
