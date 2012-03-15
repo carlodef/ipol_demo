@@ -37,7 +37,9 @@ class app(base_app):
         
         # Import the code from git repository
         import os
-        os.system("git clone ssh://fuchsia/home/facciolo/code/stereo.git "+self.src_dir)
+        os.system("git clone --depth 1 ssh://fuchsia/home/facciolo/code/stereo.git "+self.src_dir)
+        # TODO: use git archive (see below) instead of git clone to download only the source code (and not the doc)
+        #os.system("git archive --remote=ssh://fuchsia/home/facciolo/code/stereo.git -o src.tar -v master src")
                 
         # Create bin dir (delete the previous one if exists)
         if os.path.isdir(self.bin_dir):
