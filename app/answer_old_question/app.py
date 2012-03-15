@@ -229,7 +229,7 @@ class app(base_app):
         
         fig = plt.figure()
         plt.grid(True)
-        plt.plot(tilt_list, rmse)
+        plt.plot(tilt_list, rmse, 'bo')
         fig.savefig(self.work_dir+"rmse.png")
         
         return
