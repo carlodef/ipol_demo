@@ -4,6 +4,20 @@
 The algorithm result is displayed hereafter. It ran in ${"%0.2f" % app.cfg['info']['run_time']} seconds.
 </p>
 
+<p>
+-First graph: Root Mean Square Error (y-axis), in pixels, of the disparity map computed by matching the left image with a tilted 
+	right image. It depends on the tilt parameter (x-axis)
+</p>
+<p>
+-Second graph: same thing, with Precision (y-axis) instead of RMSE. The "precision" is the ratio of pixels that are accepted
+	by both the LRRL and the flat_patches filters, and that have an estimated disparity less that 1 pixel far from the ground truth.
+	Notice that even with the good tilt parameter we don't obtain 100% as one would expect (because in this case the block-matching is
+	computed on identical left and right images). This is due to the border problem. The disparity computed on the borders (on a stripe
+	of half_window_size width) are always wrong, and rejected by flat_filter.
+</p>
+
+
+
   <div class="gallery" style="height:${sizeY}px;">
     <ul class="index">
      
@@ -13,6 +27,17 @@ The algorithm result is displayed hereafter. It ran in ${"%0.2f" % app.cfg['info
 	<span>
 	  <table><tr><td style="vertical-align:top;">
 	       <img src="${app.work_url + 'rmse.png'}" alt="rmse">
+	  </td></tr></table>
+	</span>
+      </a>
+     </li>
+     
+    <li>
+    <a href="#">
+	Precision
+	<span>
+	  <table><tr><td style="vertical-align:top;">
+	       <img src="${app.work_url + 'precision.png'}" alt="precision">
 	  </td></tr></table>
 	</span>
       </a>

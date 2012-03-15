@@ -217,20 +217,28 @@ class app(base_app):
             self.wait_proc(p[t], timeout=self.timeout)
     
         
-        # Plot the graph of RMSE
+        # Plot the graphs of RMSE and PRECISION
         self.print_debug("Plot the rmse graph")
         rmse = []
+        precision = [] # "precision complete" ie the ratio of correct matches with precision < 1 among all the pixels of the image
         i=0
         for t in tilt_list:
             t_str = '%1.2f' % t
             disperror = open(self.work_dir+"/"+"stat_t"+t_str+".txt","r").read().split()
             rmse.append(disperror[2])
+            precision.append(disperror[1])
         print rmse
+        print precision
         
         fig = plt.figure()
         plt.grid(True)
         plt.plot(tilt_list, rmse, 'bo')
         fig.savefig(self.work_dir+"rmse.png")
+        
+        fig = plt.figure()
+        plt.grid(True)
+        plt.plot(tilt_list, precision, 'r^')
+        fig.savefig(self.work_dir+"precision.png")
         
         return
 
