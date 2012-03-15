@@ -15,11 +15,10 @@ echo "stereoSSD-mean -w $win_w -h $win_h -r $2 -R $3 input_1.png input_0_t$1.png
 stereoSSD-mean -w $win_w -h $win_h -r $2 -R $3 input_1.png input_0_t$1.png disp_t$1.tif cost_t$1.tif dispR_t$1.tif costR_t$1.tif 
 
 # 2. Filtering
-echo "stereoLRRL disp_t$1.tif dispR_t$1.tif filt_t$1.png 1"
-stereoLRRL disp_t$1.tif dispR_t$1.tif filt_t$1.tif 1
-
-echo "save_png_mask.sh filt_t$1.tif filt_t$1.png"
-save_png_mask.sh filt_t$1.tif filt_t$1.png
+echo "filtering"
+stereoLRRL disp_t$1.tif dispR_t$1.tif filt_LRRL_t$1.png 1
+flat input_1.png filt_flat_t$1.png $win_w
+intersection filt_LRRL_t$1.png filt_flat_t$1.png filt_t$1.tif
 
 # 3. Correct disparity values according to tilt
 echo "correction_disp.sh $1"

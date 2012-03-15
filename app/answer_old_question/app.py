@@ -180,11 +180,11 @@ class app(base_app):
         # disp range for the input pair :
         self.print_debug("List of disp ranges")
         if tilt < 1:
-                    disp_min = 0
+                    disp_min = -5
                     disp_max = width-new_width
         else:
                     disp_min = width-new_width
-                    disp_max = 0
+                    disp_max = 5
         
         # List of disparity range needed
         disp_bounds = {}
@@ -212,7 +212,7 @@ class app(base_app):
         for t in tilt_list:
             t_str = '%1.2f' % t
             (d_m,d_M) = disp_bounds[t]
-            p[t] = self.run_proc(['/bin/bash', 'run_multi.sh', t_str, str(d_m), str(d_M)])
+            p[t] = self.run_proc(['/bin/bash', 'run_bm.sh', t_str, str(d_m), str(d_M)])
         for t in tilt_list:
             self.wait_proc(p[t], timeout=self.timeout)
     
