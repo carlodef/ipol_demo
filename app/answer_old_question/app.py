@@ -79,10 +79,13 @@ class app(base_app):
     
     @cherrypy.expose
     @init_app
-    def wait(self, tilt=None, tilts_half_nb=None):
+    def wait(self, newrun=False, tilt=None, tilts_half_nb=None):
         """
         configure the algo execution
         """
+        if newrun:
+            self.clone_input()
+        
         # save and validate the parameters
         try:
 	    tilt = float(tilt)

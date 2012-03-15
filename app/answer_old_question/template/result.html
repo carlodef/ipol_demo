@@ -1,5 +1,21 @@
 <%include file="header.html" />
 
+
+<form action="${app.base_url + 'wait'}" method="get">
+    <label for="tilt">t:</label>
+    <input type="text" name="tilt" value="${str(app.cfg['param']['tilt'])}" size="4" />
+    </br>
+    <label for="tilts_half_nb">n:</label>
+    <input type="text" name="tilts_half_nb" value="${str(app.cfg['param']['tilts_half_nb'])}" size="4" />
+    </br>
+    <input type="hidden" name="newrun" value="True">
+    <input type="hidden" name="key" value="${app.key}">
+    <input type="submit" value="Run again"/>
+</form>
+<form action="${app.base_url + 'index'}" method="get">
+<input type="submit" value="New input images"/>
+</form>
+
 <p>
 The algorithm result is displayed hereafter. It ran in ${"%0.2f" % app.cfg['info']['run_time']} seconds.
 </p>
@@ -58,19 +74,5 @@ The algorithm result is displayed hereafter. It ran in ${"%0.2f" % app.cfg['info
 
     </ul>
   </div>
-
-
-<p>
-You can change images or parameters to make a new experiment:
-<form action="${app.base_url + 'index'}" method="get">
-<input type="submit" value="New input images"/>
-</form>
-
-<form action="${app.base_url + 'params'}" method="get">
-<input type="hidden" name="key" value="${app.key}">
-<input type="hidden" name="newrun" value="True">
-<input type="submit" value="New parameters"/>
-</form>
-</p>
 
 <%include file="footer.html" />
