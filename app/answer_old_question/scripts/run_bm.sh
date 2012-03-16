@@ -12,7 +12,7 @@ export PATH=$PATH:/usr/bin/:/usr/local/bin/:/bin
 
 # 1. Do the block-matching: this is the time-consuming step
 echo "stereoSSD-mean -w $win_w -h $win_h -r $2 -R $3 input_1.png input_0_t$1.png disp_t$1.tif cost_t$1.tif dispR_t$1.tif costR_t$1.tif" 
-stereoSSD-mean -w $win_w -h $win_h -r $2 -R $3 input_1.png input_0_t$1.png disp_t$1.tif cost_t$1.tif dispR_t$1.tif costR_t$1.tif 
+stereoSSD-mean -w $win_w -h $win_h -r $2 -R $3 input_1_noised.png input_0_t$1.png disp_t$1.tif cost_t$1.tif dispR_t$1.tif costR_t$1.tif 
 
 # 2. Filtering
 echo "filtering"

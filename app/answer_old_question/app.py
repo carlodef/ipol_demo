@@ -79,7 +79,7 @@ class app(base_app):
     
     @cherrypy.expose
     @init_app
-    def wait(self, newrun=False, tilt=None, tilts_half_nb=None):
+    def wait(self, newrun=False, sigma=None, tilt=None, tilts_half_nb=None):
         """
         configure the algo execution
         """
@@ -93,6 +93,7 @@ class app(base_app):
             return self.error(errcode='badparams',
                               errmsg="The parameters must be numeric.")
 
+        self.cfg['param']['sigma'] = sigma
         self.cfg['param']['tilt'] = tilt
         self.cfg['param']['tilts_half_nb'] = tilts_half_nb
         self.cfg['param']['width'] = image(self.work_dir+'input_0.png').size[0]
@@ -126,6 +127,7 @@ class app(base_app):
 
         return self.tmpl_out("run.html")
 
+    
     def print_debug(self,string):
         print ""
         print ""
@@ -139,6 +141,7 @@ class app(base_app):
         this one needs no parameter
         """
         # Read parameters
+        sigma = self.cfg['param']['sigma']
         width = self.cfg['param']['width']
         tilt = self.cfg['param']['tilt']
         tilts_half_nb = self.cfg['param']['tilts_half_nb']
@@ -150,6 +153,7 @@ class app(base_app):
         f.write('tilts_half_nb='+str(tilts_half_nb)+'\n')
         f.write('win_w='+str(9)+'\n')
         f.write('win_h='+str(9)+'\n')
+        f.write('sigma='+str(sigma)+'\n')
         f.close();
         
         # Computes tilt on the image
@@ -157,6 +161,11 @@ class app(base_app):
         new_width = int(tilt*width)
         p_first_tilt = self.run_proc(['zoom_1d', 'input_0.png', 'input_1.png', str(new_width)])
         self.wait_proc(p_first_tilt, timeout=self.timeout)
+        
+        # Add noise to the two input images
+        self.print_debug("Add noise")
+        p_noise = self.run_proc(['/bin/bash', 'run_addnoise.sh'])
+        self.wait_proc(p_noise, timeout=self.timeout)
         
         # Generate ground truth for the matching of input_1 (as left image) with input_0 (as right image)
         self.print_debug("Generate GT")

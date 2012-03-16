@@ -2,6 +2,9 @@
 
 
 <form action="${app.base_url + 'wait'}" method="get">
+	<label for="sigma">sigma:</label>
+    <input type="text" name="sigma" value="${str(app.cfg['param']['sigma'])}" size="4" />
+    </br>
     <label for="tilt">t:</label>
     <input type="text" name="tilt" value="${str(app.cfg['param']['tilt'])}" size="4" />
     </br>
