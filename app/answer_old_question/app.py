@@ -160,7 +160,7 @@ class app(base_app):
         
         # Generate ground truth for the matching of input_1 (as left image) with input_0 (as right image)
         self.print_debug("Generate GT")
-        p_gt = self.run_proc(['/bin/bash', 'run_generate_gt.sh', 'input_1.png'])
+        p_gt = self.run_proc(['/bin/bash', 'run_generate_gt.sh'])
         self.wait_proc(p_gt, timeout=self.timeout)
         
         # list of tilts
@@ -178,7 +178,6 @@ class app(base_app):
         self.cfg['param']['tilt_list'] = tilt_list
         self.cfg.save()
         print tilt_list
-        
         
         # disp range for the input pair :
         self.print_debug("List of disp ranges")
