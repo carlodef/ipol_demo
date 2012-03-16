@@ -79,7 +79,7 @@ class app(base_app):
     
     @cherrypy.expose
     @init_app
-    def wait(self, newrun=False, sigma=None, tilt=None, tilts_half_nb=None):
+    def wait(self, newrun=False, distance=None, sigma=None, tilt=None, tilts_half_nb=None):
         """
         configure the algo execution
         """
@@ -93,6 +93,7 @@ class app(base_app):
             return self.error(errcode='badparams',
                               errmsg="The parameters must be numeric.")
 
+        self.cfg['param']['distance'] = distance
         self.cfg['param']['sigma'] = sigma
         self.cfg['param']['tilt'] = tilt
         self.cfg['param']['tilts_half_nb'] = tilts_half_nb
@@ -141,6 +142,7 @@ class app(base_app):
         this one needs no parameter
         """
         # Read parameters
+        distance = self.cfg['param']['distance']
         sigma = self.cfg['param']['sigma']
         width = self.cfg['param']['width']
         tilt = self.cfg['param']['tilt']
@@ -153,6 +155,7 @@ class app(base_app):
         f.write('tilts_half_nb='+str(tilts_half_nb)+'\n')
         f.write('win_w='+str(9)+'\n')
         f.write('win_h='+str(9)+'\n')
+        f.write('distance='+str(distance)+'\n')
         f.write('sigma='+str(sigma)+'\n')
         f.close();
         

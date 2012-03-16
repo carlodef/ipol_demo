@@ -10,6 +10,11 @@ Choose a tilt parameter t to apply to the input image, and an integer n. Angulo
 <br>
 
 <form action="${app.base_url + 'wait'}" method="get">
+	<label for="subpixel">distance:</label>
+	<input type="radio" name="distance" value="stereoSSD" checked >SSD &nbsp;
+	<input type="radio" name="distance" value="stereoSAD">SAD &nbsp;
+	<input type="radio" name="distance" value="stereoS0D">S0D &nbsp;
+    </br>
 	<label for="sigma">sigma:</label>
     <input type="text" name="sigma" value="5" size="4" />
     </br>
