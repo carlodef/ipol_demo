@@ -244,11 +244,13 @@ class app(base_app):
         fig = plt.figure()
         plt.grid(True)
         plt.plot(tilt_list, rmse, 'bo')
+        #plt.semilogx(tilt_list, rmse, 'bo')
         fig.savefig(self.work_dir+"rmse.png")
         
         fig = plt.figure()
         plt.grid(True)
         plt.plot(tilt_list, precision, 'r^')
+        #plt.semilogx(tilt_list, precision, 'r^')
         fig.savefig(self.work_dir+"precision.png")
         
         return
