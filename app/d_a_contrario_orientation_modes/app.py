@@ -251,23 +251,30 @@ class app(base_app):
     def crop_download(self):
         """
         Makes a crop of the resulting images around the keypoint
+        Download the results
         """
         print '********************* Crop and download ************************'
+        
+        # Get the coordinates of the keypoint
         x = int(self.cfg['param']['x'])
         y = int(self.cfg['param']['y'])
         r = int(self.cfg['param']['r'])
+        
+        # Vertex of the square to crop
         x1 = x-2*r
         y1 = y-2*r
         x2 = x+2*r
         y2 = y+2*r
+        
+        # Do the crop
         crop_image(self.work_dir + 'output_ac.png', x1, y1, x2, y2, \
                            self.work_dir + 'output_ac_cropped.png')
         crop_image(self.work_dir + 'output_lowe.png', x1, y1, x2, y2, \
                            self.work_dir + 'output_lowe_cropped.png')
         
-        
+        # Go back on the result page
         sizeX=image(self.work_dir + 'input_0.png').size[0]
         sizeY=image(self.work_dir + 'input_0.png').size[1]
-        return self.tmpl_out("result.html", sizeX=sizeX, sizeY=sizeY)
+        return self.tmpl_out("result_with_links.html", sizeX=sizeX, sizeY=sizeY)
         
 

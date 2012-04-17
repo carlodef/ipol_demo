@@ -1,0 +1,113 @@
+<%include file="header.html" />
+
+<p>
+You can choose a point of interest by clicking on the image, and specify its scale <i>r</i>. It is the radius of the disc taken into account to build the orientation histogram. For the a contrario orientation assignement method, the modes and associated orientations will be computed from this histogram. For the Lowe's orientation assignment method, the histogram is different: each sample added to the histogram is weighted by its gradient norm and by a Gaussian-weighted circular window with a standard deviation that is 1.5 times that of the scale, <i>r</i>, of the keypoint.
+</p>
+
+<p>
+To demonstrate the robustness to noise of the a contrario detector, you may add some Gaussian white noise on the RGB channels of the input image. The Gaussian noise has standard deviation σ, which you can choose in the algorithm parameters.
+</p>
+
+<a name="p" href=#p></a>
+
+<p>
+The algorithm result is displayed hereafter. It ran in ${"%0.2f" % app.cfg['info']['run_time']} seconds.
+</p>
+
+It is possible to modifiy the parameters, <i>r</i>, <i>L</i> and σ, and to run the algorithm again on the same keypoint by clicking on the button below, or to choose a new keypoint by clicking on the image. 
+
+<form action="${app.base_url + 'wait#p'}" method="get">
+ <input type="hidden" name="key" value="${app.key}">
+ <input type="hidden" name="newrun" value="True">
+ 
+ <div class="action">
+
+  <table>
+    <tr>
+	    <label for="r">Radius (or scale) <i>r</i>:</label>
+	    <input type="text" name="r" value="${str(app.cfg['param']['r'])}" size="4" />
+	    </br>
+	    <label for="n_bins">Number of bins <i>L</i>:</label>
+	    <input type="text" name="n_bins" value="${str(app.cfg['param']['n_bins'])}"" size="4" />
+	    </br>
+	    <label for="sigma">Noise standard deviation σ:</label>
+	    <input type="text" name="sigma" value="${str(app.cfg['param']['sigma'])}" size="4" />
+	    </br>
+	    <input type="hidden" name="xold" value="${str(app.cfg['param']['x'])}">
+      	<input type="hidden" name="yold" value="${str(app.cfg['param']['y'])}">
+    </tr>
+
+    <tr>
+    	    <input type="submit" value="run with the same keypoint" />
+    </tr>
+  </table>
+
+  <p><br /></p>
+
+
+  <div class="gallery" style="height:${sizeY}px;">
+    <ul class="index">
+
+     <li>
+      <a href="#">
+	A Contrario
+	<span>
+	  <table><tr><td style="vertical-align:top;">
+	       <input type="image" name="" style="cursor:crosshair;" src="${app.work_url + 'output_ac.png'}" alt="AC orientations">
+	  </td><td style="vertical-align:top;">
+	  <img src="${app.work_url + 'histo_ac.png'}"
+	       alt="histogram used for AC detection"
+	       style="height:${sizeY}px" />
+	  </td></tr></table>
+	</span>
+      </a>
+     </li>
+
+     <li>
+      <a href="#">
+	Lowe
+	<span>
+	  <table><tr><td style="vertical-align:top;">
+	       <input type="image" name="" style="cursor:crosshair;" src="${app.work_url + 'output_lowe.png'}" alt="Lowe orientations">
+	  </td><td style="vertical-align:top;">
+	  <img src="${app.work_url + 'histo_lowe.png'}"
+	       alt="Lowe's histogram"
+	       style="height:${sizeY}px" />
+	  </td></tr></table>
+	</span>
+      </a>
+     </li>
+
+    </ul>
+  </div>
+
+  </div>
+</form>
+
+<p> Detected modes, corresponding orientations (in radians), and their meaningfullness (-log(NFA))</p>
+<pre class="stdio">${open(app.work_dir + 'modes_ac.txt', 'r').read()}</pre>
+
+<p> Number of pixels used to build the orientation histogram for a contrario detection (remember that pixels with too small gradient are discarded to prevent quantization artifacts)</p>
+<pre class="stdio">${open(app.work_dir + 'nb_pixels_ac.txt', 'r').read()}</pre>
+
+<p>
+To select a different input image for a new experiment:
+<form action="${app.base_url}" method="get">
+   <input type="submit" value="new input" />
+</form>
+</p>
+
+<p>
+Rerun link: <input type="text" value="
+${app.base_url}get_params_from_url?input_id=${str(app.cfg['meta']['input_id'])}&x=${str(app.cfg['param']['x'])}&y=${str(app.cfg['param']['y'])}&r=${str(app.cfg['param']['r'])}&n_bins=${str(app.cfg['param']['n_bins'])}&sigma=${str(app.cfg['param']['sigma'])}
+" size="120"/>
+</p><p>
+Download: <a href="${app.base_url}tmp/${app.key}/output_ac_cropped.png">patch a contrario</a>,
+<a href="${app.base_url}tmp/${app.key}/output_lowe_cropped.png">patch lowe</a>,
+<a href="${app.base_url}tmp/${app.key}/histo_ac.png">histogram a contrario</a>,
+<a href="${app.base_url}tmp/${app.key}/histo_lowe.png">histogram lowe</a>.
+</p>
+<a name="p" href=#p></a>
+<br><br>
+
+<%include file="footer.html" />
