@@ -101,6 +101,9 @@ To select a different input image for a new experiment:
 Rerun link: <input type="text" value="
 ${app.base_url}get_params_from_url?input_id=${str(app.cfg['meta']['input_id'])}&x=${str(app.cfg['param']['x'])}&y=${str(app.cfg['param']['y'])}&r=${str(app.cfg['param']['r'])}&n_bins=${str(app.cfg['param']['n_bins'])}&sigma=${str(app.cfg['param']['sigma'])}
 " size="120"/>
-
+<form action="${app.base_url + 'crop_download#p'}" method="get">
+   <input type="submit" value="crop and download" />
+</form>
 </p>
+<a name="p" href=#p></a>
 <%include file="footer.html" />

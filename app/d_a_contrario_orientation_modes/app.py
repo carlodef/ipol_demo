@@ -1,5 +1,5 @@
 """
-demo A contrario detection of modes in orientation histogram
+A contrario detection of modes in orientation histogram web app
 """
 
 from lib import base_app, build, http, image, config
@@ -10,6 +10,11 @@ from cherrypy import TimeoutError
 import os.path
 import shutil
 import time
+from plot_orientations import *
+from plot_modes import *
+
+
+
 
 class app(base_app):
     """ detection of modes app"""
@@ -214,20 +219,16 @@ class app(base_app):
         self.wait_proc(p_1, timeout=self.timeout)
 
 	# Draw circle and arrows on the input_1 images, for AC and then for Lowe
-        from plot_orientations import *
         plot_orientations(self.work_dir + 'input_1.png', x, y, r,\
         self.work_dir + 'modes_ac.txt', self.work_dir + 'output_ac.png')
 
-        from plot_orientations import *
         plot_orientations(self.work_dir + 'input_1.png', x, y, r,\
         self.work_dir + 'modes_lowe.txt', self.work_dir + 'output_lowe.png')
 
 	# Plot modes, AC and then Lowe
-        from plot_modes import *
         plot_modes(self.work_dir + 'histo_ac.txt', self.work_dir + 'modes_ac.txt',\
         self.work_dir + 'histo_ac.png', n_bins)
 
-        from plot_modes import *
         plot_modes(self.work_dir + 'histo_lowe.txt', self.work_dir + 'modes_lowe.txt',\
         self.work_dir + 'histo_lowe.png', n_bins)
 
@@ -244,3 +245,29 @@ class app(base_app):
         sizeY=image(self.work_dir + 'input_0.png').size[1]
 
         return self.tmpl_out("result.html", sizeX=sizeX, sizeY=sizeY)
+    
+    
+    @cherrypy.expose
+    def crop_download(self):
+        """
+        Makes a crop of the resulting images around the keypoint
+        """
+        print '********************* Crop and download ************************'
+        x = int(self.cfg['param']['x'])
+        y = int(self.cfg['param']['y'])
+        r = int(self.cfg['param']['r'])
+        x1 = x-2*r
+        y1 = y-2*r
+        x2 = x+2*r
+        y2 = y+2*r
+        crop_image(self.work_dir + 'output_ac.png', x1, y1, x2, y2, \
+                           self.work_dir + 'output_ac_cropped.png')
+        crop_image(self.work_dir + 'output_lowe.png', x1, y1, x2, y2, \
+                           self.work_dir + 'output_lowe_cropped.png')
+        
+        
+        sizeX=image(self.work_dir + 'input_0.png').size[0]
+        sizeY=image(self.work_dir + 'input_0.png').size[1]
+        return self.tmpl_out("result.html", sizeX=sizeX, sizeY=sizeY)
+        
+

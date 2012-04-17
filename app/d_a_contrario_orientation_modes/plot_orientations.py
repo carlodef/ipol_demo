@@ -5,6 +5,7 @@ import Image, ImageDraw
 from math import cos
 from math import sin
 from math import pi
+from lib import image
 
 def plot_orientations(input_image, x, y, r, file_modes, output_name):
 
@@ -32,3 +33,15 @@ def plot_orientations(input_image, x, y, r, file_modes, output_name):
 
     del draw
     im.save(output_name, "PNG")
+
+
+def crop_image(input_image, x0, y0, x1, y1, output_image):
+    """
+    copy the part of the input image contained in the rectangle defined by the
+    two provided corners into the output image
+    """
+    img = image(input_image)
+    (x0, x1) = (min(x0,x1), max(x0,x1))
+    (y0, y1) = (min(y0,y1), max(y0,y1))
+    img.crop((x0, y0, x1, y1))
+    img.save(output_image)
