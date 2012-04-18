@@ -272,6 +272,29 @@ class app(base_app):
         crop_image(self.work_dir + 'output_lowe.png', x1, y1, x2, y2, \
                            self.work_dir + 'output_lowe_cropped.png')
         
+        # Get the other parameters
+        n_bins = int(self.cfg['param']['n_bins'])
+        sigma = int(self.cfg['param']['sigma'])
+        url = 'get_params_from_url?input_id='+str(self.cfg['meta']['input_id'])+\
+            '&x='+str(self.cfg['param']['x'])+\
+            '&y='+str(self.cfg['param']['y'])+\
+            '&r='+str(self.cfg['param']['r'])+\
+            '&n_bins='+str(self.cfg['param']['n_bins'])+\
+            '&sigma='+str(self.cfg['param']['sigma'])
+        
+        # Write them in a txt file
+        f = open(self.work_dir + 'params.txt', 'w')
+        f.write(str(r)+'\n')
+        f.write(str(n_bins)+'\n')
+        f.write(str(sigma)+'\n')
+        f.write(url)
+        f.close()
+        
+        # Put the files in a tar
+        p = self.run_proc(['/bin/bash', 'zip_results.sh'])
+        #self.wait_proc(p, timeout=self.timeout)
+        #the above line makes python fail...
+        
         # Go back on the result page
         sizeX=image(self.work_dir + 'input_0.png').size[0]
         sizeY=image(self.work_dir + 'input_0.png').size[1]
