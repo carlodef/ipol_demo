@@ -49,65 +49,59 @@ class app(base_app):
         program build/update
         """
         # store common file path in variables
-        tgz_urls = ['https://edit.ipol.im/edit/algo/d_a_contrario_orientation_modes/' \
-            + tgz_name for tgz_name in ['modes_detection.tar.gz', 'addnoise.tar.gz']]
-        tgz_files = [self.dl_dir
-            + tgz_name for tgz_name in ['modes_detection.tar.gz', 'addnoise.tar.gz']]
-        progs = ['modes_detection', 'addnoise']
         log_file = self.base_dir + 'build.log'
 
-        # get the latest source archives
-        for tgz_url, tgz_file in zip(tgz_urls, tgz_files):
-            build.download(tgz_url, tgz_file)
-
-        # first prog : modes_detection
-        # test if the dest file is missing, or too old
-        if (os.path.isfile(self.bin_dir + progs[0])
-                 and ctime(tgz_files[0]) < ctime(self.bin_dir + p)):
-            cherrypy.log("not rebuild needed",
-                         context='BUILD', traceback=False)
-        else:
-            # extract the archive
-            build.extract(tgz_files[0], self.src_dir)
-
-            # build the program
-            build.run("make -C %s" % (self.src_dir + progs[0]),
-                      stdout=log_file)
-
-            # save into bin dir
-            if os.path.isdir(self.bin_dir):
-                shutil.rmtree(self.bin_dir)
-            os.mkdir(self.bin_dir)
-            shutil.copy(self.src_dir + progs[0] + '/' + progs[0], self.bin_dir + progs[0])
-
-            # cleanup the source dir
-            shutil.rmtree(self.src_dir)
-
-        # second prog : addnoise
-        # test if the dest file is missing, or too old
-        if (os.path.isfile(self.bin_dir + progs[1])
-                 and ctime(tgz_files[1]) < ctime(self.bin_dir + p)):
-            cherrypy.log("not rebuild needed",
-                         context='BUILD', traceback=False)
-        else:
-            # extract the archive
-            build.extract(tgz_files[1], self.src_dir)
-
-            # build the program
-            build.run("make -C %s" % (self.src_dir + progs[1]),
-                      stdout=log_file)
-
-            # save into bin dir
-            shutil.copy(self.src_dir + progs[1] + '/' + progs[1], self.bin_dir + progs[1])
-
-            # cleanup the source dir
-            shutil.rmtree(self.src_dir)
-            
+                
+        # second prog : modes_detection
+        self.src_dir = self.src_dir + "modes";
         
+        # get the latest snapshot from git
+        import os
+        os.system("git clone http://dev.ipol.im/git/carlo/modes.git"+self.src_dir)
+        
+        # build the program
+        build.run("make -C %s" % (self.src_dir), stdout=log_file)
+
+        # cleanup the source dir
+        shutil.rmtree(self.src_dir)
+
+            
         # link all the scripts to the bin dir
         import glob
         for file in glob.glob( os.path.join( self.base_dir, 'scripts/*')):
+            print '********************** LINKING SCRIPTS ***************************'
             os.symlink(file, os.path.join( self.bin_dir , os.path.basename(file)))
+        
+        
+        
+        
+        # first prog : addnoise
+        addnoise_url = 'https://edit.ipol.im/edit/algo/d_a_contrario_orientation_modes/addnoise.tar.gz'
+        addnoise_files = self.dl_dir + 'addnoise.tar.gz'
+        build.download(addnoise_url, addnoise_files)
+        
+        # test if the dest file is missing, or too old
+        if (os.path.isfile(self.bin_dir + 'addnoise')
+                 and ctime(addnoise_files) < ctime(self.bin_dir + 'addnoise')):
+            print '****************************************************************'
+            cherrypy.log("no rebuild needed",
+                         context='BUILD', traceback=False)
+        else:
+            
+            # extract the archive
+            build.extract(addnoise_files, self.src_dir)
+
+            # build the program
+            build.run("make -C %s" % (self.src_dir + 'addnoise'),
+                      stdout=log_file)
+
+            # save into bin dir
+            shutil.copy(self.src_dir + 'addnoise' + '/' + 'addnoise', self.bin_dir + 'addnoise')
+
+            # cleanup the source dir
+            shutil.rmtree(self.src_dir)
+        
+
 
         return
     
