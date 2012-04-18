@@ -102,6 +102,12 @@ class app(base_app):
 
             # cleanup the source dir
             shutil.rmtree(self.src_dir)
+            
+        
+        # link all the scripts to the bin dir
+        import glob
+        for file in glob.glob( os.path.join( self.base_dir, 'scripts/*')):
+            os.symlink(file, os.path.join( self.bin_dir , os.path.basename(file)))
 
         return
     
