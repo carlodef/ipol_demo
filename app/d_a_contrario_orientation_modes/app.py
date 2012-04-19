@@ -8,8 +8,6 @@ from lib.base_app import init_app
 import cherrypy
 from cherrypy import TimeoutError
 import os
-from os import *
-from os.path import *
 import shutil
 import time
 from plot_orientations import *
