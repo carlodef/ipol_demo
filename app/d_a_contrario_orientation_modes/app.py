@@ -7,7 +7,9 @@ from lib.misc import app_expose, ctime
 from lib.base_app import init_app
 import cherrypy
 from cherrypy import TimeoutError
-import os.path
+import os
+from os import *
+from os.path import *
 import shutil
 import time
 from plot_orientations import *
@@ -50,59 +52,36 @@ class app(base_app):
         """
         # store common file path in variables
         log_file = self.base_dir + 'build.log'
-
-                
-        # second prog : modes_detection
-        self.src_dir = self.src_dir + "modes";
-        
-        # get the latest snapshot from git
-        import os
-        os.system("git clone http://dev.ipol.im/git/carlo/modes.git"+self.src_dir)
-        
-        # build the program
-        build.run("make -C %s" % (self.src_dir), stdout=log_file)
-
-        # cleanup the source dir
-        shutil.rmtree(self.src_dir)
-
-            
-        # link all the scripts to the bin dir
-        import glob
-        for file in glob.glob( os.path.join( self.base_dir, 'scripts/*')):
-            print '********************** LINKING SCRIPTS ***************************'
-            os.symlink(file, os.path.join( self.bin_dir , os.path.basename(file)))
-        
-        
-        
         
         # first prog : addnoise
         addnoise_url = 'https://edit.ipol.im/edit/algo/d_a_contrario_orientation_modes/addnoise.tar.gz'
         addnoise_files = self.dl_dir + 'addnoise.tar.gz'
         build.download(addnoise_url, addnoise_files)
         
-        # test if the dest file is missing, or too old
-        if (os.path.isfile(self.bin_dir + 'addnoise')
-                 and ctime(addnoise_files) < ctime(self.bin_dir + 'addnoise')):
-            print '****************************************************************'
-            cherrypy.log("no rebuild needed",
-                         context='BUILD', traceback=False)
-        else:
-            
-            # extract the archive
-            build.extract(addnoise_files, self.src_dir)
+        # extract the archive
+        build.extract(addnoise_files, self.src_dir)
+        # build the program
+        build.run("make -C %s" % (self.src_dir + 'addnoise'),
+                  stdout=log_file)
+        # save into bin dir
+        shutil.copy(self.src_dir + 'addnoise' + '/' + 'addnoise', self.bin_dir + 'addnoise')
+        # cleanup the source dir
+        shutil.rmtree(self.src_dir)
+                
+        # second prog : modes_detection
+        self.src_dir = self.src_dir + "modes";
+        # get the latest snapshot from git
+        os.system("git clone http://dev.ipol.im/git/carlo/modes.git "+self.src_dir)
+        # build the program
+        build.run("make -C %s %s" % (self.src_dir, "ipol"), stdout=log_file)
+        # cleanup the source dir
+        shutil.rmtree(self.src_dir)
 
-            # build the program
-            build.run("make -C %s" % (self.src_dir + 'addnoise'),
-                      stdout=log_file)
-
-            # save into bin dir
-            shutil.copy(self.src_dir + 'addnoise' + '/' + 'addnoise', self.bin_dir + 'addnoise')
-
-            # cleanup the source dir
-            shutil.rmtree(self.src_dir)
+        # link all the scripts to the bin dir
+        import glob
+        for file in glob.glob( os.path.join( self.base_dir, 'scripts/*')):
+            os.symlink(file, os.path.join( self.bin_dir , os.path.basename(file)))
         
-
-
         return
     
     @cherrypy.expose
