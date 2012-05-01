@@ -14,13 +14,14 @@ import time
 class app(base_app):
     """ shear and Tilt"""
 
-    title = "Shear and Tilt"
+    title = "Shear and tilt illustration"
     input_nb = 1 # number of input images
     input_max_pixels = 512 * 512 # max size (in pixels) of an input image
     input_max_weight = 10 * 1024 * 1024 # max size (in bytes) of an input file
     input_dtype = '3x8i' # input image expected data type
     input_ext = '.png'   # input image expected extension (ie file format)
     is_test = True       # switch to False for deployment
+    is_listed = False
 
     def __init__(self):
         """

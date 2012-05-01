@@ -5,7 +5,8 @@ import os.path
 
 class app(base_app):
 
-	title = "Hello World"
+	title = "Hello World !"
+	is_listed = False
 
 	def __init__(self):
 		base_dir = os.path.dirname(os.path.abspath(__file__))

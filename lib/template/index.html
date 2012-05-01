@@ -26,9 +26,11 @@
       <div id="content">
 	
 	<ul>
-	  % for key in indexd.keys():
+    % for key in indexd.keys():
+        % if indexd[key].is_listed:
 	  <li><a href='./${key}/'>${indexd[key].title}</a></li>
-	  % endfor
+	% endif
+    % endfor
 	</ul>
 	
 	<%include file="./footer.html" />
