@@ -3,7 +3,7 @@
 
 import numpy as np
 import matplotlib as mpl
-#mpl.use('Agg')
+mpl.use('Agg')
 import matplotlib.pyplot as plt
 
 def plot_modes(file_histo, file_modes, output_name, n_bins):

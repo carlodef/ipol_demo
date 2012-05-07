@@ -11,8 +11,8 @@ import os.path
 import shutil
 import time
 from collections import deque
-import matplotlib as mpl
-mpl.use('Agg')
+#import matplotlib as mpl
+#mpl.use('Agg')
 import matplotlib.pyplot as plt
 
 
