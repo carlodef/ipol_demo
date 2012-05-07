@@ -10,6 +10,7 @@ from cherrypy import TimeoutError
 import os
 import shutil
 import time
+import glob
 from plot_orientations import *
 from plot_modes import *
 
@@ -50,34 +51,23 @@ class app(base_app):
         program build/update
         """
         # store common file path in variables
-        log_file = self.base_dir + 'build.log'
+        log_detection = self.base_dir + 'build_detection.log'
+        log_addnoise = self.base_dir + 'build_addnoise.log'
         
-        # first prog : addnoise
-        addnoise_url = 'https://edit.ipol.im/edit/algo/d_a_contrario_orientation_modes/addnoise.tar.gz'
-        addnoise_files = self.dl_dir + 'addnoise.tar.gz'
-        build.download(addnoise_url, addnoise_files)
-        
-        # extract the archive
-        build.extract(addnoise_files, self.src_dir)
-        # build the program
-        build.run("make -C %s" % (self.src_dir + 'addnoise'),
-                  stdout=log_file)
-        # save into bin dir
-        shutil.copy(self.src_dir + 'addnoise' + '/' + 'addnoise', self.bin_dir + 'addnoise')
-        # cleanup the source dir
-        shutil.rmtree(self.src_dir)
-                
-        # second prog : modes_detection
-        self.src_dir = self.src_dir + "modes";
-        # get the latest snapshot from git
+        # Create bin dir (delete the previous one if exists)
+        if os.path.isdir(self.bin_dir):
+            shutil.rmtree(self.bin_dir)
+        os.mkdir(self.bin_dir)
+                 
+        # get code from git repo and compile it
         os.system("git clone http://dev.ipol.im/git/carlo/modes.git "+self.src_dir)
-        # build the program
-        build.run("make -C %s %s" % (self.src_dir, "ipol"), stdout=log_file)
+        build.run("make -C %s %s" % (self.src_dir + 'detection', 'ipol'), stdout=log_detection)
+        build.run("make -C %s %s" % (self.src_dir + 'addnoise', 'ipol'), stdout=log_addnoise)
+        
         # cleanup the source dir
         shutil.rmtree(self.src_dir)
 
-        # link all the scripts to the bin dir
-        import glob
+        # link all the scripts to the bin dir : it works only if the scripts are not already there
         for file in glob.glob( os.path.join( self.base_dir, 'scripts/*')):
             os.symlink(file, os.path.join( self.bin_dir , os.path.basename(file)))
         
