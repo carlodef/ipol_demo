@@ -50,5 +50,5 @@ visualize out_argmin.tif $tilt_min $tilt_max $shear_min $shear_max out_argmin.pn
 # Convert the out_cost image into a png file
 echo "save_png.sh out_cost.tif out_cost.png 0 100"
 save_png.sh out_cost.tif out_cost.png 0 100
-save_png.sh out_cost_minfiltered.tif out_cost_minfiltered.png 0 100
-save_png.sh out_cost_minfiltered2.tif out_cost_minfiltered2.png 0 100
+#save_png.sh out_cost_minfiltered.tif out_cost_minfiltered.png 0 100
+#save_png.sh out_cost_minfiltered2.tif out_cost_minfiltered2.png 0 100
