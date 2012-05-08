@@ -33,8 +33,8 @@ intersection filt_LRRL_t$1_s$2.png filt_flat_t$1_s$2.png filt_t$1_s$2.tif
 echo "save_png_mask.sh filt_t$1_s$2.tif filt_t$1_s$2.png"
 save_png_mask.sh filt_t$1_s$2.tif filt_t$1_s$2.png
 
-echo "Applying minfilter"
-minfilter 7 disp_t$1_s$2.tif cost_t$1_s$2.tif m_disp_t$1_s$2.tif m_cost_t$1_s$2.tif
+#echo "Applying minfilter"
+#minfilter 7 disp_t$1_s$2.tif cost_t$1_s$2.tif m_disp_t$1_s$2.tif m_cost_t$1_s$2.tif
 
 # 3. Correct disparity values according to shear, tilt and translation parameters
 echo "correction_disp_multi.sh $1 $2 0"

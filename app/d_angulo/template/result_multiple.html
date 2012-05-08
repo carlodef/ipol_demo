@@ -104,57 +104,37 @@ The algorithm result is displayed hereafter. It ran in ${"%0.2f" % app.cfg['info
      
      <li>
       <a href="#">
-	Disparity
+	Disparity (angulo)
 	<span>
 	  <table><tr>
 	  <td style="vertical-align:top;">
-	  <img style="background:url(${app.work_url + 'out_render.png'})" 
-	  		src="${app.work_url + 'out_filt.png'}" alt="" /><br>
-	  3D Rendering
-	  </td><td style="vertical-align:top;">
 	  <img style="background:url(${app.work_url + 'out_disp.png'})" 
 	  		src="${app.work_url + 'out_filt.png'}" alt="" /><br>
-	  Disparity
-	  </td>
-	  </tr></table>
+	  </td></tr></table>
 	</span>
       </a>
      </li>
      
-      <li>
+    <li>
       <a href="#">
-	Disparity (minfiltered 1)
+	Disparity (bm)
 	<span>
 	  <table><tr>
 	  <td style="vertical-align:top;">
-	  <img style="background:url(${app.work_url + 'out_render_minfiltered.png'})" 
-	  		src="${app.work_url + 'out_filt.png'}" alt="" /><br>
-	  3D Rendering
-	  </td><td style="vertical-align:top;">
-	  <img style="background:url(${app.work_url + 'out_disp_minfiltered.png'})" 
-	  		src="${app.work_url + 'out_filt.png'}" alt="" /><br>
-	  Disparity
-	  </td>
-	  </tr></table>
+	  <img style="background:url(${app.work_url + 'disp_t1.00_s0.00.png'})" 
+	  		src="${app.work_url + 'filt_t1.00_s0.00.png'}" alt="" /><br>
+	  </td></tr></table>
 	</span>
       </a>
      </li>
      
-     <li>
+    <li>
       <a href="#">
-	Disparity (minfiltered 2)
+	Left image
 	<span>
-	  <table><tr>
-	  <td style="vertical-align:top;">
-	  <img style="background:url(${app.work_url + 'out_render_minfiltered2.png'})" 
-	  		src="${app.work_url + 'out_filt.png'}" alt="" /><br>
-	  3D Rendering
-	  </td><td style="vertical-align:top;">
-	  <img style="background:url(${app.work_url + 'out_disp_minfiltered2.png'})" 
-	  		src="${app.work_url + 'out_filt.png'}" alt="" /><br>
-	  Disparity
-	  </td>
-	  </tr></table>
+	  <table><tr><td style="vertical-align:top;">
+	  <img src="${app.work_url + 'input_0.png'}" alt="" />
+	  </td></tr></table>
 	</span>
       </a>
      </li>
@@ -175,44 +155,7 @@ The algorithm result is displayed hereafter. It ran in ${"%0.2f" % app.cfg['info
 	  </td></tr></table>
 	</span>
       </a>
-     </li>
-     
-     <li>
-      <a href="#">
-	Argmin (minfiltered)
-	<span>
-	  <table><tr><td style="vertical-align:top;">
-	   <img style="background:url(${app.work_url + 'out_argmin_minfiltered.png'})" 
-	  		src="${app.work_url + 'out_filt.png'}" alt="" /><br>
-	  Argmin
-	  </td>
-	  <td style="vertical-align:top;">
-	   <img style="background:url(${app.work_url + 'out_cost_minfiltered.png'})" 
-	  		src="${app.work_url + 'out_filt.png'}" alt="" /><br>
-	 Minimal matching Cost
-	  </td></tr></table>
-	</span>
-      </a>
-     </li>
-     
-     <li>
-      <a href="#">
-	Argmin (minfiltered 2)
-	<span>
-	  <table><tr><td style="vertical-align:top;">
-	   <img style="background:url(${app.work_url + 'out_argmin_minfiltered2.png'})" 
-	  		src="${app.work_url + 'out_filt.png'}" alt="" /><br>
-	  Argmin
-	  </td>
-	  <td style="vertical-align:top;">
-	   <img style="background:url(${app.work_url + 'out_cost_minfiltered2.png'})" 
-	  		src="${app.work_url + 'out_filt.png'}" alt="" /><br>
-	 Minimal matching Cost
-	  </td></tr></table>
-	</span>
-      </a>
-     </li>
-     
+     </li>     
     </ul>
 </div>
 
