@@ -267,12 +267,12 @@ class app(base_app):
         """
         if newrun:
             self.clone_input()
-            sizeY=image(self.work_dir + 'input_0.png').size[1]
+            sizeY=image(self.work_dir + 'left_image.png').size[1]
             return self.tmpl_out("params.html", sizeY=sizeY)
 
         elif action:
             # The crop is done, go to the parameters page
-            sizeY=image(self.work_dir + 'input_0.png').size[1]
+            sizeY=image(self.work_dir + 'left_image.png').size[1]
             return self.tmpl_out("params.html", sizeY=sizeY)
         
         else:
@@ -287,8 +287,8 @@ class app(base_app):
                 self.cfg['param']['y0'] = y
                 
                 # draw a cross at the first corner
-                plot_cross(self.work_dir + 'input_0.png', x, y, \
-                           self.work_dir + 'input_0_corner.png')
+                plot_cross(self.work_dir + 'left_image.png', x, y, \
+                           self.work_dir + 'left_image_corner.png')
                 
                 # change the page
                 return self.tmpl_out("crop.html", corners=1)
@@ -302,12 +302,15 @@ class app(base_app):
                 # draw selection rectangle on the image
                 x0 = self.cfg['param']['x0']
                 y0 = self.cfg['param']['y0']
-                plot_rectangle(self.work_dir + 'input_0.png', x0, y0, x, y, \
-                               self.work_dir + 'input_0_selection.png')
+                plot_rectangle(self.work_dir + 'left_image.png', x0, y0, x, y, \
+                               self.work_dir + 'left_image_selection.png')
                 
                 # crop from the first input image
-                crop_image(self.work_dir + 'input_0.png', x0, y0, x, y, \
-                           self.work_dir + 'input_0.png')
+                crop_image(self.work_dir + 'left_image.png', x0, y0, x, y, \
+                           self.work_dir + 'left_image.png')
+                # Same with tiff
+                crop_image(self.work_dir + 'left_image.tif', x0, y0, x, y, \
+                           self.work_dir + 'left_image.tif')
                
                 return self.tmpl_out("crop.html", corners=2)
              
@@ -324,12 +327,15 @@ class app(base_app):
                 y3 = y2 + abs(y1-y0)    
 
                 # draw selection rectangle on the image
-                plot_rectangle(self.work_dir + 'input_1.png', x, y2, x3, y3, \
-                               self.work_dir + 'input_1_selection.png')
+                plot_rectangle(self.work_dir + 'right_image.png', x, y2, x3, y3, \
+                               self.work_dir + 'right_image_selection.png')
                 
                 # crop from the first input image
-                crop_image(self.work_dir + 'input_1.png', x, y2, x3, y3, \
-                           self.work_dir + 'input_1.png')
+                crop_image(self.work_dir + 'right_image.png', x, y2, x3, y3, \
+                           self.work_dir + 'right_image.png')
+                # Same with tiff
+                crop_image(self.work_dir + 'right_image.tif', x, y2, x3, y3, \
+                           self.work_dir + 'right_image.tif')
                 
                 return self.tmpl_out("crop.html", corners=3)
             return
@@ -362,11 +368,11 @@ class app(base_app):
         self.cfg['param']['disp_min'] = disp_min
         self.cfg['param']['disp_max'] = disp_max
         self.cfg['param']['subpixel'] = subpixel
-        self.cfg['param']['width'] = image(self.work_dir+'input_1.png').size[0]
+        self.cfg['param']['width'] = image(self.work_dir+'right_image.png').size[0]
         self.cfg.save()
 
         http.refresh(self.base_url + 'run?key=%s' % self.key)
-        sizeY=image(self.work_dir + 'input_0.png').size[1]
+        sizeY=image(self.work_dir + 'left_image.png').size[1]
         return self.tmpl_out("wait.html", sizeY=sizeY)
     
     @cherrypy.expose
@@ -406,11 +412,11 @@ class app(base_app):
         self.cfg['param']['disp_min'] = disp_min
         self.cfg['param']['disp_max'] = disp_max
         self.cfg['param']['subpixel'] = subpixel
-        self.cfg['param']['width'] = image(self.work_dir+'input_1.png').size[0]
+        self.cfg['param']['width'] = image(self.work_dir+'right_image.png').size[0]
         self.cfg.save()
 
         http.refresh(self.base_url + 'run?key=%s' % self.key)
-        sizeY=image(self.work_dir + 'input_0.png').size[1]
+        sizeY=image(self.work_dir + 'left_image.png').size[1]
         return self.tmpl_out("wait.html",sizeY=sizeY)
 
 
@@ -513,7 +519,7 @@ class app(base_app):
         f.write('shear_min='+str(self.cfg['param']['shear_min'])+'\n')
         f.write('shear_max='+str(self.cfg['param']['shear_max'])+'\n')
         f.write('subpixel='+str(self.cfg['param']['subpixel'])+'\n')
-        f.write('height='+str(image(self.work_dir + 'input_0.png').size[1])+'\n')
+        f.write('height='+str(image(self.work_dir + 'left_image.png').size[1])+'\n')
 
         f.close();
         
@@ -605,7 +611,7 @@ class app(base_app):
         """
         display the algo results
         """
-        sizeY=image(self.work_dir + 'input_0.png').size[1]
+        sizeY=image(self.work_dir + 'left_image.png').size[1]
         
         if (self.cfg['param']['type'] == 'single'):
             return self.tmpl_out("result_simple.html", sizeY=sizeY)
