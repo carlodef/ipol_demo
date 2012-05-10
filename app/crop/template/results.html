@@ -1,0 +1,43 @@
+<%include file="header.html" />
+
+<%
+    max_size = max(sizeY,2*30)
+%>
+
+   <p>
+   The cropped images are displayed below.
+    </p>
+    
+    <div class="gallery" style="height:${max_size}px;">
+    <ul class="index">
+
+     <li>
+      <a href="#">
+	Left
+	<span>
+	  <table><tr><td style="vertical-align:top;">
+	  <img src="${app.work_url + 'out_0.png'}" alt="" />
+	  </td></tr></table>
+	</span>
+      </a>
+     </li>
+
+     <li>
+      <a href="#">
+	Right
+	<span>
+	  <table><tr><td style="vertical-align:top;">
+	  <img src="${app.work_url + 'out_1.png'}" alt="" />
+	  </td></tr></table>
+	</span>
+      </a>
+     </li>
+    </ul>
+	</div>
+	
+<p>
+	Download: <a href="${app.base_url}tmp/${app.key}/out_0.png">first image</a>,
+	<a href="${app.base_url}tmp/${app.key}/out_1.png">second image</a>.
+</p>
+
+<%include file="footer.html" />
