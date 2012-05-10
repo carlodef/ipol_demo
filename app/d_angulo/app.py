@@ -10,7 +10,6 @@ import cherrypy
 from cherrypy import TimeoutError
 import os.path
 import time
-from utils import *
 
 
 class app(base_app):
@@ -19,8 +18,8 @@ class app(base_app):
     title = 'Angulo: Stereo block-matching with deformed patches'
 
     input_nb = 2 # number of input images
-    input_max_pixels = 5000000 # max size (in pixels) of an input image
-    input_max_weight = 1 * 10024 * 10024 # max size (in bytes) of an input file
+    input_max_pixels = 10000 * 10000 # max size (in pixels) of an input image
+    input_max_weight = 3 * 10000 * 10000 # max size (in bytes) of an input file
     input_dtype = '3x8i' # input image expected data type
     input_ext = '.png'   # input image expected extension (ie file format)
     timeout = 90
@@ -80,98 +79,19 @@ class app(base_app):
 
     @cherrypy.expose
     @init_app
-#    Il faut forcement mettre une methode params car les methodes input_select
-#    et input_upload, definies dans base_app.py et appelees par la page input.html,
-#    renvoient a la methode params. Et celle qui est implementee dans base_app.py
-#    renvoie la page params.html.
-#    Le plus propre serait en fait de redefinir les methodes input_select et input_upload
-#    dans app pour qu'elles renvoient a la methode crop directement.
+#   Les methodes input_select et input_upload
+#   renvoient a la methode params, qui affiche la page params.html.
     def params(self, msg=None, newrun=False):
         """
-        Redirects to the crop page
+        Redirects to the params page
         """
         if newrun:
             self.clone_input()
         
-        return self.tmpl_out("crop.html", corners=0)
+        sizeY=image(self.work_dir + 'input_0.png').size[1]        
+        return self.tmpl_out("params.html", sizeY=sizeY)
     
     
-    @cherrypy.expose
-    @init_app
-    def crop(self, action=None, x=None, y=None, newrun=False):
-        """
-        select a rectangle in the image
-        """
-        if newrun:
-            self.clone_input()
-            sizeY=image(self.work_dir + 'input_0.png').size[1]
-            return self.tmpl_out("params.html", sizeY=sizeY)
-
-        elif action:
-            # The crop is done, go to the parameters page
-            sizeY=image(self.work_dir + 'input_0.png').size[1]
-            return self.tmpl_out("params.html", sizeY=sizeY)
-        
-        else:
-            # The user has not defined all the corners yet
-            x = int(x)
-            y = int(y)
-            
-            # Case 1 : nothing is defined
-            if (not self.cfg['param'].has_key('x0')):
-                
-                self.cfg['param']['x0'] = x
-                self.cfg['param']['y0'] = y
-                
-                # draw a cross at the first corner
-                plot_cross(self.work_dir + 'input_0.png', x, y, \
-                           self.work_dir + 'input_0_corner.png')
-                
-                # change the page
-                return self.tmpl_out("crop.html", corners=1)
-            
-            # Case 2 : 1 corner is defined in the first image
-            elif (not self.cfg['param'].has_key('x1')):
-
-                self.cfg['param']['x1'] = x
-                self.cfg['param']['y1'] = y
-                
-                # draw selection rectangle on the image
-                x0 = self.cfg['param']['x0']
-                y0 = self.cfg['param']['y0']
-                plot_rectangle(self.work_dir + 'input_0.png', x0, y0, x, y, \
-                               self.work_dir + 'input_0_selection.png')
-                
-                # crop from the first input image
-                crop_image(self.work_dir + 'input_0.png', x0, y0, x, y, \
-                           self.work_dir + 'input_0.png')
-               
-                return self.tmpl_out("crop.html", corners=2)
-             
-            # Case 3 : 2 corners defined in the first image    
-            else:
-                x0 = self.cfg['param']['x0']
-                y0 = self.cfg['param']['y0']
-                x1 = self.cfg['param']['x1']
-                y1 = self.cfg['param']['y1']
-                y2 = min(y0,y1)
-                self.cfg['param']['x2'] = x
-                self.cfg['param']['y2'] = y2
-                x3 = x + abs(x1-x0)
-                y3 = y2 + abs(y1-y0)    
-
-                # draw selection rectangle on the image
-                plot_rectangle(self.work_dir + 'input_1.png', x, y2, x3, y3, \
-                               self.work_dir + 'input_1_selection.png')
-                
-                # crop from the first input image
-                crop_image(self.work_dir + 'input_1.png', x, y2, x3, y3, \
-                           self.work_dir + 'input_1.png')
-                
-                return self.tmpl_out("crop.html", corners=3)
-            return
-
-
     @cherrypy.expose
     @init_app
     def wait_single_value(self, shear=None, tilt=None, win=None, 
