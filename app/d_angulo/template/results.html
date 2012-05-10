@@ -20,7 +20,7 @@
 %>
 
 <h2>Input parameters</h2>
-<form action="${app.base_url + 'wait_multiple_values'}" method="get">
+<form action="${app.base_url + 'wait'}" method="get">
     <input type="hidden" name="key" value="${app.key}">
     
     <label for="shear_min">Horizontal shear range: [</label>
@@ -46,13 +46,13 @@
     </br>
     
     <label for="win">Window size:</label>
-    <input type="text" name="win" value="${str(app.cfg['param']['win_w'])}" size="4" />
+    <input type="text" name="win" value="${str(app.cfg['param']['windowsize'])}" size="4" />
     </br>
 	
-	<label for="disp_min">Disparity range: [</label>
-    <input type="text" name="disp_min" value="${str(app.cfg['param']['disp_min'])}" size="4" />
-    <label for="disp_max"> , </label>
-    <input type="text" name="disp_max" value="${str(app.cfg['param']['disp_max'])}" size="4" />
+	<label for="min_disparity">Disparity range: [</label>
+    <input type="text" name="min_disparity" value="${str(app.cfg['param']['min_disparity'])}" size="4" />
+    <label for="max_disparity"> , </label>
+    <input type="text" name="max_disparity" value="${str(app.cfg['param']['max_disparity'])}" size="4" />
 	] pixels
 	</br>
 	

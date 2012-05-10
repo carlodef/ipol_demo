@@ -91,7 +91,9 @@ class app(base_app):
                  # THESE ARE EXECUTION PARAMETERS
                  'decision_method', 'block_match_method', 'filter_method', 
                  'windowsize', 'noise_sigma', 'action',
-                 'run', 'input_data_url', 'input_data', 'subpixel' , 'preprocess'
+                 'run', 'input_data_url', 'input_data', 'subpixel' , 'preprocess',
+                 'tilt_min', 'tilt_max', 'tilt_nb',
+                 'shear_min', 'shear_max', 'shear_nb'
                  ]
 
     # these are files 
@@ -108,7 +110,13 @@ class app(base_app):
              'image_height': 600,
              'scale_gt_a' : 1,
              'scale_gt_b' : 0,
-             'subpixel' : 1
+             'subpixel' : 1,
+             'tilt_min' : 0.7,
+             'tilt_max' : 1.3,
+             'tilt_nb' : 3,
+             'shear_min' : -0.2,
+             'shear_max' : 0.2,
+             'shear_nb' : 3
              }.items()
           )
     
@@ -144,9 +152,9 @@ class app(base_app):
 
         # Load self.cfg with non-null params
         for key in self.VALID_KEYS:
-           if key in params.keys():
-              self.cfg['param'][key] = params[key];
-           else:
+            if key in params.keys():
+               self.cfg['param'][key] = params[key];
+            else:
               if key not in self.cfg['param'].keys():
                  self.cfg['param'][key]='' 
 
@@ -385,7 +393,7 @@ class app(base_app):
                self.cfg['param']['ground_truth_mask'] = 'ground_truth_mask.png'
 
    
-######### END INPUT HANDLING #################################################################
+######### END INPUT HANDLING AND PROCESSING ##################################################
 ##############################################################################################
     
     
@@ -404,45 +412,13 @@ class app(base_app):
         return self.tmpl_out("params.html", sizeY=sizeY)
     
     
-    @cherrypy.expose
-    @init_app
-    def wait_single_value(self, shear=None, tilt=None, win=None, 
-                          disp_min=None, disp_max=None, subpixel=None):
-        """
-        params handling and run redirection
-        """
-        try:
-            shear = float(shear)
-            tilt = float(tilt)
-            win_w = int(win)
-            win_h = int(win)
-            disp_min = int(disp_min)
-            disp_max = int(disp_max)
-            subpixel = int(subpixel)
-        except ValueError:
-            return self.error(errcode='badparams',
-                              errmsg="The parameters must be numeric.")
-
-        self.cfg['param']['type'] = 'single'
-        self.cfg['param']['shear'] = shear
-        self.cfg['param']['tilt'] = tilt
-        self.cfg['param']['win_w'] = win_w
-        self.cfg['param']['win_h'] = win_h
-        self.cfg['param']['disp_min'] = disp_min
-        self.cfg['param']['disp_max'] = disp_max
-        self.cfg['param']['subpixel'] = subpixel
-        self.cfg['param']['width'] = image(self.work_dir+'right_image.png').size[0]
-        self.cfg.save()
-
-        http.refresh(self.base_url + 'run?key=%s' % self.key)
-        sizeY=image(self.work_dir + 'left_image.png').size[1]
-        return self.tmpl_out("wait.html", sizeY=sizeY)
     
     @cherrypy.expose
     @init_app
-    def wait_multiple_values(self, shear_min=None, shear_max=None, shear_nb=None,
+    def wait(self, shear_min=None, shear_max=None, shear_nb=None,
                              tilt_min=None, tilt_max=None, tilt_nb=None,
-                             win=None, disp_min=None, disp_max=None, subpixel=None):
+                             windowsize=None, min_disparity=None, max_disparity=None, 
+                             subpixel=None):
         """
         params handling and run redirection
         """
@@ -454,28 +430,25 @@ class app(base_app):
             tilt_min = float(tilt_min)
             tilt_max = float(tilt_max)
             tilt_nb = int(tilt_nb)
-            win_w = int(win)
-            win_h = int(win)
-            disp_min = int(disp_min)
-            disp_max = int(disp_max)
+            windowsize = int(windowsize)
+            min_disparity = int(min_disparity)
+            max_disparity = int(max_disparity)
             subpixel = int(subpixel)
         except ValueError:
             return self.error(errcode='badparams',
                               errmsg="The parameters must be numeric.")
 
-        self.cfg['param']['type'] = 'multiple'
         self.cfg['param']['shear_min'] = shear_min
         self.cfg['param']['shear_max'] = shear_max
         self.cfg['param']['shear_nb'] = shear_nb
         self.cfg['param']['tilt_min'] = tilt_min
         self.cfg['param']['tilt_max'] = tilt_max
         self.cfg['param']['tilt_nb'] = tilt_nb
-        self.cfg['param']['win_w'] = win_w
-        self.cfg['param']['win_h'] = win_h
-        self.cfg['param']['disp_min'] = disp_min
-        self.cfg['param']['disp_max'] = disp_max
+        self.cfg['param']['windowsize'] = windowsize
+        self.cfg['param']['min_disparity'] = min_disparity
+        self.cfg['param']['max_disparity'] = max_disparity
         self.cfg['param']['subpixel'] = subpixel
-        self.cfg['param']['width'] = image(self.work_dir+'right_image.png').size[0]
+        self.cfg['param']['image_width'] = image(self.work_dir+'right_image.png').size[0]
         self.cfg.save()
 
         http.refresh(self.base_url + 'run?key=%s' % self.key)
@@ -492,10 +465,7 @@ class app(base_app):
         # run the algorithm
         try:
             run_time = time.time()
-            if (self.cfg['param']['type'] == 'single'):
-                self.run_algo_simple()
-            elif (self.cfg['param']['type'] == 'multiple'):
-                self.run_algo_multiple()
+            self.run_algo()
             self.cfg['info']['run_time'] = time.time() - run_time
             self.cfg.save()
         except TimeoutError:
@@ -507,55 +477,7 @@ class app(base_app):
         # archive
 
 
-
-    def run_algo_simple(self):
-        """
-        Computes the block_matching, on both the normal pair and the transformed pair
-        """
-        # Parameters reading (we need them to compute the disparity range)
-        tilt = self.cfg['param']['tilt']
-        disp_min = self.cfg['param']['disp_min']
-        disp_max = self.cfg['param']['disp_max']
-        width = self.cfg['param']['width']
-             
-        # Computation of the disparity range needed        
-        if tilt < 1:
-            disp_min_new = (tilt-1)*width+tilt*disp_min
-            disp_max_new = tilt*disp_max
-        else:
-            disp_min_new = tilt*disp_min
-            disp_max_new = (tilt-1)*width+tilt*disp_max
-                
-        # WRITE THE CONFIG FILE
-        f = open(os.path.join(self.work_dir,'params'), 'w')
-        f.write('win_w='+str(self.cfg['param']['win_w'])+'\n')
-        f.write('win_h='+str(self.cfg['param']['win_h'])+'\n')
-        f.write('disp_min='+str(self.cfg['param']['disp_min'])+'\n')
-        f.write('disp_max='+str(self.cfg['param']['disp_max'])+'\n')
-        f.write('disp_min_new='+str(disp_min_new)+'\n')
-        f.write('disp_max_new='+str(disp_max_new)+'\n')
-        f.write('shear='+str(self.cfg['param']['shear'])+'\n')
-        f.write('tilt='+str(self.cfg['param']['tilt'])+'\n')
-        f.write('subpixel='+str(self.cfg['param']['subpixel'])+'\n')
-        f.close();
-        
-        # Computes tilt and shear on the right image
-        new_width = int(tilt*width)
-        p_transform = self.run_proc(['/bin/bash', 'run_transform.sh', str(new_width)])
-        self.wait_proc(p_transform, timeout=self.timeout)
-
-        # Run flat-patches first because it does not depend on disp maps
-        p_flat = self.run_proc(['/bin/bash', 'run_flat.sh'])
-        self.wait_proc(p_flat, timeout=self.timeout)
-
-        # Block-matching on the two pairs
-        p_normal = self.run_proc(['/bin/bash', 'run_n.sh'])
-        p_transformed = self.run_proc(['/bin/bash', 'run.sh'])
-        self.wait_proc(p_normal, timeout=self.timeout)
-        self.wait_proc(p_transformed, timeout=self.timeout)
-
-
-    def run_algo_multiple(self):
+    def run_algo(self):
         """
         Computes the block_matching, on the whole set of simulated pairs        
         """
@@ -567,16 +489,16 @@ class app(base_app):
         tilt_min = self.cfg['param']['tilt_min']
         tilt_max = self.cfg['param']['tilt_max']
         tilt_nb = self.cfg['param']['tilt_nb']
-        disp_min = self.cfg['param']['disp_min']
-        disp_max = self.cfg['param']['disp_max']
-        width = self.cfg['param']['width']
+        min_disparity = self.cfg['param']['min_disparity']
+        max_disparity = self.cfg['param']['max_disparity']
+        width = self.cfg['param']['image_width']
         
         # WRITE THE CONFIG FILE
         f = open(os.path.join(self.work_dir,'params'), 'w')
-        f.write('win_w='+str(self.cfg['param']['win_w'])+'\n')
-        f.write('win_h='+str(self.cfg['param']['win_h'])+'\n')
-        f.write('disp_min='+str(self.cfg['param']['disp_min'])+'\n')
-        f.write('disp_max='+str(self.cfg['param']['disp_max'])+'\n')
+        f.write('win_w='+str(self.cfg['param']['windowsize'])+'\n')
+        f.write('win_h='+str(self.cfg['param']['windowsize'])+'\n')
+        f.write('min_disparity='+str(self.cfg['param']['min_disparity'])+'\n')
+        f.write('max_disparity='+str(self.cfg['param']['max_disparity'])+'\n')
         f.write('tilt_min='+str(self.cfg['param']['tilt_min'])+'\n')
         f.write('tilt_max='+str(self.cfg['param']['tilt_max'])+'\n')
         f.write('shear_min='+str(self.cfg['param']['shear_min'])+'\n')
@@ -618,11 +540,11 @@ class app(base_app):
         for t in tilt_list:
             for s in shear_list:
                 if t < 1:
-                    d_m = (t-1)*width+t*disp_min
-                    d_M = t*disp_max
+                    d_m = (t-1)*width+t*min_disparity
+                    d_M = t*max_disparity
                 else:
-                    d_m = t*disp_min
-                    d_M = (t-1)*width+t*disp_max
+                    d_m = t*min_disparity
+                    d_M = (t-1)*width+t*max_disparity
                 disp_bounds[t,s] = (d_m, d_M)
         
         # Compute all the deformed right images: first all the tilted images,
@@ -663,7 +585,7 @@ class app(base_app):
         p_rendering = self.run_proc(['/bin/bash', 'run_render.sh'])
         self.wait_proc(p_rendering, timeout=self.timeout)
         
-#        # Cleanup the tmp dir
+        # Cleanup the tmp dir
         p_clean = self.run_proc(['/bin/bash', 'run_clean.sh'])
         self.wait_proc(p_clean, timeout=self.timeout)
 
@@ -675,11 +597,7 @@ class app(base_app):
         display the algo results
         """
         sizeY=image(self.work_dir + 'left_image.png').size[1]
-        
-        if (self.cfg['param']['type'] == 'single'):
-            return self.tmpl_out("result_simple.html", sizeY=sizeY)
-        elif (self.cfg['param']['type'] == 'multiple'):
-            return self.tmpl_out("result_multiple.html", sizeY=sizeY)
+        return self.tmpl_out("results.html", sizeY=sizeY)
     
     
     

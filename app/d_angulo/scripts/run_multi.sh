@@ -1,4 +1,4 @@
-#!/bin/bash
+#/bin/bash
 
 export PATH=$PATH:/usr/bin/:/usr/local/bin/:/bin
 
@@ -43,8 +43,8 @@ correction_disp_multi.sh $1 $2 0
 
 
 # 4. Generate png images for html display
-echo "save_png.sh disp_t$1_s$2.tif disp_t$1_s$2.png $disp_min $disp_max"
-save_png.sh disp_t$1_s$2.tif disp_t$1_s$2.png $disp_min $disp_max
+echo "save_png.sh disp_t$1_s$2.tif disp_t$1_s$2.png $min_disparity $max_disparity"
+save_png.sh disp_t$1_s$2.tif disp_t$1_s$2.png $min_disparity $max_disparity
 
 echo "save_png.sh cost_t$1_s$2.tif cost_t$1_s$2.png 0 100"
 save_png.sh cost_t$1_s$2.tif cost_t$1_s$2.png 0 100

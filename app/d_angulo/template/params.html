@@ -34,50 +34,47 @@ The block-matching algorithm will run on the two images shown below:
 </div>
 
 <p>
-You have two options: <br>
-- run the block-matching on several pairs, where the right image is deformed with
+Angulo will now run the block-matching on several pairs, where the right image is deformed with
 different tilt and shear values. You can choose the range and the number of 
 quantized values for each one of the parameters (shear and tilt).<br>
-- run the block-matching on one pair only, where you choose the
-deformation applied to the right image.
 </p>
 <br>
 <p>
-Option 1: choose a range
+Choose an affine deformation range
 </p>
-<form action="${app.base_url + 'wait_multiple_values'}" method="get">
+<form action="${app.base_url + 'wait'}" method="get">
     <input type="hidden" name="key" value="${app.key}">
     
     <label for="shear_min">Horizontal shear range: [</label>
-    <input type="text" name="shear_min" value="-0.2" size="4" />
+    <input type="text" name="shear_min" value="${str(app.cfg['param']['shear_min'])}" size="4" />
     <label for="shear_max"> , </label>
-    <input type="text" name="shear_max" value="0.2" size="4" />
+    <input type="text" name="shear_max" value="${str(app.cfg['param']['shear_max'])}" size="4" />
 	], with 
     
     <label for="shear_nb"></label>
-    <input type="text" name="shear_nb" value="3" size="4" />
+    <input type="text" name="shear_nb" value="${str(app.cfg['param']['shear_nb'])}" size="4" />
     quantized values.
     </br>
     
     <label for="tilt_min">Horizontal tilt range: [</label>
-    <input type="text" name="tilt_min" value="0.7" size="4" />
+    <input type="text" name="tilt_min" value="${str(app.cfg['param']['tilt_min'])}" size="4" />
     <label for="tilt_max"> , </label>
-    <input type="text" name="tilt_max" value="1.3" size="4" />
+    <input type="text" name="tilt_max" value="${str(app.cfg['param']['tilt_max'])}" size="4" />
 	], with
     
     <label for="tilt_nb"></label>
-    <input type="text" name="tilt_nb" value="3" size="4" />
+    <input type="text" name="tilt_nb" value="${str(app.cfg['param']['tilt_nb'])}" size="4" />
     quantized values.
     </br>
     
-    <label for="win">Window size:</label>
-    <input type="text" name="win" value="9" size="4" />
+    <label for="windowsize">Window size:</label>
+    <input type="text" name="windowsize" value="${str(app.cfg['param']['windowsize'])}" size="4" />
     </br>
 	
-	<label for="disp_min">Disparity range: [</label>
-    <input type="text" name="disp_min" value="-50" size="4" />
-    <label for="disp_max"> , </label>
-    <input type="text" name="disp_max" value="50" size="4" />
+	<label for="min_disparity">Disparity range: [</label>
+    <input type="text" name="min_disparity" value="${str(app.cfg['param']['min_disparity'])}" size="4" />
+    <label for="max_disparity"> , </label>
+    <input type="text" name="max_disparity" value="${str(app.cfg['param']['max_disparity'])}" size="4" />
 	] pixels
 	</br>
 	
@@ -91,44 +88,6 @@ Option 1: choose a range
 </form>
 <br>
 <p>
-Option 2: choose specific parameters
-</p>
-<form action="${app.base_url + 'wait_single_value'}" method="get">
-    <input type="hidden" name="key" value="${app.key}">
-    
-    <label for="shear">Horizontal shear</label>
-    <input type="text" name="shear" value="0" size="4" />
-    </br>
-    
-    <label for="tilt">Horizontal zoom</label>
-    <input type="text" name="tilt" value="1" size="4" />
-    </br>
-    
-    <label for="win">Window size</label>
-    <input type="text" name="win" value="9" size="4" />
-    </br>
-	
-	<label for="disp_min">Disparity range: [</label>
-    <input type="text" name="disp_min" value="-50" size="4" />
-    <label for="disp_max"> , </label>
-    <input type="text" name="disp_max" value="50" size="4" />
-	] pixels
-	</br>
-	
-	<label for="subpixel">Subpixel:</label>
-	<input type="radio" name="subpixel" value="1" checked >1 &nbsp;
-	<input type="radio" name="subpixel" value="2">&frac12;&nbsp;
-	<input type="radio" name="subpixel" value="4">&frac14;&nbsp;
-	<input type="radio" name="subpixel" value="8">&frac18;&nbsp;
-    </br>
-    
-	<p><input type="submit" value="Run on specific values" /></p>
-</form>
-
 
 
 <%include file="footer.html" />
- 
- 
- 
-

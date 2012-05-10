@@ -32,8 +32,8 @@ merge filt_t*.tif cost_t*.tif disp_t*.tif out_disp.tif out_argmin.tif out_cost.t
 
 
 # Save the output disp as a png file
-echo "save_png.sh out_disp.tif out_disp.png $disp_min $disp_max"
-save_png.sh out_disp.tif out_disp.png $disp_min $disp_max
+echo "save_png.sh out_disp.tif out_disp.png $min_disparity $max_disparity"
+save_png.sh out_disp.tif out_disp.png $min_disparity $max_disparity
 
 # Intersect all the filters to get the filter corresponding to out_disp.tif
 echo "union filt_t*.tif out_filt.tif"
