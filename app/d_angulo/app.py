@@ -152,8 +152,8 @@ class app(base_app):
 
         # Load self.cfg with non-null params
         for key in self.VALID_KEYS:
-            if key in params.keys():
-               self.cfg['param'][key] = params[key];
+            if (key in params.keys() and str(params[key]) is not ""):
+                self.cfg['param'][key] = params[key];
             else:
               if key not in self.cfg['param'].keys():
                  self.cfg['param'][key]='' 
