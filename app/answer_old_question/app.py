@@ -14,7 +14,7 @@ from collections import deque
 #import matplotlib as mpl
 #mpl.use('Agg')
 import matplotlib.pyplot as plt
-
+import Image
 
 class app(base_app):
     """ Tilt quantization tests"""
@@ -94,11 +94,13 @@ class app(base_app):
             return self.error(errcode='badparams',
                               errmsg="The parameters must be numeric.")
 
+        im = Image.open(self.work_dir+'input_0.png')
         self.cfg['param']['distance'] = distance
         self.cfg['param']['sigma'] = sigma
         self.cfg['param']['tilt'] = tilt
         self.cfg['param']['tilts_half_nb'] = tilts_half_nb
-        self.cfg['param']['width'] = image(self.work_dir+'input_0.png').size[0]
+        self.cfg['param']['width'] = im.size[0]
+        self.cfg['param']['height'] = im.size[1]
         self.cfg.save()
 
         """
@@ -265,6 +267,6 @@ class app(base_app):
         """
         display the algo results
         """
-        sizeY=image(self.work_dir + 'input_1.png').size[1]
+        sizeY=self.cfg['param']['height']
 
         return self.tmpl_out("result.html", sizeY=sizeY)

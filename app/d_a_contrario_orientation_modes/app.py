@@ -13,7 +13,7 @@ import time
 import glob
 from plot_orientations import *
 from plot_modes import *
-
+import Image
 
 
 
@@ -209,8 +209,9 @@ class app(base_app):
         """
         display the algo results
         """
-        sizeX=image(self.work_dir + 'input_0.png').size[0]
-        sizeY=image(self.work_dir + 'input_0.png').size[1]
+        im=Image.open(self.work_dir + 'input_0.png')
+        sizeX=im.size[0]
+        sizeY=im.size[1]
 
         return self.tmpl_out("result.html", sizeX=sizeX, sizeY=sizeY)
     
@@ -264,8 +265,9 @@ class app(base_app):
         #the above line makes python fail...
         
         # Go back on the result page
-        sizeX=image(self.work_dir + 'input_0.png').size[0]
-        sizeY=image(self.work_dir + 'input_0.png').size[1]
+        im=Image.open(self.work_dir + 'input_0.png')
+        sizeX=im.size[0]
+        sizeY=im.size[1]
         return self.tmpl_out("result_with_links.html", sizeX=sizeX, sizeY=sizeY)
         
 

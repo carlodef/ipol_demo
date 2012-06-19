@@ -448,12 +448,10 @@ class app(base_app):
         self.cfg['param']['min_disparity'] = min_disparity
         self.cfg['param']['max_disparity'] = max_disparity
         self.cfg['param']['subpixel'] = subpixel
-        self.cfg['param']['image_width'] = image(self.work_dir+'right_image.png').size[0]
         self.cfg.save()
 
         http.refresh(self.base_url + 'run?key=%s' % self.key)
-        sizeY=image(self.work_dir + 'left_image.png').size[1]
-        return self.tmpl_out("wait.html",sizeY=sizeY)
+        return self.tmpl_out("wait.html",sizeY=self.cfg['param']['image_height'])
 
 
     @cherrypy.expose
@@ -504,7 +502,7 @@ class app(base_app):
         f.write('shear_min='+str(self.cfg['param']['shear_min'])+'\n')
         f.write('shear_max='+str(self.cfg['param']['shear_max'])+'\n')
         f.write('subpixel='+str(self.cfg['param']['subpixel'])+'\n')
-        f.write('height='+str(image(self.work_dir + 'left_image.png').size[1])+'\n')
+        f.write('height='+str(self.cfg['param']['image_height'])+'\n')
 
         f.close();
         
@@ -596,8 +594,7 @@ class app(base_app):
         """
         display the algo results
         """
-        sizeY=image(self.work_dir + 'left_image.png').size[1]
-        return self.tmpl_out("results.html", sizeY=sizeY)
+        return self.tmpl_out("results.html", sizeY=self.cfg['param']['image_height'])
     
     
     
