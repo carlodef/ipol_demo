@@ -247,6 +247,7 @@ class app(base_app):
     
 
     # Overwrite of the input_select method to allow better input handling
+    
     @cherrypy.expose
     def input_select(self, **kwargs):
         """
@@ -423,7 +424,7 @@ class app(base_app):
         params handling and run redirection
         """
         try:
-            # The shear has to be between -1 and 1
+            # The shear has to be between -1 and 1.
             shear_min = max(float(shear_min),-1)
             shear_max = min(float(shear_max),1)
             shear_nb = int(shear_nb)
@@ -477,115 +478,11 @@ class app(base_app):
 
     def run_algo(self):
         """
-        Computes the block_matching, on the whole set of simulated pairs        
+        Launches the angulo script    
         """
-
-        # read the parameters
-        shear_min = self.cfg['param']['shear_min']
-        shear_max = self.cfg['param']['shear_max']
-        shear_nb = self.cfg['param']['shear_nb']
-        tilt_min = self.cfg['param']['tilt_min']
-        tilt_max = self.cfg['param']['tilt_max']
-        tilt_nb = self.cfg['param']['tilt_nb']
-        min_disparity = self.cfg['param']['min_disparity']
-        max_disparity = self.cfg['param']['max_disparity']
-        width = self.cfg['param']['image_width']
-        
-        # WRITE THE CONFIG FILE
-        f = open(os.path.join(self.work_dir,'params'), 'w')
-        f.write('win_w='+str(self.cfg['param']['windowsize'])+'\n')
-        f.write('win_h='+str(self.cfg['param']['windowsize'])+'\n')
-        f.write('min_disparity='+str(self.cfg['param']['min_disparity'])+'\n')
-        f.write('max_disparity='+str(self.cfg['param']['max_disparity'])+'\n')
-        f.write('tilt_min='+str(self.cfg['param']['tilt_min'])+'\n')
-        f.write('tilt_max='+str(self.cfg['param']['tilt_max'])+'\n')
-        f.write('shear_min='+str(self.cfg['param']['shear_min'])+'\n')
-        f.write('shear_max='+str(self.cfg['param']['shear_max'])+'\n')
-        f.write('subpixel='+str(self.cfg['param']['subpixel'])+'\n')
-        f.write('height='+str(self.cfg['param']['image_height'])+'\n')
-
-        f.close();
-        
-        # List of tilts, shears
-        if tilt_nb>1 :
-            tilt_delta = abs(tilt_max-tilt_min)/(tilt_nb-1)
-            tilt_list = []
-            i = 0
-            while (i<tilt_nb):
-                tilt = tilt_min + i*tilt_delta
-                tilt_list.append(tilt)
-                i += 1
-        else:
-            tilt_list = [tilt_min]
-        self.cfg['param']['tilt_list'] = tilt_list
-            
-        if shear_nb>1 :
-            shear_delta = abs(shear_max-shear_min)/(shear_nb-1)
-            shear_list = []
-            i = 0
-            while (i<shear_nb):
-                shear = shear_min + i*shear_delta
-                shear_list.append(shear)
-                i += 1
-        else:
-            shear_list = [shear_min]
-        self.cfg['param']['shear_list'] = shear_list
-        self.cfg.save()
-        
-        # List of disparity range needed
-        ############################### TO DO : correct the formula to take shear into account #################################"
-        disp_bounds = {}
-        for t in tilt_list:
-            for s in shear_list:
-                if t < 1:
-                    d_m = (t-1)*width+t*min_disparity
-                    d_M = t*max_disparity
-                else:
-                    d_m = t*min_disparity
-                    d_M = (t-1)*width+t*max_disparity
-                disp_bounds[t,s] = (d_m, d_M)
-        
-        # Compute all the deformed right images: first all the tilted images,
-        # then we apply shears on these tilted images
-        p = {}
-        for t in tilt_list:
-            t_str = '%1.2f' % t
-            p[t] = self.run_proc(['/bin/bash', 'run_tilt.sh', t_str, str(int(t*width))])
-        for t in tilt_list:
-            self.wait_proc(p[t], timeout=self.timeout)
-
-        for t in tilt_list:
-            t_str = '%1.2f' % t
-            for s in shear_list:
-                s_str = '%1.2f' % s
-                p[t,s] = self.run_proc(['/bin/bash', 'run_shear.sh', t_str, s_str])
-        for t in tilt_list:
-            for s in shear_list:
-                self.wait_proc(p[t,s], timeout=self.timeout)
-        
-        
-        # Do the block-matching and filtering on all the simulated pairs
-        for t in tilt_list:
-            t_str = '%1.2f' % t
-            for s in shear_list:
-                s_str = '%1.2f' % s
-                (d_m,d_M) = disp_bounds[t,s]
-                p[t,s] = self.run_proc(['/bin/bash', 'run_multi.sh', t_str, s_str, str(d_m), str(d_M)])
-        for t in tilt_list:
-            for s in shear_list:
-                self.wait_proc(p[t,s], timeout=self.timeout)
-                
-        # Merge the maps
-        p_merge = self.run_proc(['/bin/bash', 'run_merge.sh'])
-        self.wait_proc(p_merge, timeout=self.timeout)
-        
-        # Generate 3D rendering
-        p_rendering = self.run_proc(['/bin/bash', 'run_render.sh'])
-        self.wait_proc(p_rendering, timeout=self.timeout)
-        
-        # Cleanup the tmp dir
-        p_clean = self.run_proc(['/bin/bash', 'run_clean.sh'])
-        self.wait_proc(p_clean, timeout=self.timeout)
+        from angulo import *
+        angulo(self.cfg,self.work_dir)
+          
 
 
     @cherrypy.expose
