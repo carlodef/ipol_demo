@@ -20,6 +20,28 @@ class app(base_app):
     is_test = True       # switch to False for deployment
     is_listed = True
 
+
+    def build(self):
+        """
+        program build/update
+        """
+        # Create bin dir (delete the previous one if exists)
+        if os.path.isdir(self.bin_dir):
+            shutil.rmtree(self.bin_dir)
+        os.mkdir(self.bin_dir)
+        
+        # link all the scripts to the bin dir
+        import glob
+        for file in glob.glob( os.path.join( self.base_dir, 'scripts/*')):
+            os.symlink(file, os.path.join( self.bin_dir , os.path.basename(file)))
+    
+        # Needed binaries
+        BINARIES=[ 'iion', 'qauto', 'plambda']
+        for file in BINARIES:
+            shutil.copy(os.path.join(self.base_dir,'../answer_old_question/bin/'+file),self.bin_dir) 
+        return
+
+
     def __init__(self):
         base_dir = os.path.dirname(os.path.abspath(__file__))
         base_app.__init__(self, base_dir)
