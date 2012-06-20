@@ -12,11 +12,8 @@
               list = []
        return list
        
-    tilt_list = text2list(app.cfg['param']['tilt_list'])
-    shear_list = text2list(app.cfg['param']['shear_list']) 
     
     first_list_max_size = max(sizeY,8*30)
-    sec_list_max_size = max(sizeY,(len(tilt_list) * len(shear_list)+2)*30) 
 %>
 
 <h2>Input parameters</h2>
@@ -160,64 +157,6 @@ The algorithm result is displayed hereafter. It ran in ${"%0.2f" % app.cfg['info
 </div>
 
 
-<h2>All the results</h2>
-<p>
-The first two images are those from the input pair. Then are displayed the disparity
-map and the cost map for each simulated set of parameters, ie for each pair (tilt, shear).
-</p>
-
-
-<div class="gallery" style="height:${sec_list_max_size}px;">
-    <ul class="index">
-
-     <li>
-      <a href="#">
-	Right image
-<!--  	<span style="position:fixed; top:220px; padding-left:56px;  padding-top:415px;"> -->
-	  <span>
-	  <table><tr><td style="vertical-align:top;">
-	  <img src="${app.work_url + 'right_image.png'}" alt="" />
-	  </td></tr></table>
-	</span>
-      </a>
-     </li>
-     
-    <li>
-      <a href="#">
-	Left image
-<!--	<span style="position:fixed;  top:220px; padding-left:56px;  padding-top:415px;"> -->
-	<span>
-	  <table><tr><td style="vertical-align:top;">
-	  <img src="${app.work_url + 'left_image.png'}" alt="" />
-	  </td></tr></table>
-	</span>
-      </a>
-     </li>
-     
-          
-%for t in tilt_list:
-	%for s in shear_list:
-     <li>
-      <a href="#">
-	${'%.2f' % t} ; ${'%.2f' % s}
-<!--	<span style="position:fixed; top:220px; padding-left:56px; padding-top:415px;"> -->
-	<span>
-	  <table><tr><td style="vertical-align:top;">
-	  Disparity <br>
-	  <img style="background:url(${app.work_url + 'disp_t%.2f_s%.2f.png' % (t,s)})" 
-	  		src="${app.work_url + 'filt_t%.2f_s%.2f.png' % (t,s)}" alt="" />
-	  </td><td style="vertical-align:top;">
-	  Matching cost <br>
-	  <img src="${app.work_url + 'cost_t%.2f_s%.2f.png' % (t,s)}" alt="" />
-	  </td></tr></table>
-	</span>
-      </a>
-     </li>
-	%endfor
-%endfor   
-     
-    </ul>
-</div>
 
 <form action="${app.base_url + 'run'}" method="get">
 <input type="hidden" name="key" value="${app.key}">

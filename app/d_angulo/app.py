@@ -478,11 +478,12 @@ class app(base_app):
 
     def run_algo(self):
         """
-        Launches the angulo script    
+        Launches the angulo script
+        gives it the key (ie the path to working dir)
         """
-        from angulo import *
-        angulo(self.cfg,self.work_dir)
-          
+        p = self.run_proc(['angulo.py', self.key])
+        self.wait_proc(p, timeout=self.timeout)
+  
 
 
     @cherrypy.expose
