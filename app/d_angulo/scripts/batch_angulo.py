@@ -131,7 +131,7 @@ def block_matching_and_filtering(tilts, shears, disp_bounds):
         for s in shears:
             s_str = '%1.2f' % s
             (m, M) = disp_bounds[t, s]
-            run('/bin/bash run_multi.sh %s %s %d %d' % (t_str, s_str, m, M))
+            run('/bin/bash run_bmf.sh %s %s %d %d' % (t_str, s_str, m, M))
        
 
 def merge_maps():

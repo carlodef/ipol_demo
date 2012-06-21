@@ -480,7 +480,7 @@ class app(base_app):
         """
         Launches the angulo script
         """
-        p = self.run_proc(['angulo.py'])
+        p = self.run_proc(['batch_angulo.py'])
         self.wait_proc(p, timeout=self.timeout)
   
 
