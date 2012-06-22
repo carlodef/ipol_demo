@@ -17,20 +17,6 @@ done
 echo "merge filt_t*.tif cost_t*.tif disp_t*.tif out_disp out_argmin out_cost.tif"
 merge filt_t*.tif cost_t*.tif disp_t*.tif out_disp.tif out_argmin.tif out_cost.tif
 
-# Do the merge for the minfiltered maps (option 2)
-#merge filt_t*.tif m_cost_t*.tif m_disp_t*.tif out_disp_minfiltered2.tif out_argmin_minfiltered2.tif out_cost_minfiltered2.tif
-#save_png.sh out_disp_minfiltered2.tif out_disp_minfiltered2.png $disp_min $disp_max
-#visualize out_argmin_minfiltered2.tif $tilt_min $tilt_max $shear_min $shear_max out_argmin_minfiltered2.png
-
-
- 
-# Apply the minfilter (in its special version adapted for angulo, ie option 1)
-#echo "Angulo special minfilter"
-#minfilter_angulo 7 out_disp.tif out_cost.tif out_argmin.tif out_disp_minfiltered.tif out_cost_minfiltered.tif out_argmin_minfiltered.tif
-#save_png.sh out_disp_minfiltered.tif out_disp_minfiltered.png $disp_min $disp_max
-#visualize out_argmin_minfiltered.tif $tilt_min $tilt_max $shear_min $shear_max out_argmin_minfiltered.png
-
-
 # Save the output disp as a png file
 echo "save_png.sh out_disp.tif out_disp.png $min_disparity $max_disparity"
 save_png.sh out_disp.tif out_disp.png $min_disparity $max_disparity
@@ -50,5 +36,3 @@ visualize out_argmin.tif $tilt_min $tilt_max $shear_min $shear_max out_argmin.pn
 # Convert the out_cost image into a png file
 echo "save_png.sh out_cost.tif out_cost.png 0 100"
 save_png.sh out_cost.tif out_cost.png 0 100
-#save_png.sh out_cost_minfiltered.tif out_cost_minfiltered.png 0 100
-#save_png.sh out_cost_minfiltered2.tif out_cost_minfiltered2.png 0 100
