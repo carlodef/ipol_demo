@@ -35,8 +35,8 @@ save_png_mask.sh filt_t$1_s$2.tif filt_t$1_s$2.png
 
 
 # 3. Correct disparity values according to shear, tilt and translation parameters
-echo "correction_disp_multi.sh $1 $2 0"
-correction_disp_multi.sh $1 $2 0 
+echo "correction_disp.sh $1 $2 0"
+correction_disp.sh $1 $2 0 
 
 
 # 4. Generate png images for html display
