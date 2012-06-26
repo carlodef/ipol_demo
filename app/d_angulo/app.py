@@ -336,7 +336,7 @@ class app(base_app):
                     os.unlink(os.path.join(self.work_dir, localname))
 
                     # generate the preview with a scale
-                    tmp = self.run_proc(['genpreview_stretch.sh', file+'.tif', file+'.png', str(mindisp), str(maxdisp)])
+                    tmp = self.run_proc(['save_png.sh', file+'.tif', file+'.png', str(mindisp), str(maxdisp)])
                     self.wait_proc(tmp)
 
                     # update the configuration
