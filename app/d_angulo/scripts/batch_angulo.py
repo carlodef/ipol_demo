@@ -3,6 +3,7 @@
 import os
 import sys
 import math
+from subprocess import Popen
 
 def run(cmd):
     """
@@ -109,8 +110,8 @@ def apply_tilts(tilts, im_width):
     for t in tilts:
         out_w = int(t * im_width)
         run('/bin/bash run_tilt.sh %1.2f %d' % (t, out_w))
-        if t>1: #need to blur left image
-            g=0.8*math.sqrt(t*t-1) #gaussian std deviation
+        if t>1: # blur left image
+            g=0.8*math.sqrt(t*t-1) # gaussian std deviation
             run('/bin/bash run_blur.sh %1.2f %1.2f' % (t, g))
 
 def apply_shears(tilts, shears):
