@@ -2,6 +2,7 @@
 
 import os
 import sys
+import math
 
 def run(cmd):
     """
@@ -102,23 +103,23 @@ def write_config_file_for_shell(config_dict):
 
 def apply_tilts(tilts, im_width):
     """
-    Compute all the deformed (tilted) right images
+    Compute all the deformed (tilted) right images, and blurs the left image if
+    needed
     """
     for t in tilts:
-        t_str = '%1.2f' % t
-        out_w = str(int(t * im_width))
-        run('/bin/bash run_tilt.sh %s %s' % (t_str, out_w))
-
+        out_w = int(t * im_width)
+        run('/bin/bash run_tilt.sh %1.2f %d' % (t, out_w))
+        if t>1: #need to blur left image
+            g=0.8*math.sqrt(t*t-1) #gaussian std deviation
+            run('/bin/bash run_blur.sh %1.2f %1.2f' % (t, g))
 
 def apply_shears(tilts, shears):
     """
     Compute all the deformed (tilt+shear) right images
     """
     for t in tilts:
-        t_str = '%1.2f' % t
         for s in shears:
-            s_str = '%1.2f' % s
-            run('/bin/bash run_shear.sh %s %s' % (t_str, s_str))
+            run('/bin/bash run_shear.sh %1.2f %1.2f' % (t, s))
 
 
 def block_matching_and_filtering(tilts, shears, disp_bounds):
@@ -126,12 +127,11 @@ def block_matching_and_filtering(tilts, shears, disp_bounds):
     Run the block-matching and filtering on all the simulated pairs
     """
     for t in tilts:
-        t_str = '%1.2f' % t
+        t_flag=(t>1) # Needed because the bash isn't able to do float comparisons
         for s in shears:
-            s_str = '%1.2f' % s
             (m, M) = disp_bounds[t, s]
-            run('/bin/bash run_bmf.sh %s %s %d %d' % (t_str, s_str, m, M))
-       
+            run('/bin/bash run_bmf.sh %1.2f %1.2f %d %d %d' % (t, s, m, M, t_flag))
+             
 
 def merge_maps():
     """
@@ -186,4 +186,3 @@ def main():
 
 # main call
 if __name__ == '__main__': main()
-
