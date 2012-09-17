@@ -3,17 +3,7 @@
 import os
 import sys
 import math
-from subprocess import Popen
-
-def run(cmd):
-    """
-    Print the provided command, then ask the shell to run it, and 
-    print all the messages that would appear in the shell. It seems to
-    wait that the command terminates.
-    """
-    print cmd
-    fin, fout = os.popen4(cmd)
-    print fout.read()
+import subprocess
 
 
 def load_parameters():
@@ -107,53 +97,71 @@ def apply_tilts(tilts, im_width):
     Compute all the deformed (tilted) right images, and blurs the left image if
     needed
     """
+    p={}
+    p2={}
     for t in tilts:
         out_w = int(t * im_width)
-        run('/bin/bash run_tilt.sh %1.2f %d' % (t, out_w))
+        p[t] = subprocess.Popen('/bin/bash run_tilt.sh %1.2f %d'%(t,out_w), shell=1)
         if t>1: # blur left image
             g=0.8*math.sqrt(t*t-1) # gaussian std deviation
-            run('/bin/bash run_blur.sh %1.2f %1.2f' % (t, g))
+            p2[t]=subprocess.Popen('/bin/bash run_blur.sh %1.2f %1.2f'%(t,g), shell=1)
+    for t in tilts:
+        p[t].wait()
+        try:
+            p2[t].wait()
+        except KeyError:
+            print('t<1')    
 
 def apply_shears(tilts, shears):
     """
     Compute all the deformed (tilt+shear) right images
     """
+    p={}
     for t in tilts:
         for s in shears:
-            run('/bin/bash run_shear.sh %1.2f %1.2f' % (t, s))
+            p[t,s]=subprocess.Popen('/bin/bash run_shear.sh %1.2f %1.2f'%(t,s),shell=1)
+    for t in tilts:
+        for s in shears:
+            p[t,s].wait()
 
 
 def block_matching_and_filtering(tilts, shears, disp_bounds):
     """
     Run the block-matching and filtering on all the simulated pairs
     """
+    p={}
     for t in tilts:
         t_flag=(t>1) # Needed because the bash isn't able to do float comparisons
         for s in shears:
             (m, M) = disp_bounds[t, s]
-            run('/bin/bash run_bmf.sh %1.2f %1.2f %d %d %d' % (t, s, m, M, t_flag))
+            p[t,s]=subprocess.Popen('/bin/bash run_bmf.sh %1.2f %1.2f %d %d %d'%(t,s,m,M,t_flag), shell=1)
+    for t in tilts:
+        for s in shears:
+            p[t,s].wait()
              
 
 def merge_maps():
     """
     Merge the disparity maps
     """
-    run('/bin/bash run_merge.sh')
+    p = subprocess.Popen('/bin/bash run_merge.sh', shell=1)
+    p.wait()
         
 
 def rendering():
     """        
     Generate 3D rendering
     """
-    run('/bin/bash run_render.sh')
+    p = subprocess.Popen('/bin/bash run_render.sh', shell=1)
+    p.wait()
         
 
 def cleanup():
     """
     Cleanup the tmp dir
     """
-    run('/bin/bash run_clean.sh')
-
+    p = subprocess.Popen('/bin/bash run_clean.sh', shell=1)
+    p.wait()
 
 def main():
     """
