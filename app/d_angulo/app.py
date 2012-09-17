@@ -471,7 +471,7 @@ class app(base_app):
             return self.error(errcode='timeout')
         except RuntimeError:
             return self.error(errcode='runtime')
-        http.redir_303(self.base_url + 'result?key=%s' % self.key)
+        http.redir_303(self.base_url + 'zip_results?key=%s' % self.key)
         
         # archive
 
@@ -484,7 +484,63 @@ class app(base_app):
         self.wait_proc(p, timeout=self.timeout)
   
 
+    def merge_png(self,out,in1,in2):
+        """
+        From png images in1 and in2 (u2 being transparent), makes an unique image with in2 on top of in1
+        """
+        import Image
+        background = Image.open(self.work_dir + in1)
+        foreground = Image.open(self.work_dir + in2)
 
+        background_rgb = background.convert('RGB')
+        background_rgb.paste(foreground, (0, 0), foreground)
+        background_rgb.save(out)
+        return
+
+    @cherrypy.expose
+    @init_app
+    def zip_results(self):
+        """
+        zip the output images in a single downloadable archive:
+        left_image.png
+        right_image.png
+        out_disp.png + out_filt.png 
+        disp_t1.00_s0.00.png + filt_t1.00_s0.00.png 
+        """
+        print '********************* fusion and zip ************************'
+        
+        # Put the filters on the disparity images
+        self.merge_png(self.work_dir+"out_disp_angulo.png","out_disp.png","out_filt.png")
+        self.merge_png(self.work_dir+"out_disp_bm.png","disp_t1.00_s0.00.png","filt_t1.00_s0.00.png")
+
+
+        # # Get the other parameters
+        # n_bins = int(self.cfg['param']['n_bins'])
+        # sigma = int(self.cfg['param']['sigma'])
+        # url = 'get_params_from_url?input_id='+str(self.cfg['meta']['input_id'])+\
+        #     '&x='+str(self.cfg['param']['x'])+\
+        #     '&y='+str(self.cfg['param']['y'])+\
+        #     '&r='+str(self.cfg['param']['r'])+\
+        #     '&n_bins='+str(self.cfg['param']['n_bins'])+\
+        #     '&sigma='+str(self.cfg['param']['sigma'])
+        # 
+        # # Write them in a txt file
+        # f = open(self.work_dir + 'params.txt', 'w')
+        # f.write(str(r)+'\n')
+        # f.write(str(n_bins)+'\n')
+        # f.write(str(sigma)+'\n')
+        # f.write(url)
+        # f.close()
+        
+        # Put the files in a zip 
+        pr = self.run_proc(['/bin/bash', 'zip_results.sh'])
+        #self.wait_proc(p, timeout=self.timeout)
+        #the above line makes python fail...
+        
+        # Go back on the result page
+        http.redir_303(self.base_url + 'result?key=%s' % self.key)
+    
+    
     @cherrypy.expose
     @init_app
     def result(self):
@@ -492,9 +548,8 @@ class app(base_app):
         display the algo results
         """
         return self.tmpl_out("results.html", sizeY=self.cfg['param']['image_height'])
-    
-    
-    
+
+
 # We overwrite the clone_input method to copy also the cropped input images, in order
 # to have a button 'change parameters' on the results page
     def clone_input(self):
