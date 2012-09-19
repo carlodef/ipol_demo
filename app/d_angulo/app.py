@@ -2,7 +2,7 @@
 Angulo web app
 """
 
-from lib import base_app, build, http, image
+from lib import base_app, build, http, image, config, thumbnail
 from lib.misc import ctime
 from lib.base_app import init_app
 import shutil
@@ -74,6 +74,42 @@ class app(base_app):
         base_app.params.im_func.exposed = True
         # result() is modified from the template
         base_app.result.im_func.exposed = True
+    
+    
+    #
+    # INDEX
+    #
+
+    @cherrypy.expose
+    def index(self):
+        """
+        demo presentation and input menu
+        """
+        # read the input index as a dict
+        inputd = config.file_dict(self.input_dir)
+        tn_size = int(cherrypy.config.get('input.thumbnail.size', '192'))
+        # TODO: build via list-comprehension
+        for (input_id, input_info) in inputd.items():
+            # convert the files to a list of file names
+            # by splitting at blank characters
+            # and generate thumbnails and thumbnail urls
+            fname = input_info['files'].split()
+#           GENERATE THUMBNAIL EVEN FOR FILES IN SUBDIRECTORIES OF INPUT
+            inputd[input_id]['tn_url'] = [self.input_url +'/'+ os.path.dirname(f) + '/' +
+                        os.path.basename(thumbnail(self.input_dir + f, (tn_size, tn_size)))
+                        for f in fname]
+            inputd[input_id]['url'] = [self.input_url + os.path.basename(f)
+                                       for f in fname]
+#            tn_fname = [thumbnail(self.input_dir + f, (tn_size, tn_size))
+#                        for f in fname]
+#            inputd[input_id]['url'] = [self.input_url + os.path.basename(f)
+#                                       for f in fname]
+#            inputd[input_id]['tn_url'] = [self.input_url + os.path.basename(f)
+#                                          for f in tn_fname]
+
+
+        return self.tmpl_out("input.html",
+                             inputd=inputd)
 
 
 
