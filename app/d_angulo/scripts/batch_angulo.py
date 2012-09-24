@@ -191,7 +191,7 @@ def main():
     block_matching_and_filtering(tilt_list, shear_list, disparity_bounds)
     merge_maps()
     rendering()
-    cleanup()
+#    cleanup()
 
 # main call
 if __name__ == '__main__': main()

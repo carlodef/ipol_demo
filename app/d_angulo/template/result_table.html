@@ -1,0 +1,153 @@
+<%
+    # adapt the size of the window
+    height = app.cfg['param']['image_height'] + 20
+    if height < 360:
+       height = 360
+    width = app.cfg['param']['image_width']*2 + 100
+    if width < 800:
+       width = 800 
+
+    # gt is a variable to activate the groundtruth statistics
+    gt = app.cfg['param']['ground_truth']
+
+    # gtmask and gtocc are active if there is a ground_truth_mask.png and ground_truth_occ.png
+    import os.path
+    gtmask = 0
+    gtocc  = 0
+    if  gt != '':
+       if os.path.isfile(app.work_dir+"/"+'ground_truth_mask.png'): 
+          gtmask = 1
+       if os.path.isfile(app.work_dir+"/"+'ground_truth_occ.png'): 
+          gtocc = 1
+
+
+    # if GT is present load all the statistics if necessary
+    if  gt != '':
+       disperror = {}
+       for i in algolist:
+         disperror[i] = open(app.work_dir+"/"+i+"_stat.txt","r").read().split()
+         # In case the file is empty or worse
+         if disperror[i] == []:
+            disperror[i] = [float('nan'),float('nan'),float('nan'),float('nan'),float('nan'),float('nan')]
+       print("DISPERROR = " + str(disperror))
+
+       rejerror = {}
+       for i in decisionlist:
+         rejerror[i] = open(app.work_dir+"/"+i+"_stat.txt","r").read().split()
+         # In case the file is empty or worse
+         if rejerror[i] == []:
+            rejerror[i] = [float('nan'),float('nan'),float('nan'),float('nan'),float('nan'),float('nan')]
+       print("REJERROR = " + str(rejerror))
+
+       filterror = {}
+       for i in filterlist:
+         filterror[i] = open(app.work_dir+"/"+i+"_stat.txt","r").read().split()
+         # In case the file is empty or worse
+         if filterror[i] == []:
+            filterror[i] = [float('nan'),float('nan'),float('nan'),float('nan'),float('nan'),float('nan')]
+       print("FILRERROR = " + str(filterror))
+
+
+%>
+
+
+<form action="${app.base_url + 'index'}" method="get">
+<input type="submit" value="Change images"/>
+</form>
+
+<p>
+The algorithm result is displayed hereafter. It ran in ${"%0.2f" % app.cfg['info']['run_time']} seconds.
+</p>
+
+<h2>Results synthesis</h2>
+<div class="gallery" style="height:${height}px;">
+    <ul class="index">
+
+     <li>
+      <a href="#">
+	Right image
+	<span>
+	  <table><tr><td style="vertical-align:top;">
+	  <img src="${app.work_url + 'right_image.png'}" alt="" />
+	  </td></tr></table>
+	</span>
+      </a>
+     </li>
+     
+    <li>
+      <a href="#">
+	Left image
+	<span>
+	  <table><tr><td style="vertical-align:top;">
+	  <img src="${app.work_url + 'left_image.png'}" alt="" />
+	  </td></tr></table>
+	</span>
+      </a>
+     </li>
+     
+     <li>
+      <a href="#">
+	Disparity (angulo)
+	<span>
+	  <table><tr>
+	  <td style="vertical-align:top;">
+	  <img style="background:url(${app.work_url + 'out_disp.png'})" 
+	  		src="${app.work_url + 'out_filt.png'}" alt="" /><br>
+	  </td></tr></table>
+	</span>
+      </a>
+     </li>
+     
+    <li>
+      <a href="#">
+	Disparity (bm)
+	<span>
+	  <table><tr>
+	  <td style="vertical-align:top;">
+	  <img style="background:url(${app.work_url + 'disp_t1.00_s0.00.png'})" 
+	  		src="${app.work_url + 'filt_t1.00_s0.00.png'}" alt="" /><br>
+	  </td></tr></table>
+	</span>
+      </a>
+     </li>
+     
+    <li>
+      <a href="#">
+	Left image
+	<span>
+	  <table><tr><td style="vertical-align:top;">
+	  <img src="${app.work_url + 'left_image.png'}" alt="" />
+	  </td></tr></table>
+	</span>
+      </a>
+     </li>
+     
+     <li>
+      <a href="#">
+	Argmin
+	<span>
+	  <table><tr><td style="vertical-align:top;">
+	   <img style="background:url(${app.work_url + 'out_argmin.png'})" 
+	  		src="${app.work_url + 'out_filt.png'}" alt="" /><br>
+	  Argmin
+	  </td>
+	  <td style="vertical-align:top;">
+	   <img style="background:url(${app.work_url + 'out_cost.png'})" 
+	  		src="${app.work_url + 'out_filt.png'}" alt="" /><br>
+	 Minimal matching Cost
+	  </td></tr></table>
+	</span>
+      </a>
+     </li>     
+    </ul>
+</div>
+
+
+
+<p>
+Download: <a href="${app.base_url}tmp/${app.key}/results.zip">results.zip</a>
+</p>
+<a name="p" href=#p></a>
+<br><br>
+
+<%include file="archive_info.html" />

@@ -445,8 +445,7 @@ class app(base_app):
         if newrun:
             self.clone_input()
         
-        sizeY=image(self.work_dir + 'left_image.png').size[1]        
-        return self.tmpl_out("params.html", sizeY=sizeY)
+        return self.tmpl_out("paramresult.html")
     
     
     
@@ -455,7 +454,7 @@ class app(base_app):
     def wait(self, shear_min=None, shear_max=None, shear_nb=None,
                              tilt_min=None, tilt_max=None, tilt_nb=None,
                              windowsize=None, min_disparity=None, max_disparity=None, 
-                             subpixel=None):
+                             subpixel=None,noise_sigma=None):
         """
         params handling and run redirection
         """
@@ -471,6 +470,7 @@ class app(base_app):
             min_disparity = int(min_disparity)
             max_disparity = int(max_disparity)
             subpixel = int(subpixel)
+            noise_sigma = int(noise_sigma)
         except ValueError:
             return self.error(errcode='badparams',
                               errmsg="The parameters must be numeric.")
@@ -485,6 +485,7 @@ class app(base_app):
         self.cfg['param']['min_disparity'] = min_disparity
         self.cfg['param']['max_disparity'] = max_disparity
         self.cfg['param']['subpixel'] = subpixel
+        self.cfg['param']['noise_sigma'] = noise_sigma 
         self.cfg.save()
 
         http.refresh(self.base_url + 'run?key=%s' % self.key)
@@ -501,6 +502,7 @@ class app(base_app):
         try:
             run_time = time.time()
             self.run_algo()
+            self.cfg['param']['run'] = 'done' 
             self.cfg['info']['run_time'] = time.time() - run_time
             self.cfg.save()
         except TimeoutError:
@@ -583,7 +585,7 @@ class app(base_app):
         """
         display the algo results
         """
-        return self.tmpl_out("results.html", sizeY=self.cfg['param']['image_height'])
+        return self.tmpl_out("paramresult.html")
 
 
 # We overwrite the clone_input method to copy also the cropped input images, in order

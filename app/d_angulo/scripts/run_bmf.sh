@@ -1,6 +1,6 @@
 #/bin/bash
 
-export PATH=$PATH:/usr/bin/:/usr/local/bin/:/bin
+export PATH=$PATH:/usr/bin/:/usr/local/bin/:/bin:.
 
 #load params
 . params

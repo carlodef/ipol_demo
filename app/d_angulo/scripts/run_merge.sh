@@ -3,7 +3,7 @@
 #load params
 . params
 
-export PATH=$PATH:/usr/bin/:/usr/local/bin/:/bin
+export PATH=$PATH:/usr/bin/:/usr/local/bin/:/bin:.
 
 #Remove extra canals from cost maps
 ls cost_t*.tif > cost_maps
