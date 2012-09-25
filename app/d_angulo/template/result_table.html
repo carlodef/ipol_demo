@@ -24,28 +24,28 @@
     # if GT is present load all the statistics if necessary
     if  gt != '':
        disperror = {}
-       for i in algolist:
-         disperror[i] = open(app.work_dir+"/"+i+"_stat.txt","r").read().split()
-         # In case the file is empty or worse
-         if disperror[i] == []:
-            disperror[i] = [float('nan'),float('nan'),float('nan'),float('nan'),float('nan'),float('nan')]
-       print("DISPERROR = " + str(disperror))
-
-       rejerror = {}
-       for i in decisionlist:
-         rejerror[i] = open(app.work_dir+"/"+i+"_stat.txt","r").read().split()
-         # In case the file is empty or worse
-         if rejerror[i] == []:
-            rejerror[i] = [float('nan'),float('nan'),float('nan'),float('nan'),float('nan'),float('nan')]
-       print("REJERROR = " + str(rejerror))
-
-       filterror = {}
-       for i in filterlist:
-         filterror[i] = open(app.work_dir+"/"+i+"_stat.txt","r").read().split()
-         # In case the file is empty or worse
-         if filterror[i] == []:
-            filterror[i] = [float('nan'),float('nan'),float('nan'),float('nan'),float('nan'),float('nan')]
-       print("FILRERROR = " + str(filterror))
+#       for i in algolist:
+#         disperror[i] = open(app.work_dir+"/"+i+"_stat.txt","r").read().split()
+#         # In case the file is empty or worse
+#         if disperror[i] == []:
+#            disperror[i] = [float('nan'),float('nan'),float('nan'),float('nan'),float('nan'),float('nan')]
+#       print("DISPERROR = " + str(disperror))
+#
+#       rejerror = {}
+#       for i in decisionlist:
+#         rejerror[i] = open(app.work_dir+"/"+i+"_stat.txt","r").read().split()
+#         # In case the file is empty or worse
+#         if rejerror[i] == []:
+#            rejerror[i] = [float('nan'),float('nan'),float('nan'),float('nan'),float('nan'),float('nan')]
+#       print("REJERROR = " + str(rejerror))
+#
+#       filterror = {}
+#       for i in filterlist:
+#         filterror[i] = open(app.work_dir+"/"+i+"_stat.txt","r").read().split()
+#         # In case the file is empty or worse
+#         if filterror[i] == []:
+#            filterror[i] = [float('nan'),float('nan'),float('nan'),float('nan'),float('nan'),float('nan')]
+#       print("FILRERROR = " + str(filterror))
 
 
 %>
