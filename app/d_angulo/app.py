@@ -518,8 +518,11 @@ class app(base_app):
         """
         Launches the angulo script
         """
-        p = self.run_proc(['batch_angulo.py'])
-        self.wait_proc(p, timeout=self.timeout)
+        p_angulo = self.run_proc(['batch_angulo.py'])
+        self.wait_proc(p_angulo, timeout=self.timeout)
+        
+        p_std_bm = self.run_proc(['/bin/bash','run_std_bm.sh'])
+        self.wait_proc(p_std_bm, timeout=self.timeout)
   
 
     def merge_png(self,out,in1,in2):
@@ -549,7 +552,7 @@ class app(base_app):
         
         # Put the filters on the disparity images
         self.merge_png(self.work_dir+"out_disp_angulo.png","out_disp.png","out_filt.png")
-        self.merge_png(self.work_dir+"out_disp_bm.png","disp_t1.00_s0.00.png","filt_t1.00_s0.00.png")
+        self.merge_png(self.work_dir+"out_disp_bm.png","disp_std_bm.png","filt_std_bm.png")
 
 
         # # Get the other parameters
