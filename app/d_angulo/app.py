@@ -548,35 +548,13 @@ class app(base_app):
         out_disp.png + out_filt.png 
         disp_t1.00_s0.00.png + filt_t1.00_s0.00.png 
         """
-        print '********************* fusion and zip ************************'
-        
         # Put the filters on the disparity images
         self.merge_png(self.work_dir+"out_disp_angulo.png","out_disp.png","out_filt.png")
         self.merge_png(self.work_dir+"out_disp_bm.png","disp_std_bm.png","filt_std_bm.png")
 
-
-        # # Get the other parameters
-        # n_bins = int(self.cfg['param']['n_bins'])
-        # sigma = int(self.cfg['param']['sigma'])
-        # url = 'get_params_from_url?input_id='+str(self.cfg['meta']['input_id'])+\
-        #     '&x='+str(self.cfg['param']['x'])+\
-        #     '&y='+str(self.cfg['param']['y'])+\
-        #     '&r='+str(self.cfg['param']['r'])+\
-        #     '&n_bins='+str(self.cfg['param']['n_bins'])+\
-        #     '&sigma='+str(self.cfg['param']['sigma'])
-        # 
-        # # Write them in a txt file
-        # f = open(self.work_dir + 'params.txt', 'w')
-        # f.write(str(r)+'\n')
-        # f.write(str(n_bins)+'\n')
-        # f.write(str(sigma)+'\n')
-        # f.write(url)
-        # f.close()
-        
         # Put the files in a zip 
         pr = self.run_proc(['/bin/bash', 'zip_results.sh'])
-        #self.wait_proc(p, timeout=self.timeout)
-        #the above line makes python fail...
+        self.wait_proc(pr, timeout=self.timeout)
         
         # Go back on the result page
         http.redir_303(self.base_url + 'result?key=%s' % self.key)
