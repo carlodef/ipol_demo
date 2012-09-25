@@ -470,7 +470,7 @@ class app(base_app):
             min_disparity = int(min_disparity)
             max_disparity = int(max_disparity)
             subpixel = int(subpixel)
-            noise_sigma = int(noise_sigma)
+            noise_sigma = float(noise_sigma)
         except ValueError:
             return self.error(errcode='badparams',
                               errmsg="The parameters must be numeric.")
