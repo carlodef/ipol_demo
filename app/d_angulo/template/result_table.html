@@ -21,33 +21,12 @@
           gtocc = 1
 
 
-    # if GT is present load all the statistics if necessary
+#    # if GT is present load all the statistics if necessary
     if  gt != '':
        disperror = {}
-#       for i in algolist:
-#         disperror[i] = open(app.work_dir+"/"+i+"_stat.txt","r").read().split()
-#         # In case the file is empty or worse
-#         if disperror[i] == []:
-#            disperror[i] = [float('nan'),float('nan'),float('nan'),float('nan'),float('nan'),float('nan')]
-#       print("DISPERROR = " + str(disperror))
-#
-#       rejerror = {}
-#       for i in decisionlist:
-#         rejerror[i] = open(app.work_dir+"/"+i+"_stat.txt","r").read().split()
-#         # In case the file is empty or worse
-#         if rejerror[i] == []:
-#            rejerror[i] = [float('nan'),float('nan'),float('nan'),float('nan'),float('nan'),float('nan')]
-#       print("REJERROR = " + str(rejerror))
-#
-#       filterror = {}
-#       for i in filterlist:
-#         filterror[i] = open(app.work_dir+"/"+i+"_stat.txt","r").read().split()
-#         # In case the file is empty or worse
-#         if filterror[i] == []:
-#            filterror[i] = [float('nan'),float('nan'),float('nan'),float('nan'),float('nan'),float('nan')]
-#       print("FILRERROR = " + str(filterror))
-
-
+       algolist = ['Angulo','Standard_BM']
+       disperror['Angulo'] = open(app.work_dir+"/statistics.txt","r").readlines()[0].split()
+       disperror['Standard_BM'] = open(app.work_dir+"/statistics.txt","r").readlines()[2].split()
 %>
 
 
@@ -142,6 +121,43 @@ The algorithm result is displayed hereafter. It ran in ${"%0.2f" % app.cfg['info
     </ul>
 </div>
 
+
+%if  gt != '':
+
+<div>
+   <h3>Matching statistics</h3>
+<table border="1" cellpadding="6" cellspacing="0" style="margin-left:0px;margin-right:auto">
+	<tr bgcolor="#cccccc">
+		<td ></td>
+      <th >% pixels with |Err| &lt; Subpixel</br> not counting NaNs</th>
+      <th >% pixels with |Err| &lt; Subpixel</br> including NaNs</th>
+		<th >RMSE (w/o NaNs)</th>
+		<th >Average Error (w/o NaNs)</th>
+	</tr>
+	%for a in algolist:
+	<tr>
+		<th bgcolor="#cccccc">${a}</th>
+      <td align="center">
+         ${"%5.5f" % float(disperror[a][0])}
+         <i style="font-size:x-small"></i>
+      </td>
+		<td align="center">
+			${"%5.5f" % float(disperror[a][1])}
+			<i style="font-size:x-small"></i>
+		</td>
+		<td align="center">
+			${"%5.5f" % float(disperror[a][2])}
+			<i style="font-size:x-small">pixels</i>
+		</td>
+		<td align="center">
+			${"%5.5f" % float(disperror[a][3])}
+			<i style="font-size:x-small">pixels</i>
+		</td>
+	</tr>
+    %endfor
+</table>
+</div>
+%endif
 
 
 <p>

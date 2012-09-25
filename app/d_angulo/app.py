@@ -516,14 +516,18 @@ class app(base_app):
 
     def run_algo(self):
         """
-        Launches the angulo script
+        Launches the angulo script, the standard block-matching script, and the statistics script
         """
         p_angulo = self.run_proc(['batch_angulo.py'])
         self.wait_proc(p_angulo, timeout=self.timeout)
         
         p_std_bm = self.run_proc(['/bin/bash','run_std_bm.sh'])
         self.wait_proc(p_std_bm, timeout=self.timeout)
-  
+        
+        if self.cfg['param']['ground_truth'] != '':
+            p_stat = self.run_proc(['/bin/bash','compute_statistics.sh'])
+            self.wait_proc(p_stat, timeout=self.timeout)
+
 
     def merge_png(self,out,in1,in2):
         """

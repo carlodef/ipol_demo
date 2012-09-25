@@ -89,6 +89,7 @@ def write_config_file_for_shell(config_dict):
     f.write('shear_max=' + str(config_dict['param']['shear_max']) + '\n')
     f.write('subpixel=' + str(config_dict['param']['subpixel']) + '\n')
     f.write('height=' + str(config_dict['param']['image_height']) + '\n')
+    f.write('ground_truth=' + str(config_dict['param']['ground_truth']) + '\n')
     f.close();
 
 
