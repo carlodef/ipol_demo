@@ -361,8 +361,7 @@ class app(base_app):
         """
         if done:
             # The crop is done, go to the results page
-            sizeY = image(self.work_dir + 'out_0.png').size[1]
-            return self.tmpl_out("results.html", sizeY=sizeY)
+            http.redir_303(self.base_url + 'zip_results?key=%s' % self.key)
         
         elif (x == None):
             # the user has not yet clicked on the first corner
@@ -428,10 +427,28 @@ class app(base_app):
                 crop_image(self.work_dir + 'right_image.tif', x, y2, x3, y3, \
                            self.work_dir + 'out_1.tif')
 
-                # crop from the ground truth map 
+                # crop from the ground truth map and mask
                 if self.cfg['param']['ground_truth'] != '':
                     crop_image(self.work_dir + 'ground_truth.tif', x, y2, x3, y3, \
                            self.work_dir + 'out_gt.tif')
+                    crop_image(self.work_dir + 'ground_truth_mask.tif', x, y2, x3, y3, \
+                           self.work_dir + 'out_gt_mask.tif')
 
                 return self.tmpl_out("crop.html", corners=3)
         return
+            
+    @cherrypy.expose
+    @init_app
+    def zip_results(self):
+        """
+        zip the output images in a single downloadable archive:
+        out_0.tif
+        out_1.tif
+        out_gt.tif
+        """
+        # Put the files in a zip 
+        pr = self.run_proc(['/bin/bash', 'zip_results.sh'])
+        self.wait_proc(pr, timeout=self.timeout)
+        
+        sizeY = image(self.work_dir + 'out_0.png').size[1]
+        return self.tmpl_out("results.html", sizeY=sizeY)
