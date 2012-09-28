@@ -107,20 +107,16 @@ The algorithm result is displayed hereafter. It ran in ${"%0.2f" % app.cfg['info
 	<span>
 	  <table><tr><td style="vertical-align:top;">
 	   <img style="background:url(${app.work_url + 'out_argmin.png'})" 
-	  		src="${app.work_url + 'out_filt.png'}" alt="" /><br>
-	  Argmin
+	  		src="${app.work_url + 'out_filt.png'}" alt="" />
 	  </td>
 	  <td style="vertical-align:top;">
-	   <img style="background:url(${app.work_url + 'out_cost.png'})" 
-	  		src="${app.work_url + 'out_filt.png'}" alt="" /><br>
-	 Minimal matching Cost
+          <img src="${app.work_url + 'argmin_map_legend.png'}" alt="" height="${height}"/>
 	  </td></tr></table>
 	</span>
       </a>
      </li>     
     </ul>
 </div>
-
 
 %if  gt != '':
 

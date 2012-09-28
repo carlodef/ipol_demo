@@ -570,6 +570,9 @@ class app(base_app):
         """
         display the algo results
         """
+        # copy the argmin_legend in the current working directory
+        shutil.copy(self.base_dir+'template/argmin_map_legend.png',self.work_dir+'argmin_map_legend.png')
+        # go on the results page
         return self.tmpl_out("paramresult.html")
 
 
