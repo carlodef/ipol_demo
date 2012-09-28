@@ -1,4 +1,4 @@
-from lib import base_app
+from lib import base_app, http
 from lib.base_app import init_app
 import cherrypy
 import os.path
