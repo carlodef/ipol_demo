@@ -427,6 +427,11 @@ class app(base_app):
                            self.work_dir + 'out_1.png')
                 crop_image(self.work_dir + 'right_image.tif', x, y2, x3, y3, \
                            self.work_dir + 'out_1.tif')
-                
+
+                # crop from the ground truth map 
+                if self.cfg['param']['ground_truth'] != '':
+                    crop_image(self.work_dir + 'ground_truth.tif', x, y2, x3, y3, \
+                           self.work_dir + 'out_gt.tif')
+
                 return self.tmpl_out("crop.html", corners=3)
         return

@@ -2,6 +2,8 @@
 
 <%
     max_size = max(sizeY,2*30)
+    # gt is a variable to activate the groundtruth crop download 
+    gt = app.cfg['param']['ground_truth']
 %>
 
    <p>
@@ -38,6 +40,9 @@
 <p>
 	Download (tif): <a href="${app.base_url}tmp/${app.key}/out_0.tif">first image</a>,
 	<a href="${app.base_url}tmp/${app.key}/out_1.tif">second image</a>.
+%if  gt != '':
+	<a href="${app.base_url}tmp/${app.key}/out_gt.tif">ground truth</a>.
+%endif
 </p>
 <p>
 	Download (png): <a href="${app.base_url}tmp/${app.key}/out_0.png">first image</a>,
