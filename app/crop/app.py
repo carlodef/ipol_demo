@@ -402,8 +402,22 @@ class app(base_app):
                            self.work_dir + 'out_0.png')
                 crop_image(self.work_dir + 'left_image.tif', x0, y0, x, y, \
                            self.work_dir + 'out_0.tif')
-               
-                return self.tmpl_out("crop.html", corners=2)
+                
+                # if there is ground truth, it's almost done 
+                if self.cfg['param']['ground_truth']!='':
+                    # crop from the second input image
+                    crop_image(self.work_dir + 'right_image.png', x0, y0, x, y, \
+                               self.work_dir + 'out_1.png')
+                    crop_image(self.work_dir + 'right_image.tif', x0, y0, x, y, \
+                               self.work_dir + 'out_1.tif')
+                    # crop from the gt image
+                    crop_image(self.work_dir + 'left_image.png', x0, y0, x, y, \
+                               self.work_dir + 'ground_truth.png')
+                    crop_image(self.work_dir + 'ground_truth.tif', x0, y0, x, y, \
+                               self.work_dir + 'out_gt.tif')
+                    return self.tmpl_out("crop.html", corners=3)
+                else: 
+                    return self.tmpl_out("crop.html", corners=2)
              
             # Case 3 : 2 corners defined, the third is clicked
             else:
@@ -421,7 +435,7 @@ class app(base_app):
                 plot_rectangle(self.work_dir + 'right_image.png', x, y2, x3, y3, \
                                self.work_dir + 'right_image_selection.png')
                 
-                # crop from the first input image
+                # crop from the second input image
                 crop_image(self.work_dir + 'right_image.png', x, y2, x3, y3, \
                            self.work_dir + 'out_1.png')
                 crop_image(self.work_dir + 'right_image.tif', x, y2, x3, y3, \
