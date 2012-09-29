@@ -415,6 +415,8 @@ class app(base_app):
                                self.work_dir + 'ground_truth.png')
                     crop_image(self.work_dir + 'ground_truth.tif', x0, y0, x, y, \
                                self.work_dir + 'out_gt.tif')
+                    crop_image(self.work_dir + 'ground_truth_mask.tif', x0, y0, x, y, \
+                           self.work_dir + 'out_gt_mask.tif')
                     return self.tmpl_out("crop.html", corners=3)
                 else: 
                     return self.tmpl_out("crop.html", corners=2)
