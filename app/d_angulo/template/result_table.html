@@ -125,30 +125,15 @@ The algorithm result is displayed hereafter. It ran in ${"%0.2f" % app.cfg['info
 <table border="1" cellpadding="6" cellspacing="0" style="margin-left:0px;margin-right:auto">
 	<tr bgcolor="#cccccc">
 		<td ></td>
-      <th >% pixels with |Err| &lt; Subpixel</br> not counting NaNs</th>
-      <th >% pixels with |Err| &lt; Subpixel</br> including NaNs</th>
-		<th >RMSE (w/o NaNs)</th>
-		<th >Average Error (w/o NaNs)</th>
+      <th >% of pixels with |Err| &lt; Subpixel</th>
 	</tr>
 	%for a in algolist:
 	<tr>
 		<th bgcolor="#cccccc">${a}</th>
       <td align="center">
-         ${"%5.5f" % float(disperror[a][0])}
+         ${"%5.5f" % float(disperror[a][1])}
          <i style="font-size:x-small"></i>
       </td>
-		<td align="center">
-			${"%5.5f" % float(disperror[a][1])}
-			<i style="font-size:x-small"></i>
-		</td>
-		<td align="center">
-			${"%5.5f" % float(disperror[a][2])}
-			<i style="font-size:x-small">pixels</i>
-		</td>
-		<td align="center">
-			${"%5.5f" % float(disperror[a][3])}
-			<i style="font-size:x-small">pixels</i>
-		</td>
 	</tr>
     %endfor
 </table>
