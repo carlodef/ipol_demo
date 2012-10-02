@@ -30,7 +30,11 @@ stereoSSD-mean -w $win_w -h $win_h -r $3 -R $4 $left right_image_t$1_s$2.tif dis
 # 2. Filtering
 flatH $left filt_flat_t$1_s$2.png $win_w
 stereoLRRL2 disp_t$1_s$2.tif dispR_t$1_s$2.tif filt_LRRL_t$1_s$2.png 1
+if [ "${ground_truth_mask}" != "" ]; then
+intersection $ground_truth_mask filt_LRRL_t$1_s$2.png filt_flat_t$1_s$2.png filt_t$1_s$2.tif
+else
 intersection filt_LRRL_t$1_s$2.png filt_flat_t$1_s$2.png filt_t$1_s$2.tif
+fi
 save_png_mask.sh filt_t$1_s$2.tif filt_t$1_s$2.png
 
 # 3. Correct disparity values according to shear, tilt and translation parameters

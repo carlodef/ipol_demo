@@ -14,7 +14,11 @@ stereoSSD-mean -w $win_w -h $win_h -r $min_disparity -R $max_disparity left_imag
 # 2. Filtering
 flatH left_image.tif filt_flat_std_bm.png $win_w
 stereoLRRL2 disp_std_bm.tif dispR_std_bm.tif filt_LRRL_std_bm.png 1
+if [ "${ground_truth_mask}" != "" ]; then
+intersection $ground_truth_mask filt_LRRL_std_bm.png filt_flat_std_bm.png filt_std_bm.tif
+else
 intersection filt_LRRL_std_bm.png filt_flat_std_bm.png filt_std_bm.tif
+fi
 save_png_mask.sh filt_std_bm.tif filt_std_bm.png
 
 # 4. Generate png images for html display

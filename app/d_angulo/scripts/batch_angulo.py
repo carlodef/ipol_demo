@@ -90,6 +90,7 @@ def write_config_file_for_shell(config_dict):
     f.write('subpixel=' + str(config_dict['param']['subpixel']) + '\n')
     f.write('height=' + str(config_dict['param']['image_height']) + '\n')
     f.write('ground_truth=' + str(config_dict['param']['ground_truth']) + '\n')
+    f.write('ground_truth_mask=' + str(config_dict['param']['ground_truth_mask']) + '\n')
     f.close();
 
 
