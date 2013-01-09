@@ -36,7 +36,7 @@ class app(base_app):
         
         # Import the code from git repository
         import os
-        os.system("git clone --depth 1 ssh://fuchsia/home/facciolo/code/stereo.git "+self.src_dir)
+        os.system("git clone --depth 1 ssh://purple/home/facciolo/code/stereo.git "+self.src_dir)
                 
         # Create bin dir (delete the previous one if exists)
         if os.path.isdir(self.bin_dir):
