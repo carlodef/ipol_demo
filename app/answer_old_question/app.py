@@ -48,7 +48,7 @@ class app(base_app):
         os.mkdir(self.bin_dir)
         
         # build the program
-        build.run("make -C %s %s" % (self.src_dir, "all"), stdout=log_file)
+        build.run("make -j -C %s %s" % (self.src_dir, "all"), stdout=log_file)
 
         # cleanup the source dir
         shutil.rmtree(self.src_dir)

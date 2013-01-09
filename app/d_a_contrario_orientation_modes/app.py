@@ -61,8 +61,8 @@ class app(base_app):
                  
         # get code from git repo and compile it
         os.system("git clone http://dev.ipol.im/git/carlo/modes.git "+self.src_dir)
-        build.run("make -C %s %s" % (self.src_dir + 'detection', 'ipol'), stdout=log_detection)
-        build.run("make -C %s %s" % (self.src_dir + 'addnoise', 'ipol'), stdout=log_addnoise)
+        build.run("make -j -C %s %s" % (self.src_dir + 'detection', 'ipol'), stdout=log_detection)
+        build.run("make -j -C %s %s" % (self.src_dir + 'addnoise', 'ipol'), stdout=log_addnoise)
         
         # cleanup the source dir
         shutil.rmtree(self.src_dir)
