@@ -24,7 +24,7 @@ class app(base_app):
     input_ext = '.png'   # input image expected extension (ie file format)
     timeout = 90
     is_test = True       # switch to False for deployment
-    is_listed = False
+    is_listed = True 
 
     def build(self):
         """
