@@ -24,10 +24,11 @@ save_png.sh out_disp.tif out_disp.png $min_disparity $max_disparity
 # Intersect all the filters to get the filter corresponding to out_disp.tif
 echo "union filt_t*.tif out_filt.tif"
 union filt_t*.tif out_filt.tif
-
-echo "transp_mask.sh out_filt.tif out_filt.png"
 save_png_mask.sh out_filt.tif out_filt.png
 
+# save computed tilt and shear in two separated files
+plambda out_argmin.tif "x[0]" | iion - out_tilt.tif;
+plambda out_argmin.tif "x[1]" | iion - out_shear.tif;
 
 # Convert the out_argmin image into a HSV image with tilt=hue and shear=value
 echo "visualize out_argmin.tif $tilt_min $tilt_max $shear_min $shear_max out_argmin.png"
