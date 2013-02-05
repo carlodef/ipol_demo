@@ -16,6 +16,6 @@ tar cv left_image.tif right_image.tif out_disp.tif out_tilt.tif out_shear.tif ou
 # copy the archive on caviar 
 scp $1.tar.gz caviar:~/code/ipol_demo/app/d_angulo/tmp/
 
-# run the processing script on caviar
-ssh caviar "/bin/bash ~/code/batch_script.sh $1"
+# run the processing script on sel 
+ssh sel "/bin/bash ~/code/batch_script.sh $1"
 
