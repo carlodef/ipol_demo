@@ -1,5 +1,5 @@
 """
-demo to determine how to quantize tilts for angulo 
+demo to determine how to quantize tilts for angulo
 """
 
 from lib import base_app, build, http, image
@@ -26,8 +26,8 @@ class app(base_app):
     input_dtype = '3x8i' # input image expected data type
     input_ext = '.png'   # input image expected extension (ie file format)
     is_test = True       # switch to False for deployment
-    is_listed = True
-    
+    is_listed = False
+
     def build(self):
         """
         program build/update
@@ -35,18 +35,18 @@ class app(base_app):
         # useful file paths
         log_file = self.base_dir + "build.log"
         self.src_dir = self.src_dir + "stereo";
-        
+
         # Import the code from git repository
         import os
         os.system("git clone --depth 1 ssh://purple/home/facciolo/code/stereo.git "+self.src_dir)
         # TODO: use git archive (see below) instead of git clone to download only the source code (and not the doc)
         #os.system("git archive --remote=ssh://purple/home/facciolo/code/stereo.git -o src.tar -v master src")
-                
+
         # Create bin dir (delete the previous one if exists)
         if os.path.isdir(self.bin_dir):
             shutil.rmtree(self.bin_dir)
         os.mkdir(self.bin_dir)
-        
+
         # build the program
         build.run("make -j -C %s %s" % (self.src_dir, "all"), stdout=log_file)
 
