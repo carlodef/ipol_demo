@@ -497,12 +497,12 @@ class app(base_app):
     def run(self):
         """
         algo execution
-        """        
+        """
         # run the algorithm
         try:
             run_time = time.time()
             self.run_algo()
-            self.cfg['param']['run'] = 'done' 
+            self.cfg['param']['run'] = 'done'
             self.cfg['info']['run_time'] = time.time() - run_time
             self.cfg.save()
         except TimeoutError:
@@ -510,26 +510,26 @@ class app(base_app):
         except RuntimeError:
             return self.error(errcode='runtime')
         http.redir_303(self.base_url + 'zip_results?key=%s' % self.key)
-        
+
         # archive
 
 
     def run_algo(self):
         """
-        Launches the angulo script, the standard block-matching script, and the statistics script
-        After the angulo script, the refinement scripts is launched, but we
-        don't wait for it to terminate as it might take long time (data has to
-        be transferred to server sel, and matlab has to process this data
-        before sending it back)
+        Launches the angulo script, the standard block-matching script, and the
+        statistics script After the angulo script, the refinement scripts is
+        launched, but we don't wait for it to terminate as it might take long
+        time (data has to be transferred to server sel, and matlab has to
+        process this data before sending it back)
         """
         p_angulo = self.run_proc(['batch_angulo.py'])
         self.wait_proc(p_angulo, timeout=self.timeout)
-        
-        p_refinement = self.run_proc(['/bin/bash','batch_refinement.sh', self.key])
+
+        #p_refinement = self.run_proc(['/bin/bash','batch_refinement.sh', self.key])
 
         p_std_bm = self.run_proc(['/bin/bash','run_std_bm.sh'])
         self.wait_proc(p_std_bm, timeout=self.timeout)
-        
+
         if self.cfg['param']['ground_truth'] != '':
             p_stat = self.run_proc(['/bin/bash','compute_statistics.sh'])
             self.wait_proc(p_stat, timeout=self.timeout)
