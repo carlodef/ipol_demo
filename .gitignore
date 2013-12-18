@@ -21,4 +21,3 @@ app/*/input/*/.__*
 
 #ignore backup files
 *~
-

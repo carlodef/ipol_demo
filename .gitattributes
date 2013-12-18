@@ -1,0 +1,5 @@
+*.py    diff=python
+*.html  diff=html
+*.png	diff=exif
+*.jpg	diff=exif
+*.tiff	diff=exif
