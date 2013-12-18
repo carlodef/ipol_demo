@@ -19,6 +19,7 @@ class app(base_app):
     timeout = 60
     is_test = True       # switch to False for deployment
     is_listed = False 
+    xlink_article = 'www.ipol.im'
 
 
     def build(self):
