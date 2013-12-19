@@ -1,0 +1,23 @@
+<%include file="header.html" />
+
+<p>
+  You can choose 2 parameters for this algorithm: <i>a</i>
+  and <i>b</i>.<br />
+</p>
+
+<form action="${app.base_url + 'wait'}" method="get">
+  <div class="action">
+    Set the algorithm parameters and run the algorithm.
+    <input type="hidden" name="key" value="${app.key}">
+    <label for="roi_size">ROI size:</label>
+    <input type="text" name="roi_size" value="500" size="4" />
+    <label for="zoom">subsampling factor:</label>
+    <input type="text" name="zoom" value="1" size="4" />
+    <input type="image"  name="" style="cursor:crosshair;" src="${app.work_url + 'input_0.png'}" alt="input_0">
+    <!--    <input type="submit" value="run" /> -->
+  </div>
+</form>
+
+<hr />
+
+<%include file="footer.html" />

@@ -1,0 +1,71 @@
+<%include file="header_ipol.html" />
+<p>
+  The algorithm result is displayed  hereafter.
+</p>
+
+<form action="${app.base_url}" method="get">
+  <div class="action">
+    Restart this algorithm with new data.
+    <input type="submit" value="new input" />
+  </div>
+</form>
+
+<!--<form action="${app.base_url + 'params'}" method="get">
+  <div class="action">
+    Restart this algorithm with new parameters.
+    <input type="hidden" name="key" value="${app.key}">
+    <input type="hidden" name="newrun" value="1">
+    <input type="submit" value="new parameters" />
+  </div>
+</form> -->
+
+<hr />
+
+<h2>Result</h2>
+
+<div class="gallery" style="height:${height}px">
+  <ul class="index">
+    <li>
+      <a href="#">input
+	<span>
+	  <img src="${app.work_url + 's2p_results/roi_ref_preview.png'}" alt="input" />
+	</span>
+      </a>
+    </li>
+    <li>
+      <a href="#">output
+	<span>
+	  <img src="${app.work_url + 's2p_results/roi_color_ref_preview.png'}" alt="input" />
+	</span>
+      </a>
+    </li>
+    <li>
+      <a href="#">output
+	<span>
+	  <img src="${app.work_url + 's2p_results/dem_fusion_preview.png'}" alt="output" />
+	</span>
+      </a>
+    </li>
+  </ul>
+</div>
+
+<hr />
+
+<h2>Results</h2>
+
+<div id="content">
+<canvas id="canvas" name="canvas" width="1000" height="800"></canvas><br>
+    <span>status: </span><span class="orangeText" id="fileStatus">STREAMING</span><br>
+    <input type="button" value="Zoom in" onclick="ipol_zoom_in();">
+    <input type="button" value="Zoom out" onclick="ipol_zoom_out();">
+
+    <script>
+        <!--ipol_3d_start("../js/XB-PointStream-master/clouds/acorn.asc");-->
+          ipol_3d_start("${app.work_url + 's2p_results/cloud.ply'}");
+      </script>
+  </div>
+
+      <br><br>
+<%include file="archive_info.html" />
+
+<%include file="footer.html" />
