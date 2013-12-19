@@ -39,8 +39,8 @@ if __name__ == '__main__':
 
         prv_w, prv_h = common.image_size(preview)
         r1 = rpc_model.RPCModel(rpc1)
-        cfg['roi']['x'] = (float(x) / prv_w) * r1.lastCol
-        cfg['roi']['y'] = (float(y) / prv_h) * r1.lastRow
+        cfg['roi']['x'] = int((float(x) / prv_w) * r1.lastCol)
+        cfg['roi']['y'] = int((float(y) / prv_h) * r1.lastRow)
         cfg.pop('preview_coordinate_system')
         print prv_w, prv_h, x, y
         print cfg

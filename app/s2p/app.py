@@ -100,6 +100,32 @@ class app(base_app):
         return
 
     @cherrypy.expose
+    def input_select(self, **kwargs):
+        """
+        use the selected available input images
+        """
+        self.new_key()
+        self.init_cfg()
+        # kwargs contains input_id.x and input_id.y
+        input_id = kwargs.keys()[0].split('.')[0]
+        assert input_id == kwargs.keys()[1].split('.')[0]
+        # get the images
+        input_dict = config.file_dict(self.input_dir)
+        fnames = input_dict[input_id]['files'].split()
+        nb_img = input_dict[input_id]['nb_img']
+        for i in range(len(fnames)):
+            shutil.copy(self.input_dir + fnames[i],
+                        self.work_dir + 'input_%i' % i)
+        msg = self.process_input()
+        self.log("input selected : %s" % input_id)
+        self.cfg['meta']['original'] = True
+        self.cfg['meta']['input_id'] = input_id
+        self.cfg['meta']['nb_img'] = nb_img
+        self.cfg.save()
+        # jump to the params page
+        return self.params(msg=msg, key=self.key)
+
+    @cherrypy.expose
     @init_app
     def wait(self, **kwargs):
         """
@@ -107,17 +133,29 @@ class app(base_app):
         """
         # save the parameters in self.cfg['param']
         # TODO: use dataset id
-        self.cfg['param']['input_id'] = self.cfg['meta']['input_id']
+        input_id = self.cfg['meta']['input_id']
+        nb_img = self.cfg['meta']['nb_img']
+        self.cfg['param']['input_id'] = input_id
+        self.cfg['param']['nb_img'] = nb_img
         self.cfg['param']['out_dir'] = 's2p_results'
-        self.cfg['param']['images'] = [
-          { "img" : "pleiades_data/images/toulouse/im02.tif",
-            "rpc" : "pleiades_data/rpc/toulouse/rpc02.xml",
-            "clr" : "pleiades_data/images/toulouse/im02_color.tif" },
-          { "img" : "pleiades_data/images/toulouse/im01.tif",
-            "rpc" : "pleiades_data/rpc/toulouse/rpc01.xml" },
-          { "img" : "pleiades_data/images/toulouse/im03.tif",
-            "rpc" : "pleiades_data/rpc/toulouse/rpc03.xml" }
-          ]
+        if nb_img == 3:
+           self.cfg['param']['images'] = [
+             { "img" : "pleiades_data/images/%s/im02.tif" % input_id,
+               "rpc" : "pleiades_data/rpc/%s/rpc02.xml"% input_id,
+               "clr" : "pleiades_data/images/%s/im02_color.tif"% input_id },
+             { "img" : "pleiades_data/images/%s/im01.tif"% input_id,
+               "rpc" : "pleiades_data/rpc/%s/rpc01.xml"% input_id },
+             { "img" : "pleiades_data/images/%s/im03.tif"% input_id,
+               "rpc" : "pleiades_data/rpc/%s/rpc03.xml"% input_id }
+             ]
+        if nb_img == 2:
+           self.cfg['param']['images'] = [
+             { "img" : "pleiades_data/images/%s/im02.tif" % input_id,
+               "rpc" : "pleiades_data/rpc/%s/rpc02.xml"% input_id,
+               "clr" : "pleiades_data/images/%s/im02_color.tif"% input_id },
+             { "img" : "pleiades_data/images/%s/im01.tif"% input_id,
+               "rpc" : "pleiades_data/rpc/%s/rpc01.xml"% input_id }
+             ]
         self.cfg['param']['roi'] = {}
         self.cfg['param']['roi']['x'] = int(kwargs['x'])
         self.cfg['param']['roi']['y'] = int(kwargs['y'])
@@ -170,7 +208,7 @@ class app(base_app):
         except RuntimeError:
             return self.error(errcode='runtime')
         http.redir_303(self.base_url + 'result?key=%s' % self.key)
-        
+
         # GENERATE A ZIP (do not wait for it)
         p = self.run_proc(['/bin/bash', 'zipresults.sh'])
 #        self.wait_proc(p, timeout=self.timeout)
@@ -178,10 +216,14 @@ class app(base_app):
         # archive
         if self.cfg['meta']['original']:
             ar = self.make_archive()
+            ar.add_file("config.json", info="input")
             ar.add_file("input_0.png", "input.png", info="input")
-            ar.add_file("s2p_results/dem_fusion_preview.png", info="output")
-            ar.add_file("s2p_results/roi_color_ref_preview.png", info="output")
-            ar.add_file("s2p_results/roi_ref_preview.png", info="output")
+            ar.add_file("dem_fusion_preview.png", info="output")
+            ar.add_file("roi_color_ref_preview.png", info="output")
+            ar.add_file("roi_ref_preview.png", info="output")
+            ar.add_info({"roi": self.cfg['param']['roi'],
+                         "input_id": self.cfg['param']['input_id'],
+                         "nb_img": self.cfg['param']['nb_img']})
             ar.save()
 
         return self.tmpl_out("run.html")
@@ -189,6 +231,7 @@ class app(base_app):
     def run_algo(self):
         """
         the core algo runner
+
         could also be called by a batch processor
         this one needs no parameter
         """
