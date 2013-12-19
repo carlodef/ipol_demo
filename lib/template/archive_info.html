@@ -2,9 +2,6 @@
 <div>
   <form action="" method="get">
     <p>
-      This result is archived
-      (<a href="${app.base_url + 'archive?key=%s' % app.key | h }"
-	  title="permalink">link</a>).
       <input type="hidden" name="key" value="${app.key}" />
       %if app.cfg['meta']['public']:
       This archive is public

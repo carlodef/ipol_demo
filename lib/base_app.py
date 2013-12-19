@@ -229,7 +229,6 @@ class base_app(empty_app):
         msg = self.process_input()
         self.log("input selected : %s" % input_id)
         self.cfg['meta']['original'] = False
-        self.cfg['meta']['input_id'] = input_id
         self.cfg.save()
         # jump to the params page
         return self.params(msg=msg, key=self.key)
@@ -379,10 +378,6 @@ class base_app(empty_app):
             nbtotal = archive.index_count(self.archive_index,
                                            path=self.archive_dir,
                                            public=True)
-            nbtotal = nbpublic
-            nbtotal += archive.index_count(self.archive_index,
-                                           path=self.archive_dir,
-                                           public=False)
             if nbtotal:
                 firstdate = archive.index_first_date(self.archive_index,
                                                      path=self.archive_dir)
@@ -394,7 +389,6 @@ class base_app(empty_app):
             if page == -1:
                 page = nbpage - 1
             offset = limit * page
-            public = bool(int(public))
 
             buckets = [{'url' : self.archive_url + archive.key2url(key),
                         'files' : files, 'meta' : meta, 'info' : info}

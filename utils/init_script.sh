@@ -59,8 +59,6 @@ case "$1" in
 	# save the PID
 	# do nothing if it is already running
 	/sbin/start-stop-daemon --start --oknodo \
-	    --user ${SUID} --name ${SCRIPTNAME} \
-	    --pidfile ${PIDFILE} --make-pidfile \
 	    --startas ${SCRIPT} \
 	    --pidfile ${PIDFILE_RUN} --make-pidfile \
 	    --user ${SUID} --chuid ${SUID} \
