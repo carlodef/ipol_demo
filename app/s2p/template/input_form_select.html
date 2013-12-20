@@ -32,9 +32,9 @@ Click on an images to use it as the algorithm input.
 <div style="max-height:30em; overflow:auto;">
 
    <fieldset>
-      <legend>With Ground Truth</legend>
+      <legend>Triplets</legend>
 %for id in sorted(inputd.keys()):
-	%if 'gt' in inputd[id].keys():
+	%if inputd[id]['nb_img'] == 3:
 		%if 'hidden' not in inputd[id].keys():
 			<div class="select_input">
 			${imgflip(inputd[id]['tn_url'],inputd[id]['title'],id)}
@@ -49,9 +49,9 @@ Click on an images to use it as the algorithm input.
 
 
    <fieldset>
-      <legend>Without Ground Truth</legend>
+      <legend>Pairs</legend>
 %for id in sorted(inputd.keys()):
-	%if 'gt' not in inputd[id].keys():
+	%if inputd[id]['nb_img'] == 2:
 		%if 'hidden' not in inputd[id].keys():
 			<div class="select_input">
 			${imgflip(inputd[id]['tn_url'],inputd[id]['title'],id)}

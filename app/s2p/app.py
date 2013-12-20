@@ -1,5 +1,5 @@
 """
-demo example for the X->aX+b transform
+s2p ipol demo
 """
 
 from lib import base_app, build, http, image, config, thumbnail
@@ -11,10 +11,12 @@ import os.path
 import shutil
 
 class app(base_app):
-    """ template demo app """
-    
-    title = "f(x)=ax+b"
-    xlink_article = 'http://www.ipol.im/'
+    """
+    s2p ipol demo
+    """
+
+    title = "s2p: satellite stereo pipeline"
+    xlink_article = 'https://github.com/carlodef/s2p'
 
     input_nb = 1 # number of input images
     input_max_pixels = 500000 # max size (in pixels) of an input image
