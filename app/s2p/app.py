@@ -171,7 +171,7 @@ class app(base_app):
         self.cfg['param']["n_gcp_per_axis"] = 5
         self.cfg['param']["epipolar_thresh"] = 0.5
         self.cfg['param']["use_pleiades_unsharpening"] = True
-        self.cfg['param']["debug"] = False
+        self.cfg['param']["debug"] = True
         self.cfg['param']["preview_coordinate_system"] = True
 
         self.cfg['meta']["orig"] = True
