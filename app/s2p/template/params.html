@@ -1,16 +1,15 @@
 <%include file="header.html" />
 
 <p>
-  You can choose 2 parameters for this algorithm: <i>a</i>
-  and <i>b</i>.<br />
+  Choose the size of the region of interest (ROI) you want to process, then
+  click on a point of the preview below to choose the center of the ROI.
 </p>
 
 <form action="${app.base_url + 'wait'}" method="get">
   <div class="action">
-    Set the algorithm parameters and run the algorithm.
     <input type="hidden" name="key" value="${app.key}">
     <label for="roi_size">ROI size:</label>
-    <input type="text" name="roi_size" value="500" size="4" />
+    <input type="text" name="roi_size" value="500" size="4" /><br>
     <label for="zoom">subsampling factor:</label>
     <input type="text" name="zoom" value="1" size="4" />
     <input type="image"  name="" style="cursor:crosshair;" src="${app.work_url + 'input_0.png'}" alt="input_0">

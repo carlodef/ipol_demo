@@ -15,8 +15,8 @@ class app(base_app):
     s2p ipol demo
     """
 
-    title = "s2p: satellite stereo pipeline"
-    xlink_article = 'https://github.com/carlodef/s2p'
+    title = "s2p: Satellite Stereo Pipeline"
+    xlink_article = 'http://www.ipol.im'
 
     input_nb = 1 # number of input images
     input_max_pixels = 500000 # max size (in pixels) of an input image
@@ -37,7 +37,7 @@ class app(base_app):
         # select the base_app steps to expose
         # index() is generic
 #        app_expose(base_app.index)
-        app_expose(base_app.input_select)
+#        app_expose(base_app.input_select)
 #        app_expose(base_app.input_upload)
         # params() is modified from the template
         app_expose(base_app.params)
