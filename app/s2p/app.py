@@ -134,7 +134,6 @@ class app(base_app):
         params handling and run redirection
         """
         # save the parameters in self.cfg['param']
-        # TODO: use dataset id
         input_id = self.cfg['meta']['input_id']
         nb_img = self.cfg['meta']['nb_img']
         self.cfg['param']['input_id'] = input_id
@@ -171,7 +170,7 @@ class app(base_app):
         self.cfg['param']["n_gcp_per_axis"] = 5
         self.cfg['param']["epipolar_thresh"] = 0.5
         self.cfg['param']["use_pleiades_unsharpening"] = True
-        self.cfg['param']["debug"] = True
+        self.cfg['param']["debug"] = False
         self.cfg['param']["preview_coordinate_system"] = True
 
         self.cfg['meta']["orig"] = True
@@ -206,7 +205,7 @@ class app(base_app):
         try:
             self.run_algo()
         except TimeoutError:
-            return self.error(errcode='timeout') 
+            return self.error(errcode='timeout')
         except RuntimeError:
             return self.error(errcode='runtime')
         http.redir_303(self.base_url + 'result?key=%s' % self.key)
