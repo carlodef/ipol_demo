@@ -9,6 +9,7 @@ import cherrypy
 from cherrypy import TimeoutError
 import os.path
 import shutil
+import time
 
 class app(base_app):
     """
@@ -204,6 +205,8 @@ class app(base_app):
         # run the algorithm
         try:
             self.run_algo()
+           # self.cfg['param']['run'] = 'done'
+           # self.cfg.save()
         except TimeoutError:
             return self.error(errcode='timeout')
         except RuntimeError:
@@ -239,8 +242,11 @@ class app(base_app):
         p = self.run_proc(['helper_convert_inputs.sh', 'config.json', 'input_0.png'])
         self.wait_proc(p, timeout=self.timeout)
 
+        run_time = time.time()
         p = self.run_proc(['s2p.sh', 'config.json'])
         self.wait_proc(p, timeout=self.timeout)
+        self.cfg['info']['run_time'] = time.time() - run_time
+        self.cfg.save()
 
         p = self.run_proc(['helper_convert_outputs.sh'])
         self.wait_proc(p, timeout=self.timeout)
