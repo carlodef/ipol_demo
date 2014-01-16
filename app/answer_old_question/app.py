@@ -11,9 +11,9 @@ import os.path
 import shutil
 import time
 from collections import deque
-import matplotlib as mpl
-mpl.use('Agg')
-import matplotlib.pyplot as plt
+#import matplotlib as mpl
+#mpl.use('Agg')
+#import matplotlib.pyplot as plt
 import Image
 
 class app(base_app):
