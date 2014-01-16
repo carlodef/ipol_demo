@@ -73,33 +73,39 @@ class app(base_app):
         """
         program build/update
         """
-        # store common file path in variables
-        tgz_file = self.dl_dir + "io_png.tar.gz"
-        prog_file = self.bin_dir + "axpb"
         log_file = self.base_dir + "build.log"
-        # get the latest source archive
-        build.download("http://tools.ipol.im/wiki/editor/demo/"
-                       + "io_png.tar.gz", tgz_file)
-        # test if the dest file is missing, or too old
-        if (os.path.isfile(prog_file)
-            and ctime(tgz_file) < ctime(prog_file)):
-            cherrypy.log("not rebuild needed",
-                         context='BUILD', traceback=False)
-        else:
-            # extract the archive
-            build.extract(tgz_file, self.src_dir)
-            # build the program
-            build.run("make -j4 -C %s %s" % (self.src_dir + "io_png",
-                                             os.path.join("example", "axpb")),
-                      stdout=log_file)
-            # save into bin dir
-            if os.path.isdir(self.bin_dir):
-                shutil.rmtree(self.bin_dir)
-            os.mkdir(self.bin_dir)
-            shutil.copy(self.src_dir + os.path.join("io_png", "example",
-                                                    "axpb"), prog_file)
-            # cleanup the source dir
-            shutil.rmtree(self.src_dir)
+
+        home = os.path.expanduser("~")
+        s2p_dir = os.path.join(home, 'code', 's2p')
+
+        print """DON'T FORGET: Have you done 'git pull' in the local copy
+            repository of s2p ?"""
+
+        # compile s2p 'c' folder
+        build.run("make -j -C %s" % ("~/code/s2p/c"), stdout=log_file)
+
+        # Create bin dir (delete the previous one if exists)
+        if os.path.isdir(self.bin_dir):
+            shutil.rmtree(self.bin_dir)
+        os.mkdir(self.bin_dir)
+
+        # copy scripts and s2p.py to bin dir
+        import glob
+        for file in glob.glob(os.path.join(self.base_dir, 'scripts/*')):
+            shutil.copy(file, self.bin_dir)
+        shutil.copy(os.path.join(s2p_dir, 's2p.py'), self.bin_dir)
+
+        # make links to s2p/bin and s2p/python in the self.bin_dir folder
+        os.symlink(os.path.join(s2p_dir, 'bin'), os.path.join(self.bin_dir,
+            'bin'))
+        os.symlink(os.path.join(s2p_dir, 'python'), os.path.join(self.bin_dir,
+            'python'))
+
+        # link to pleiades data
+        if not os.path.lexists(os.path.join(self.input_dir, 'data')):
+            os.symlink(os.path.join(s2p_dir, 'pleiades_data'),
+                os.path.join(self.input_dir, 'data'))
+
         return
 
     @cherrypy.expose
