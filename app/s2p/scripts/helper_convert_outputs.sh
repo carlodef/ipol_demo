@@ -6,11 +6,12 @@ export PATH=/usr/bin:/usr/local/bin:/bin:$PATH
 BINBIN=`dirname \`which s2p.py\``/bin
 export PATH=$BINBIN:$PATH
 
-iion s2p_results/roi_color_ref.tif s2p_results/roi_color_ref_preview.png
+iion  s2p_results/roi_color_ref.tif s2p_results/roi_color_ref_preview.png
 qauto s2p_results/roi_ref.tif s2p_results/roi_ref_preview.png
+qauto s2p_results/dem.tif s2p_results/dem_preview.png
+bin2asc s2p_results/cloud.ply > cloud_ascii.ply
 
-if [ ! -d left ] ; then
-    qauto s2p_results/dem_fusion.tif s2p_results/dem_fusion_preview.png
+if [ -d left ] ; then
     for f in s2p_results/{left,right}/tile_*
     do
         qauto $f/dem.tif $f/dem_preview.png &
@@ -20,7 +21,6 @@ if [ ! -d left ] ; then
         wait
     done
 else
-    qauto s2p_results/dem.tif s2p_results/dem_fusion_preview.png
     for f in s2p_results/tile_*
     do
         qauto $f/dem.tif $f/dem_preview.png &
@@ -31,9 +31,7 @@ else
     done
 fi
 
-bin2asc s2p_results/cloud.ply > cloud_ascii.ply
-
 # cp output files in the root output folder for archive
-cp s2p_results/dem_fusion_preview.png .
+cp s2p_results/dem_preview.png .
 cp s2p_results/roi_color_ref_preview.png .
 cp s2p_results/roi_ref_preview.png .

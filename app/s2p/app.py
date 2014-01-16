@@ -222,7 +222,7 @@ class app(base_app):
             ar = self.make_archive()
             ar.add_file("config.json", info="input")
             ar.add_file("input_0.png", "input.png", info="input")
-            ar.add_file("dem_fusion_preview.png", info="output")
+            ar.add_file("dem_preview.png", info="output")
             ar.add_file("roi_color_ref_preview.png", info="output")
             ar.add_file("roi_ref_preview.png", info="output")
             ar.add_info({"roi": self.cfg['param']['roi'],
@@ -258,6 +258,5 @@ class app(base_app):
         """
         display the algo results
         """
-        return self.tmpl_out("result.html",
-                             height=image(self.work_dir
-                                          + 's2p_results/dem_fusion_preview.png').size[1])
+        return self.tmpl_out("result.html", height=image(self.work_dir +
+            'roi_ref_preview.png').size[1])
