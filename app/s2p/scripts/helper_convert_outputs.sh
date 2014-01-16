@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # horrible hack to add the folder bin/bin to the path
-# in order to use qauto and iion
+# in order to use qauto, iion and bin2asc
 export PATH=/usr/bin:/usr/local/bin:/bin:$PATH
 BINBIN=`dirname \`which s2p.py\``/bin
 export PATH=$BINBIN:$PATH
@@ -30,6 +30,8 @@ else
         wait
     done
 fi
+
+bin2asc s2p_results/cloud.ply > cloud_ascii.ply
 
 # cp output files in the root output folder for archive
 cp s2p_results/dem_fusion_preview.png .
