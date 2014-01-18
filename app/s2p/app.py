@@ -127,6 +127,7 @@ class app(base_app):
         input_dict = config.file_dict(self.input_dir)
         fnames = input_dict[input_id]['files'].split()
         nb_img = input_dict[input_id]['nb_img']
+        color = input_dict[input_id]['color']
         for i in range(len(fnames)):
             shutil.copy(self.input_dir + fnames[i],
                         self.work_dir + 'input_%i' % i)
@@ -135,6 +136,7 @@ class app(base_app):
         self.cfg['meta']['original'] = True
         self.cfg['meta']['input_id'] = input_id
         self.cfg['meta']['nb_img'] = nb_img
+        self.cfg['meta']['color'] = color
         self.cfg.save()
         # jump to the params page
         return self.params(msg=msg, key=self.key)
@@ -148,8 +150,10 @@ class app(base_app):
         # save the parameters in self.cfg['param']
         input_id = self.cfg['meta']['input_id']
         nb_img = self.cfg['meta']['nb_img']
+        color = self.cfg['meta']['color'] # panchro | panchro_xs | pansharpened
         self.cfg['param']['input_id'] = input_id
         self.cfg['param']['nb_img'] = nb_img
+        self.cfg['param']['color'] = color
         self.cfg['param']['out_dir'] = 's2p_results'
         if nb_img == 3:
            self.cfg['param']['images'] = [
@@ -194,14 +198,6 @@ class app(base_app):
         json.dump(self.cfg['param'], fp, indent=4)
         fp.close()
 
-        # save and validate the parameters
-#        try:
-#            self.cfg['param'] = {'a' : float(a),
-#                                 'b' : float(b)}
-#        except ValueError:
-#            return self.error(errcode='badparams',
-#                              errmsg="The parameters must be numeric.")
-
         http.refresh(self.base_url + 'run?key=%s' % self.key)
         return self.tmpl_out("wait.html")
 
@@ -234,11 +230,14 @@ class app(base_app):
             ar.add_file("config.json", info="input")
             ar.add_file("input_0.png", "input.png", info="input")
             ar.add_file("dem_preview.png", info="output")
-            ar.add_file("roi_color_ref_preview.png", info="output")
             ar.add_file("roi_ref_preview.png", info="output")
             ar.add_info({"roi": self.cfg['param']['roi'],
                          "input_id": self.cfg['param']['input_id'],
                          "nb_img": self.cfg['param']['nb_img']})
+            if self.cfg['meta']['color'] == 'panchro_xs':
+                ar.add_file("roi_color_ref_preview.png", info="output")
+            if self.cfg['meta']['color'] == 'pansharpened':
+                ar.add_file("roi_color_ref_preview.png", info="output")
             ar.save()
 
         return self.tmpl_out("run.html")
