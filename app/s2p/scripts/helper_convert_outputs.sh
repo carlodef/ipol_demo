@@ -11,7 +11,7 @@ qauto s2p_results/roi_ref.tif s2p_results/roi_ref_preview.png
 qauto s2p_results/dem.tif s2p_results/dem_preview.png
 bin2asc s2p_results/cloud.ply > cloud_ascii.ply
 
-if [ -d left ] ; then
+if [ -d s2p_results/left ] ; then
     for f in s2p_results/{left,right}/tile_*
     do
         qauto $f/dem.tif $f/dem_preview.png &
