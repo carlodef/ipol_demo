@@ -75,14 +75,19 @@ class app(base_app):
         """
         log_file = self.base_dir + "build.log"
 
-        home = os.path.expanduser("~")
-        s2p_dir = os.path.join(home, 'code', 's2p')
+        s2p_dir = os.path.join(self.base_dir, 's2p_src')
 
-        print """DON'T FORGET: Have you done 'git pull' in the local copy
-            repository of s2p ?"""
+        # update local copy of s2p source
+        if not os.path.isdir(s2p_dir):
+            print 's2p_src directory not found, doing a git clone'
+            os.system("git clone --depth 1 https://carlodef@bitbucket.org/carlodef/s2p.git %s" % s2p_dir)
+        else:
+            print 's2p_src directory found, doing a git pull'
+            os.system("git --git-dir=%s/.git --work-tree=%s pull" % (s2p_dir, s2p_dir))
+
 
         # compile s2p 'c' folder
-        build.run("make -j -C %s" % ("~/code/s2p/c"), stdout=log_file)
+        build.run("make -j -C %s/c" % s2p_dir, stdout=log_file)
 
         # Create bin dir (delete the previous one if exists)
         if os.path.isdir(self.bin_dir):
@@ -95,7 +100,7 @@ class app(base_app):
             shutil.copy(file, self.bin_dir)
         shutil.copy(os.path.join(s2p_dir, 's2p.py'), self.bin_dir)
 
-        # make links to s2p/bin and s2p/python in the self.bin_dir folder
+        # make links to s2p_dir/bin and s2p_dir/python in the self.bin_dir folder
         os.symlink(os.path.join(s2p_dir, 'bin'), os.path.join(self.bin_dir,
             'bin'))
         os.symlink(os.path.join(s2p_dir, 'python'), os.path.join(self.bin_dir,
