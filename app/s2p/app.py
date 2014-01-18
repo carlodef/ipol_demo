@@ -83,7 +83,7 @@ class app(base_app):
             os.system("git clone --depth 1 https://carlodef@bitbucket.org/carlodef/s2p.git %s" % s2p_dir)
         else:
             print 's2p_src directory found, doing a git pull'
-            os.system("git --git-dir=%s/.git --work-tree=%s pull" % (s2p_dir, s2p_dir))
+            os.system("cd %s && git pull && cd -" % s2p_dir)
 
 
         # compile s2p 'c' folder
