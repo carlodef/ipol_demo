@@ -2,7 +2,13 @@
 <p>
   The algorithm ran in ${"%0.2f" % app.cfg['info']['run_time']} seconds. The
   selected ROI of the reference input image is displayed hereafter, as well as
-  the generated Digital Elevation Model (dem) and the generated 3D point cloud.
+  the generated height map (resampled on the reference image grid) and the
+  generated 3D point cloud. These results may be best viewed with a desktop
+  point cloud viewer (e.g.: CloudCompare, MeshLab...), as well as the 12 bits
+  input images that are requantized to 8 bits for displaying on this web page.
+</p>
+<p>
+Download all the results: <a href="${app.work_url + 's2p_results.zip'}">s2p_results.zip</a>
 </p>
 
 <form action="${app.base_url}" method="get">
@@ -22,7 +28,7 @@
 </form> -->
 
 
-<h2>Input images and generated Digital Elevation Model (dem)</h2>
+<h2>Input images and generated height map</h2>
 
 <div class="gallery" style="height:${height}px">
   <ul class="index">
@@ -41,7 +47,7 @@
       </a>
       </li> -->
     <li>
-      <a href="#">dem
+      <a href="#">height map
 	<span>
 	  <img src="${app.work_url + 's2p_results/dem_preview.png'}" alt="output" />
 	</span>
@@ -66,9 +72,6 @@
 
       <br><br>
 
-<p>
-Download all the results: <a href="${app.work_url + 's2p_results.zip'}">s2p_results.zip</a>
-</p>
 <%include file="archive_info.html" />
 
 <%include file="credits_en.html" />
