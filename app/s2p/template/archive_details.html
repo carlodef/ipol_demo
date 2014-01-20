@@ -1,12 +1,8 @@
 <%include file="header_archive.html" />
 
-<div class="archive_index">
-
 <p>
-${nbtotal} public archives of online experiments with
-original images since ${firstdate}.<br />
 This archive is not moderated.
-In case of copyright infringement or similar problem, please
+In case of copyright infringement or similar problem, please 
 <a href="https://tools.ipol.im/wiki/ref/demo_input/#archive-cleanup">contact
   us</a> to request the removal of some images.
 Some archived content may be deleted by the editorial board for size
@@ -14,22 +10,16 @@ matters, inadequate content, user requests, or other reasons.
 </p>
 
 %if adminmode:
-<!-- ADMIN MODE: INDEX REBUILD BUTTON-->
-  <div class="action" >
-     <form style="float:left" action="${app.base_url}archive_admin/" method="post">
-     <input type="hidden" name="rebuildIndexNow" value="True" />
-     <input type="submit" value="rebuild the archive index now" />
-     </form>
-  </div>
-  </br>
+<!-- ADMIN MODE: ENTRY DELETE BUTTON -->
+      <div class="action" >
+         <form style="float:left" action="${app.base_url}archive_admin/" method="post">
+            <input type="hidden" name="deleteThisKey" value="${bucket['meta']['key'] | h}" />
+            <input type="submit" value="delete this entry" />
+         </form>
+      </div>
+      </br>
 %endif
-<p>
-<%include file="archive_pages.html" />
-</p>
 
-<hr class="clear">
-
-%for bucket in bucket_list:
 <%
 images = filter(lambda i : i.is_file and i.has_tn, bucket['files'])
 non_images = filter(lambda i : i.is_file and not i.has_tn, bucket['files'])
@@ -65,45 +55,18 @@ non_images = filter(lambda i : i.is_file and not i.has_tn, bucket['files'])
       <td><a href="../result?key=${bucket['meta']['key'] | h}"
      title="permalink">Results page</a> (may be unavailable)</td>
     </tr>
-%if adminmode:
-<!-- ADMIN MODE: ENTRY DELETE BUTTON -->
-   <tr> <td>
-         <div class="action" >
-            <form style="float:left" action="${app.base_url}archive_admin/" method="post">
-               <input type="hidden" name="deleteThisKey" value="${bucket['meta']['key'] | h}" />
-               <input type="submit" value="delete this entry" />
-            </form>
-         </div>
-   </td> </tr>
-%endif
-  </table>
-
-  <table class="thumbnails">
     <tr>
       <th>images</th>
-    </tr>
-    <tr>
       <td>
 	%for item in images:
-	<a href="${bucket['url'] + item.name | h}">
-	  <img class="thumbnail"
-	       src="${bucket['url'] + item.tn_name | h}"
-	       title="${item.name + ' ' + item.info | h}"
-	       alt="${item.name | h}" /></a>
+	<div><img src="${bucket['url'] + item.name | h}" /><br />
+	  ${item.name + ' ' + item.info | h}</div>
 	%endfor
       </td>
     </tr>
   </table>
 </div>
-
 <hr class="clear">
-%endfor
-
-<p>
-<%include file="archive_pages.html" />
-</p>
-
-</div>
 
 <%include file="credits_en.html" />
 <%include file="logos.html" />
