@@ -2,22 +2,72 @@
 
 <p>
   Choose the size of the region of interest (ROI) you want to process, then
-  click on a point of the preview below to choose the center of the ROI.
+  click on a point of the preview below to select the center of the ROI.
 </p>
 
 <form action="${app.base_url + 'wait'}" method="get">
-  <div class="action">
     <input type="hidden" name="key" value="${app.key}">
-    <label for="roi_size">ROI size:</label>
-    <input type="text" name="roi_size" value="500" size="4" /><br>
-    <label for="zoom">subsampling factor:</label>
-    <input type="text" name="zoom" value="1" size="4" />
-    <input type="image"  name="" style="cursor:crosshair;" src="${app.work_url + 'input_0.png'}" alt="input_0">
-    <!--    <input type="submit" value="run" /> -->
-  </div>
-</form>
 
-<hr />
+    <fieldset style="padding-top:0.0ex" >
+        <legend style="font-weight:bold;">Region of Interest</legend>
+
+        <span style="float:left; text-align:left; margin-right:2em">
+            <label for="roi_width">Width (pix): </label>
+            <select name="roi_width" style="">
+                %for r in ['500', '700', '1000', '1500', '2000', '3000', '4000']:
+                %if roi_width == r:
+                <option value="${r}" selected>${r}</option>
+                %else:
+                <option value="${r}">${r}</option>
+                %endif
+                %endfor
+            </select>
+        </span>
+        <span style="float:left; text-align:left; margin-right:2em">
+            <label for="roi_height">Height (pix): </label>
+            <select name="roi_height" style="">
+                %for r in ['500', '700', '1000', '1500', '2000', '3000', '4000']:
+                %if roi_height == r:
+                <option value="${r}" selected>${r}</option>
+                %else:
+                <option value="${r}">${r}</option>
+                %endif
+                %endfor
+            </select>
+        </span>
+    </fieldset>
+
+    <fieldset style="padding-top:0.0ex" >
+        <legend style="font-weight:bold;">Subsampling</legend>
+        <div style="float:left; width:12em;">Subsampling factor:</div>
+        <div style="float:left;margin-right:0em;">
+            <input type="radio" name="zoom" value="1" checked/>
+            <label>1 &nbsp; &nbsp;</label>
+            <input type="radio" name="zoom" value="2"/>
+            <label>2 &nbsp; &nbsp;</label>
+            <input type="radio" name="zoom" value="4"/>
+            <label>4 &nbsp; &nbsp;</label>
+            <input type="radio" name="zoom" value="8"/>
+            <label>8 &nbsp; &nbsp;</label>
+        </div>
+    </fieldset>
+
+    <fieldset style="padding-top:0.0ex" >
+        <legend style="font-weight:bold;">Stereo matching algorithm</legend>
+        <div style="float:left; width:12em;">Block matching method:</div>
+        <div style="float:left;margin-right:0em;">
+            <input type="radio" name="block_match_method" value="hirschmuller08" checked/>
+            <label>Semi-Global Block-Matching (SGBM)</label><br/>
+            <input type="radio" name="block_match_method" value="msmw"/>
+            <label>Multi-Scale Multi-Window (MSMW)</label><br/>
+        </div>
+    </fieldset>
+
+    <div class="action">
+        <input type="image"  name="" style="cursor:crosshair;" src="${app.work_url + 'input_0.png'}" alt="input_0">
+        <!--    <input type="submit" value="run" /> -->
+    </div>
+</form>
 
 <%include file="credits_en.html" />
 <%include file="logos.html" />

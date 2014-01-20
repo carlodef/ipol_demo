@@ -176,9 +176,9 @@ class app(base_app):
         self.cfg['param']['roi'] = {}
         self.cfg['param']['roi']['x'] = int(kwargs['x'])
         self.cfg['param']['roi']['y'] = int(kwargs['y'])
-        self.cfg['param']['roi']['w'] = int(kwargs['roi_size'])
-        self.cfg['param']['roi']['h'] = int(kwargs['roi_size'])
-        self.cfg['param']["matching_algorithm"] = "hirschmuller08"
+        self.cfg['param']['roi']['w'] = int(kwargs['roi_width'])
+        self.cfg['param']['roi']['h'] = int(kwargs['roi_height'])
+        self.cfg['param']["matching_algorithm"] = str(kwargs['block_match_method']) 
         self.cfg['param']['subsampling_factor'] = int(kwargs['zoom'])
         self.cfg['param']["subsampling_factor_registration"] = 1
         self.cfg['param']["sift_match_thresh"] = 0.4
