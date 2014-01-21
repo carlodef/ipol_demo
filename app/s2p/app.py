@@ -188,6 +188,7 @@ class app(base_app):
         self.cfg['param']["use_pleiades_unsharpening"] = True
         self.cfg['param']["debug"] = False
         self.cfg['param']["preview_coordinate_system"] = True
+        self.cfg['param']["tile_size"] = 1000
 
         self.cfg['meta']["orig"] = True
         self.cfg.save()
