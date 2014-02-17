@@ -174,13 +174,14 @@ class app(base_app):
                "rpc" : "pleiades_data/rpc/%s/rpc01.xml"% input_id }
              ]
         self.cfg['param']['roi'] = {}
-        self.cfg['param']['roi']['x'] = int(kwargs['x'])
-        self.cfg['param']['roi']['y'] = int(kwargs['y'])
         self.cfg['param']['roi']['w'] = int(kwargs['roi_width'])
         self.cfg['param']['roi']['h'] = int(kwargs['roi_height'])
-        self.cfg['param']["matching_algorithm"] = str(kwargs['block_match_method']) 
+        self.cfg['param']['roi_preview'] = {}
+        self.cfg['param']['roi_preview']['x'] = int(kwargs['x'])
+        self.cfg['param']['roi_preview']['y'] = int(kwargs['y'])
+        self.cfg['param']["matching_algorithm"] = str(kwargs['block_match_method'])
         self.cfg['param']['subsampling_factor'] = int(kwargs['zoom'])
-        self.cfg['param']["subsampling_factor_registration"] = 1
+        self.cfg['param']["subsampling_factor_registration"] = np.ceil(int(kwargs['zoom']) * 0.5)
         self.cfg['param']["sift_match_thresh"] = 0.4
         self.cfg['param']["disp_range_extra_margin"] = 0.2
         self.cfg['param']["n_gcp_per_axis"] = 5
@@ -260,6 +261,9 @@ class app(base_app):
         self.cfg.save()
 
         p = self.run_proc(['helper_convert_outputs.sh'])
+        self.wait_proc(p, timeout=self.timeout)
+
+        p = self.run_proc(['helper_archive.sh', 'config.json'])
         self.wait_proc(p, timeout=self.timeout)
         return
 
