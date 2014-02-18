@@ -34,8 +34,8 @@ if __name__ == '__main__':
 
     if 'preview_coordinate_system' in cfg:
         # roi definition in the preview frame
-        x = cfg['roi']['x']
-        y = cfg['roi']['y']
+        x = cfg['roi_preview']['x']
+        y = cfg['roi_preview']['y']
         w = cfg['roi']['w']
         h = cfg['roi']['h']
 
@@ -50,6 +50,12 @@ if __name__ == '__main__':
         # add offset
         cfg['roi']['x'] = x - w / 2
         cfg['roi']['y'] = y - h / 2
+
+        # convert w and h to preview coordinate system
+        cfg['roi_preview']['w'] = int(w * (float(prv_w) / r1.lastCol))
+        cfg['roi_preview']['h'] = int(h * (float(prv_h) / r1.lastRow))
+
+        # cleanup and debug
         cfg.pop('preview_coordinate_system')
         print prv_w, prv_h, x, y
         print cfg
