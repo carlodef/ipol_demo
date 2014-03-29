@@ -30,43 +30,60 @@ def init_app(func):
         """
         original function, modified
         """
+        ## GET THE KEY AS SOON AS POSSIBLE
         # key check
         key = kwargs.pop('key', None)
+
+        ## There exist only one instance of the object self
+        ## This poses a problem in a multi-threading environment
+        ## as explained in: 
+        ## https://tools.ipol.im/mailman/archive/discuss/2012-December/000969.html
+        ## To transparently solve this issue the decorator 
+        ## generates a copy of self (self2) and then applies 
+        ## the method to the copy
+
+        ## DO NOTHING
+        # self2 = self
+        self2 = base_app(self.base_dir)
+        self2.__class__ = self.__class__
+        self2.__dict__.update(self.__dict__)
+
+
         if isinstance(key, list):
             key = key[0]
-        self.init_key(key)
-        self.init_cfg()
+        self2.init_key(key)
+        self2.init_cfg()
 
         # public_archive cookie setup
         # default value
         if not cherrypy.request.cookie.get('public_archive', '1') == '0':
             cherrypy.response.cookie['public_archive'] = '1'
-            self.cfg['meta']['public'] = True
+            self2.cfg['meta']['public'] = True
         else:
-            self.cfg['meta']['public'] \
+            self2.cfg['meta']['public'] \
                 = (cherrypy.request.cookie['public_archive'] != '0')
 
         # user setting
         if kwargs.has_key('set_public_archive'):
             if kwargs.pop('set_public_archive') != '0':
                 cherrypy.response.cookie['public_archive'] = '1'
-                self.cfg['meta']['public'] = True
+                self2.cfg['meta']['public'] = True
             else:
                 cherrypy.response.cookie['public_archive'] = '0'
-                self.cfg['meta']['public'] = False
+                self2.cfg['meta']['public'] = False
             # TODO: dirty hack, fixme
-            ar_path = self.archive_dir + archive.key2path(self.key)
+            ar_path = self2.archive_dir + archive.key2path(self2.key)
             if os.path.isdir(ar_path):
-                ar = archive.bucket(path=self.archive_dir,
-                                    cwd=self.work_dir,
-                                    key=self.key)
-                ar.cfg['meta']['public'] = self.cfg['meta']['public']
+                ar = archive.bucket(path=self2.archive_dir,
+                                    cwd=self2.work_dir,
+                                    key=self2.key)
+                ar.cfg['meta']['public'] = self2.cfg['meta']['public']
                 ar.cfg.save()
-                archive.index_add(self.archive_index,
+                archive.index_add(self2.archive_index,
                                   bucket=ar,
-                                  path=self.archive_dir)
-        x = func(self, *args, **kwargs)
-        self.cfg.save()
+                                  path=self2.archive_dir)
+        x = func(self2, *args, **kwargs)
+        self2.cfg.save()
         return x
     return init_func
 
