@@ -62,7 +62,7 @@ non_images = filter(lambda i : i.is_file and not i.has_tn, bucket['files'])
     </tr>
     <tr>
       <th>result</th>
-      <td><a href="../result?key=${bucket['meta']['key'] | h}"
+      <td><a href="${app.base_url}result?key=${bucket['meta']['key'] | h}"
      title="permalink">Results page</a> (may be unavailable)</td>
     </tr>
 %if adminmode:
