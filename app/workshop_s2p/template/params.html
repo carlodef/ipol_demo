@@ -56,8 +56,10 @@
         <legend style="font-weight:bold;">Stereo matching algorithm</legend>
         <div style="float:left; width:12em;">Block matching method:</div>
         <div style="float:left;margin-right:0em;">
-            <input type="radio" name="block_match_method" value="hirschmuller08" checked/>
+            <input type="radio" name="block_match_method" value="hirschmuller08"/>
             <label>Semi-Global Block-Matching (SGBM)</label><br/>
+            <input type="radio" name="block_match_method" value="hirschmuller08_laplacian" checked/>
+            <label>Laplacian - SGBM</label><br/>
             <input type="radio" name="block_match_method" value="msmw"/>
             <label>Multi-Scale Multi-Window (MSMW)</label><br/>
         </div>
