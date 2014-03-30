@@ -109,7 +109,7 @@ class app(base_app):
 
         # link to pleiades data
         if not os.path.lexists(os.path.join(self.input_dir, 'data')):
-            os.symlink(os.path.join(s2p_dir, 'pleiades_data'),
+            os.symlink(os.path.join(s2p_dir, 'data', 'pleiades'),
                 os.path.join(self.input_dir, 'data'))
 
         return
@@ -158,22 +158,22 @@ class app(base_app):
         self.cfg['param']['out_dir'] = 's2p_results'
         if nb_img == 3:
            self.cfg['param']['images'] = [
-             { "img" : "pleiades_data/images/%s/im02.tif" % input_id,
-               "rpc" : "pleiades_data/rpc/%s/rpc02.xml"% input_id,
-               "clr" : "pleiades_data/images/%s/im02_color.tif"% input_id },
-             { "img" : "pleiades_data/images/%s/im01.tif"% input_id,
-               "rpc" : "pleiades_data/rpc/%s/rpc01.xml"% input_id },
-             { "img" : "pleiades_data/images/%s/im03.tif"% input_id,
-               "rpc" : "pleiades_data/rpc/%s/rpc03.xml"% input_id }
+             { "img" : "pleiades_data/%s/im02.tif" % input_id,
+               "rpc" : "pleiades_data/%s/rpc02.xml"% input_id },
+             { "img" : "pleiades_data/%s/im01.tif"% input_id,
+               "rpc" : "pleiades_data/%s/rpc01.xml"% input_id },
+             { "img" : "pleiades_data/%s/im03.tif"% input_id,
+               "rpc" : "pleiades_data/%s/rpc03.xml"% input_id }
              ]
         if nb_img == 2:
            self.cfg['param']['images'] = [
-             { "img" : "pleiades_data/images/%s/im02.tif" % input_id,
-               "rpc" : "pleiades_data/rpc/%s/rpc02.xml"% input_id,
-               "clr" : "pleiades_data/images/%s/im02_color.tif"% input_id },
-             { "img" : "pleiades_data/images/%s/im01.tif"% input_id,
-               "rpc" : "pleiades_data/rpc/%s/rpc01.xml"% input_id }
+             { "img" : "pleiades_data/%s/im02.tif" % input_id,
+               "rpc" : "pleiades_data/%s/rpc02.xml"% input_id },
+             { "img" : "pleiades_data/%s/im01.tif"% input_id,
+               "rpc" : "pleiades_data/%s/rpc01.xml"% input_id }
              ]
+        if color == 'panchro_xs':
+            self.cfg['param']['images'][0]['clr'] = "pleiades_data/%s/im02_color.tif" % input_id
         self.cfg['param']['roi'] = {}
         self.cfg['param']['roi']['w'] = int(kwargs['roi_width'])
         self.cfg['param']['roi']['h'] = int(kwargs['roi_height'])
