@@ -191,7 +191,7 @@ class app(base_app):
         self.cfg['param']["debug"] = False
         self.cfg['param']["preview_coordinate_system"] = True
         self.cfg['param']["tile_size"] = 1000
-        self.cfg['param']["disp_range_method"] = "wider_sift_srtm"
+        self.cfg['param']["disp_range_method"] = "sift"
 
         self.cfg['meta']["orig"] = True
         self.cfg.save()
