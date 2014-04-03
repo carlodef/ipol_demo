@@ -18,7 +18,7 @@ class app(base_app):
     """
 
     title = "s2p: Satellite Stereo Pipeline"
-    xlink_article = 'http://www.ipol.im'
+    xlink_article = 'http://dev.ipol.im/~carlo/s2p_papers'
 
     input_nb = 1 # number of input images
     input_max_pixels = 500000 # max size (in pixels) of an input image
