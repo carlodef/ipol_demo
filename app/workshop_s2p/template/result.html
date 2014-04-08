@@ -1,15 +1,23 @@
 <%include file="header_ipol.html" />
 <p>
   The algorithm ran in ${"%0.2f" % app.cfg['info']['run_time']} seconds. The
-  selected ROI of the reference input image is displayed hereafter, as well as
-  the generated height map (resampled on the reference image grid) and the
-  generated 3D point cloud. These results may be best viewed with a desktop
-  point cloud viewer (e.g.: CloudCompare, MeshLab...), as well as the 12 bits
-  input images that are requantized to 8 bits for displaying on this web page.
+  selected region of interest (ROI) of the reference input image is displayed
+  hereafter, as well as the generated height map (resampled on the reference
+  image grid) and the generated 3D point cloud. These results may be best
+  viewed with a desktop point cloud viewer (e.g.: CloudCompare, MeshLab,
+  LidarViewer...), as well as the 12 bits input images. All the images are
+  requantized to 8 bits for displaying on this web page.
 </p>
 <p>
 Download all the results: <a href="${app.work_url + 's2p_results.zip'}">s2p_results.zip</a>
 </p>
+
+<p>
+Please report any bug or comment to <img class="eq"
+src="http://dev.ipol.im/~carlo/email.png" alt="email" style="vertical-align:
+-2.5px" height="16" width="210">
+</p>
+
 
 <form action="${app.base_url}" method="get">
   <div class="action">
