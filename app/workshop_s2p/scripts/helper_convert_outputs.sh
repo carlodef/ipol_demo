@@ -23,7 +23,7 @@ if [ -d s2p_results/left ] ; then
         qauto $f/dem.tif $f/dem_preview.png &
         qauto $f/rectified_ref.tif $f/rectified_ref_preview.png &
         qauto $f/rectified_sec.tif $f/rectified_sec_preview.png &
-        qauto $f/rectified_height.tif $f/rectified_height_preview.png &
+        qauto $f/rectified_disp.tif $f/rectified_disp_preview.png &
         wait
     done
 else
@@ -32,7 +32,7 @@ else
         qauto $f/dem.tif $f/dem_preview.png &
         qauto $f/rectified_ref.tif $f/rectified_ref_preview.png &
         qauto $f/rectified_sec.tif $f/rectified_sec_preview.png &
-        qauto $f/rectified_height.tif $f/rectified_height_preview.png &
+        qauto $f/rectified_disp.tif $f/rectified_disp_preview.png &
         wait
     done
 fi
