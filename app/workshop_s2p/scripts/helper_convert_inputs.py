@@ -5,7 +5,6 @@
 # Copyright (C) 2013, Enric Meinhardt Llopis <enric.meinhardt@cmla.ens-cachan.fr>
 
 from python import common
-from python import rpc_model
 import sys
 
 if __name__ == '__main__':
@@ -39,21 +38,21 @@ if __name__ == '__main__':
         w = cfg['roi']['w']
         h = cfg['roi']['h']
 
-        rpc1 = cfg['images'][0]['rpc']
-        r1 = rpc_model.RPCModel(rpc1)
-        prv_w, prv_h = common.image_size(preview)
+        img1 = cfg['images'][0]['img']
+        prv_w, prv_h =   common.image_size_gdal(preview)
+        full_w, full_h = common.image_size_gdal(img1)
 
         # convert x, y to the full image frame
-        x = int((float(x) / prv_w) * r1.lastCol)
-        y = int((float(y) / prv_h) * r1.lastRow)
+        x = int((float(x) / prv_w) * full_w)
+        y = int((float(y) / prv_h) * full_h)
 
         # add offset
         cfg['roi']['x'] = x - w / 2
         cfg['roi']['y'] = y - h / 2
 
         # convert w and h to preview coordinate system
-        cfg['roi_preview']['w'] = int(w * (float(prv_w) / r1.lastCol))
-        cfg['roi_preview']['h'] = int(h * (float(prv_h) / r1.lastRow))
+        cfg['roi_preview']['w'] = int(w * (float(prv_w) / full_w))
+        cfg['roi_preview']['h'] = int(h * (float(prv_h) / full_h))
 
         # cleanup and debug
         cfg.pop('preview_coordinate_system')
