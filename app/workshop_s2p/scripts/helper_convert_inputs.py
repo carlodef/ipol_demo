@@ -39,8 +39,8 @@ if __name__ == '__main__':
         h = cfg['roi']['h']
 
         img1 = cfg['images'][0]['img']
-        prv_w, prv_h =   common.image_size_gdal(preview)
-        full_w, full_h = common.image_size_gdal(img1)
+        prv_w, prv_h =   common.image_size(preview)
+        full_w, full_h = common.image_size_tiffinfo(img1)
 
         # convert x, y to the full image frame
         x = int((float(x) / prv_w) * full_w)
