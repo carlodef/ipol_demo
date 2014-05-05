@@ -20,11 +20,9 @@ class app(base_app):
     title = "s2p: Satellite Stereo Pipeline"
     xlink_article = 'http://dev.ipol.im/~carlo/s2p_papers'
 
-    input_nb = 1 # number of input images
-    input_max_pixels = 500000 # max size (in pixels) of an input image
-    input_max_weight = 1 * 1024 * 1024 # max size (in bytes) of an input file
-    input_dtype = '3x8i' # input image expected data type
-    input_ext = '.png'   # input image expected extension (ie file format)
+    input_nb = 2 # number of input images
+    input_img_max_weight = 1024 * 1024 * 1024 # max size (in bytes) of an input file
+    input_rpc_max_weight = 2 * 1024 * 1024 # max size (in bytes) of an input file
     is_test = True       # switch to False for deployment
 
 
@@ -121,26 +119,110 @@ class app(base_app):
         """
         self.new_key()
         self.init_cfg()
+
         # kwargs contains input_id.x and input_id.y
         input_id = kwargs.keys()[0].split('.')[0]
         assert input_id == kwargs.keys()[1].split('.')[0]
+
         # get the images
         input_dict = config.file_dict(self.input_dir)
         fnames = input_dict[input_id]['files'].split()
+        fnames_absolute = [self.input_url + f for f in fnames]
         nb_img = input_dict[input_id]['nb_img']
         color = input_dict[input_id]['color']
-        for i in range(len(fnames)):
-            shutil.copy(self.input_dir + fnames[i],
-                        self.work_dir + 'input_%i' % i)
-        msg = self.process_input()
         self.log("input selected : %s" % input_id)
         self.cfg['meta']['original'] = True
         self.cfg['meta']['input_id'] = input_id
         self.cfg['meta']['nb_img'] = nb_img
         self.cfg['meta']['color'] = color
         self.cfg.save()
+
         # jump to the params page
-        return self.params(msg=msg, key=self.key)
+        return self.params(key=self.key, fnames=fnames_absolute)
+
+    @cherrypy.expose
+    @init_app
+    def input_upload(self, **kwargs):
+        """
+        upload images and rpcs
+        """
+        self.new_key()
+        self.init_cfg()
+
+        # receive the input files
+        print kwargs.keys()
+        for i in range(2):
+            img_up = kwargs['img_%i' % i]
+            if not img_up.filename:
+                raise cherrypy.HTTPError(400, "Missing input file")
+            extension = os.path.splitext(img_up.filename)[1].lower()
+            if not extension in ['.tif', '.tiff']:
+                raise cherrypy.HTTPError(400, "image files must be TIFF")
+            img_save = file(self.work_dir + 'img_%i.tif' % i, 'wb')
+            size = 0
+            while True:
+                data = img_up.file.read(8192)
+                if not data:
+                    break
+                size += len(data)
+                if size > self.input_img_max_weight:
+                    raise cherrypy.HTTPError(400, ("Image File too large,"
+                        "resize or use better compression"))
+                img_save.write(data)
+            img_save.close()
+
+            rpc_up = kwargs['rpc_%i' % i]
+            if not rpc_up.filename:
+                raise cherrypy.HTTPError(400, "Missing input file")
+            extension = os.path.splitext(rpc_up.filename)[1].lower()
+            if not extension in ['.xml', '.txt']:
+                raise cherrypy.HTTPError(400, "RPC files must be XML or TXT")
+            rpc_save = file("%s/rpc_%i%s" % (self.work_dir, i, extension), 'wb')
+            size = 0
+            while True:
+                data = rpc_up.file.read(128)
+                if not data:
+                    break
+                size += len(data)
+                if size > self.input_rpc_max_weight:
+                    raise cherrypy.HTTPError(400, "RPC File too large")
+                rpc_save.write(data)
+            rpc_save.close()
+
+        # process the input files, and save informations in the config file
+        fnames = self.process_input_files()
+        self.log("input uploaded")
+        self.cfg['meta']['original'] = True
+        self.cfg['meta']['input_id'] = 'unknown'
+        self.cfg['meta']['nb_img'] = 2
+        self.cfg['meta']['color'] = 'panchro'
+        self.cfg.save()
+
+        # jump to the params page
+        return self.params(key=self.key, fnames=fnames)
+
+
+    def process_input_files(self):
+        """
+        Process uploaded input data
+        * check that images are valid TIFF files
+        * generates jpg previews of the image files
+        """
+        import utils
+        utils.generate_preview("%s/img_0.tif" % self.work_dir)
+        utils.generate_preview("%s/img_1.tif" % self.work_dir)
+        return ["%s/img_%d_prv.jpg" % (self.work_url, i) for i in [0, 1]]
+
+
+    @init_app
+    def params(self, fnames=None, newrun=False, msg=None):
+        """
+        configure the algo execution
+        """
+        if newrun:
+            self.clone_input()
+        return self.tmpl_out("params.html", input=fnames)
+
 
     @cherrypy.expose
     @init_app

@@ -1,12 +1,21 @@
 <%include file="header_ipol.html" />
 
+<h3>Try s2p on your Data</h3>
 <p>
-Select the dataset on which you want to run s2p. If you want to run s2p on your own data, please contact us at
-<img class="eq" src="http://dev.ipol.im/~carlo/email.png" alt="email" style="vertical-align: -2.5px" height="16" width="210">
+Run s2p on you own data! You can upload two images (tif format only) and their
+associated RPC coefficients (Pléiades, WorldView or Ikonos formats) using the
+form below. Full images are too large for upload? Use our one-click <a
+    href="https://bitbucket.org/carlodef/rpc_cropper/get/master.zip">rpc_cropper</a>
+tool to select a crop in you stereo sequence, then upload the cropped images
+only.
 </p>
+<%include file="input_form_upload.html" />
 
+<h3>Sample Images</h3>
+<p>
+If you don't want to upload your images, you can try one of the datasets below:
+</p>
 <%include file="input_form_select.html" />
-<!-- <%include file="input_form_upload.html" /> -->
 
 <%include file="precomputed_results.html" />
 <%include file="credits_en.html" />

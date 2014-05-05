@@ -1,0 +1,39 @@
+<form action="${app.base_url + 'input_upload'}" method="post"
+      enctype="multipart/form-data">
+  <div class="action">
+    <div class="upload_input">
+      <div style="float: left; width:13em;">
+         <label for="img_0">Reference image</label>
+      </div>
+         <input type="file" name="img_0" size="20" /> <br />
+
+      <div style="float: left; width:13em;">
+         <label for="img_1">Secondary image</label>
+      </div>
+         <input type="file" name="img_1" size="20" /><br />
+
+      <div style="float: left; width:13em;">
+         <label for="rpc_0">Reference RPC</label>
+      </div>
+         <input type="file" name="rpc_0" size="20" /><br />
+
+
+      <div style="float: left; width:13em;">
+         <label for="rpc_1">Secondary RPC</label>
+      </div>
+         <input type="file" name="rpc_1" size="20" /><br />
+
+&nbsp;
+      <input type="submit" value="upload" />
+    </div>
+    <p class="note">
+      %if app.input_img_max_weight:
+      Upload size is limited to ${app.input_max_weight / (1024 *
+      1024)}MB per image file.
+      %endif
+      Image must be stored in TIFF files. RPC data must be stored in XML files
+      (Pléiades or WorldView format) or TXT files (Ikonos format).
+      <br />
+    </p>
+  </div>
+</form>
