@@ -11,15 +11,21 @@ app_available/*/bin
 app_example/*/dl
 app_example/*/src
 app_example/*/bin
+app/*/dl
+app/*/src
+app/*/bin
 # build log
 app_available/*/*.log
 app_example/*/*.log
+app/*/*.log
 
 # temporary and archive files
 app_available/*/tmp
 app_available/*/archive
 app_example/*/tmp
 app_example/*/archive
+app/*/tmp
+app/*/archive
 
 # ignore the thumbnails
 app/*/input/.__*
