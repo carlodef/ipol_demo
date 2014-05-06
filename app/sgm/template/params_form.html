@@ -1,0 +1,160 @@
+<%def name="textareaAuto(name,defaultvalue,tagproperties='')">
+   <%
+   if name in app.cfg['param'] and app.cfg['param'][name] !='':
+      value = app.cfg['param'][name]
+   else:
+      value = defaultvalue
+   endif
+   %>
+   <input type="text" ${tagproperties} id="${name}" name="${name}" value="${value}"/>
+</%def>
+
+
+
+<%def name="checkboxAuto(name,value,text,defaultchecked=0)">
+   <%
+   # GENERATE A LIST OF NAMES
+   if name in app.cfg['param']:
+      if app.cfg['param'][name]!='' and app.cfg['param'][name][0] == '[':
+         cklist = eval(app.cfg['param'][name])
+      else:
+         cklist=[ app.cfg['param'][name] ]
+         if app.cfg['param'][name] !='':
+             cklist = [ app.cfg['param'][name] ]
+         else:
+             cklist = []
+         endif
+      endif
+   else: 
+      cklist = []
+   endif
+   %>
+
+   <input type="checkbox" name=${name} value="${value}"    
+   %if value in cklist:
+      checked
+   %else:
+      %if cklist==[] and defaultchecked==1:
+         checked
+      %endif
+   %endif
+   /><label>${text}</label>
+</%def>
+
+
+<%def name="radioAuto(name,value,text,defaultchecked=0)">
+   <%
+   # GENERATE A LIST OF NAMES
+   if name in app.cfg['param']:
+      if app.cfg['param'][name]!='' and type(app.cfg['param'][name]) == str and app.cfg['param'][name][0] == '[':
+         cklist = eval(app.cfg['param'][name])
+      else:
+         cklist=[ app.cfg['param'][name] ]
+         if app.cfg['param'][name] !='':
+             cklist = [ app.cfg['param'][name] ]
+         else:
+             cklist = []
+         endif
+      endif
+   else:
+      cklist = []
+   endif
+   %>
+
+   <input type="radio" name=${name} value="${value}"    
+   %if value in cklist:
+      checked
+   %else:
+      %if cklist==[] and defaultchecked==1:
+         checked
+      %endif
+   %endif
+   /><label>${text}</label>
+</%def>
+
+<%
+    max_size = max(sizeY,2*30)
+%>
+
+<p>
+Semi-Global Matching.
+</p>
+
+<form action="${app.base_url + 'wait'}" method="get">
+<input type="hidden" name="key" value="${app.key}" />
+
+<fieldset style="padding-top:0.0ex" >
+<legend style="font-weight:bold;">Parameters of the pair</legend>
+
+<span style="float:left; text-align:left; margin-right:2em">
+<label for="disp_range">Disparity range: </label>
+   [ ${textareaAuto('min_disparity','-15', 'size="3"')}, 
+   ${textareaAuto('max_disparity','-15', 'size="3"')}] px
+</span>
+
+<!-- 
+<span style="float:left; width:30em; text-align:left; margin-bottom:0ex; margin-right:2em;">
+   Image noise <i>&sigma;</i>&nbsp;&nbsp;
+   ${textareaAuto('noise_sigma','0', 'size="5"')} (0.28 for quantization)
+</span>
+-->
+
+<!-- 
+<span style="float:left;margin-right:2em;">
+   <label>Noise curve ((val,std) pairs)</label> ${textareaAuto('noise_curve','', 'size="10"')}
+</span>
+-->
+
+</fieldset>
+
+
+<fieldset style="padding-top:0.0ex" >
+<legend style="font-weight:bold;">SGM parameters</legend>
+
+<span style="float:left; text-align:left; margin-right:2em">
+<label for="windowsize">Number of iterations: </label>
+   ${textareaAuto('nb_iter','4', 'size="1"')}
+<br>
+<label for="windowsize">Left-right consistency threshold: </label>
+   ${textareaAuto('lr','1', 'size="1"')}
+<br>
+<label for="windowsize">Regularization parameters P1: </label>
+   ${textareaAuto('P1','0.05', 'size="2"')}
+<label for="windowsize">P2: </label>
+   ${textareaAuto('P2','0.06', 'size="2"')}
+<!-- 
+<input type="hidden" name="subpixel" value="2" />
+-->
+</span>
+
+</fieldset>
+
+
+<!-- 
+<fieldset style="padding-top:0.0ex" >
+<legend style="font-weight:bold;">Angulo</legend>
+
+<span style="float:left; text-align:left; margin-right:2em">
+<label for="shear_range">Shear range: </label>
+   [ ${textareaAuto('shear_min','0.7', 'size="1"')}, 
+   ${textareaAuto('shear_max','1.3', 'size="1"')}], with 
+   ${textareaAuto('shear_nb','3', 'size="1"')}] quantized values
+</span>
+<span style="float:left; text-align:left; margin-right:2em">
+<label for="tilt_range">Tilt range: </label>
+   [ ${textareaAuto('tilt_min','0.7', 'size="1"')}, 
+   ${textareaAuto('tilt_max','1.3', 'size="1"')}], with 
+   ${textareaAuto('tilt_nb','3', 'size="1"')}] quantized values
+</span>
+
+</fieldset>
+-->
+
+<!-- RUN button -->
+<br>
+<div style="float:left; text-align:center;">
+    <input type="submit" value="run" />
+</div>
+<br>
+<br>
+</form>

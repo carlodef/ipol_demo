@@ -1,0 +1,120 @@
+<%
+    # adapt the size of the window
+    height = app.cfg['param']['image_height'] + 20
+    if height < 360:
+       height = 360
+    width = app.cfg['param']['image_width']*2 + 100
+    if width < 800:
+       width = 800 
+
+    # gt is a variable to activate the groundtruth statistics
+    gt = app.cfg['param']['ground_truth']
+
+    # gtmask and gtocc are active if there is a ground_truth_mask.png and ground_truth_occ.png
+    import os.path
+    gtmask = 0
+    gtocc  = 0
+    if  gt != '':
+       if os.path.isfile(app.work_dir+"/"+'ground_truth_mask.png'): 
+          gtmask = 1
+       if os.path.isfile(app.work_dir+"/"+'ground_truth_occ.png'): 
+          gtocc = 1
+
+
+#    # if GT is present load all the statistics if necessary
+    if  gt != '':
+       disperror = {}
+       algolist = ['sgm']
+       disperror['sgm'] = open(app.work_dir+"/statistics.txt","r").readlines()[0].split()
+%>
+
+
+<form action="${app.base_url + 'index'}" method="get">
+<input type="submit" value="Change images"/>
+</form>
+
+<p>
+The algorithm result is displayed hereafter. It ran in ${"%0.2f" % app.cfg['info']['run_time']} seconds.
+</p>
+
+<h2>Results synthesis</h2>
+<div class="gallery" style="height:${height}px;">
+    <ul class="index">
+
+     <li>
+      <a href="#">
+	Secondary image
+	<span>
+	  <table><tr><td style="vertical-align:top;">
+	  <img src="${app.work_url + 'right_image.png'}" alt="" />
+	  </td></tr></table>
+	</span>
+      </a>
+     </li>
+     
+    <li>
+      <a href="#">
+	Reference image
+	<span>
+	  <table><tr><td style="vertical-align:top;">
+	  <img src="${app.work_url + 'left_image.png'}" alt="" />
+	  </td></tr></table>
+	</span>
+      </a>
+     </li>
+     
+    <li>
+      <a href="#">
+	Disparity (sgm)
+	<span>
+	  <table><tr>
+	  <td style="vertical-align:top;">
+	  <img src="${app.work_url + 'disp_sgm.png'}" alt="" /><br>
+	  </td></tr></table>
+	</span>
+      </a>
+     </li>
+     
+    <li>
+      <a href="#">
+	Reference image
+	<span>
+	  <table><tr><td style="vertical-align:top;">
+	  <img src="${app.work_url + 'left_image.png'}" alt="" />
+	  </td></tr></table>
+	</span>
+      </a>
+     </li>
+    </ul>
+</div>
+
+%if  gt != '':
+
+<div>
+   <h3>Matching statistics</h3>
+<table border="1" cellpadding="6" cellspacing="0" style="margin-left:0px;margin-right:auto">
+	<tr bgcolor="#cccccc">
+		<td ></td>
+      <th >% of pixels with |Err| &lt; Subpixel</th>
+	</tr>
+	%for a in algolist:
+	<tr>
+		<th bgcolor="#cccccc">${a}</th>
+      <td align="center">
+         ${"%5.5f" % float(disperror[a][1])}
+         <i style="font-size:x-small"></i>
+      </td>
+	</tr>
+    %endfor
+</table>
+</div>
+%endif
+
+
+<p>
+Download: <a href="${app.base_url}tmp/${app.key}/results.zip">results.zip</a>
+</p>
+<a name="p" href=#p></a>
+<br><br>
+
+<%include file="archive_info.html" />
