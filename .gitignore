@@ -5,19 +5,27 @@ demo.conf
 *.pyc
 
 # download, source and binary files
-app/*/dl
-app/*/src
-app/*/bin
+app_available/*/dl
+app_available/*/src
+app_available/*/bin
+app_example/*/dl
+app_example/*/src
+app_example/*/bin
 # build log
-app/*/*.log
+app_available/*/*.log
+app_example/*/*.log
 
 # temporary and archive files
-app/*/tmp
-app/*/archive
+app_available/*/tmp
+app_available/*/archive
+app_example/*/tmp
+app_example/*/archive
 
 # ignore the thumbnails
 app/*/input/.__*
 app/*/input/*/.__*
+app_available/*/input/.__*
+app_example/*/input/.__*
 
 #ignore backup files
 *~

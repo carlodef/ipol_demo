@@ -1,0 +1,7 @@
+Mon, 21 Apr 2014 14:32:47 JST : make -j4 -C /home/nil/cmla/dev/ipol_demo/app/xxx_axpb/src/io_png example/axpb
+make: Entering directory `/home/nil/cmla/dev/ipol_demo/app_example/xxx_axpb/src/io_png'
+cc example/axpb.c -c -ansi -pedantic -Wall -Wextra -Werror -pipe -O2 -funroll-loops -fomit-frame-pointer -I. -o example/axpb.o
+cc io_png.c -c -ansi -pedantic -Wall -Wextra -Werror -pipe -O2 -funroll-loops -fomit-frame-pointer -I. -o io_png.o
+cc example/axpb.o io_png.o -lpng -lm -o example/axpb
+rm io_png.o example/axpb.o
+make: Leaving directory `/home/nil/cmla/dev/ipol_demo/app_example/xxx_axpb/src/io_png'
