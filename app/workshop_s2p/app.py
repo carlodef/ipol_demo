@@ -107,7 +107,7 @@ class app(base_app):
 
         # link to pleiades data
         if not os.path.lexists(os.path.join(self.input_dir, 'data')):
-            os.symlink(os.path.join(s2p_dir, 'data'),
+            os.symlink(os.path.join(os.path.expanduser("~"), 's2p_demo_data'),
                 os.path.join(self.input_dir, 'data'))
 
         return
