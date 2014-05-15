@@ -4,6 +4,11 @@ import sys
 import tempfile
 import subprocess
 
+# add the s2p_src/bin folder to system path
+current_dir = os.path.dirname(os.path.abspath(__file__))
+bin_dir = os.path.join(current_dir, 's2p_src', 'bin')
+os.environ['PATH'] = bin_dir + os.pathsep + os.environ['PATH']
+
 garbage = list()
 
 def tmpfile(ext=''):
