@@ -37,11 +37,11 @@ if __name__ == '__main__':
 
         x1 = x
         y1 = y
-        x2 = x1 + w
-        y2 = y1 + h
+        x2 = x + w
+        y2 = y + h
 
         cmd = """
-        convert input_0.png -fill 'rgba(0,255,255,0.4)' -draw 'rectangle %d,%d,%d,%d' input_0.png
+        convert prv_01.png -fill 'rgba(0,255,255,0.4)' -draw 'rectangle %d,%d,%d,%d' prv_ref.png
         """ % (x1, y1, x2, y2)
         subprocess.call(cmd, shell=True)
     else:

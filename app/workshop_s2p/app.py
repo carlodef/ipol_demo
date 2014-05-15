@@ -11,6 +11,7 @@ import os.path
 import shutil
 import time
 import numpy as np
+import json
 
 class app(base_app):
     """
@@ -34,39 +35,6 @@ class app(base_app):
         base_dir = os.path.dirname(os.path.abspath(__file__))
         base_app.__init__(self, base_dir)
 
-        # select the base_app steps to expose
-        # index() is generic
-#        app_expose(base_app.index)
-#        app_expose(base_app.input_select)
-#        app_expose(base_app.input_upload)
-        # params() is modified from the template
-        app_expose(base_app.params)
-        # run() and result() must be defined here
-
-    @cherrypy.expose
-    def index(self):
-        """
-        demo presentation and input menu
-        """
-        # read the input index as a dict
-        inputd = config.file_dict(self.input_dir)
-        tn_size = int(cherrypy.config.get('input.thumbnail.size', '192'))
-        # TODO: build via list-comprehension
-        for (input_id, input_info) in inputd.items():
-            # convert the files to a list of file names
-            # by splitting at blank characters
-            # and generate thumbnails and thumbnail urls
-            fname = input_info['files'].split()
-#           GENERATE THUMBNAIL EVEN FOR FILES IN SUBDIRECTORIES OF INPUT
-            inputd[input_id]['tn_url'] = [self.input_url +'/'+ os.path.dirname(f) + '/' +
-                        os.path.basename(thumbnail(self.input_dir + f, (tn_size, tn_size)))
-                        for f in fname]
-            inputd[input_id]['url'] = [self.input_url + os.path.basename(f)
-                                       for f in fname]
-
-
-        return self.tmpl_out("input.html",
-                             inputd=inputd)
 
     def build(self):
         """
@@ -79,7 +47,9 @@ class app(base_app):
         # update local copy of s2p source
         if not os.path.isdir(s2p_dir):
             print 's2p_src directory not found, doing a git clone'
-            os.system("git clone --depth 1 https://carlodef@bitbucket.org/carlodef/s2p.git %s" % s2p_dir)
+            cmd = ("git clone --depth 1 https://carlodef@bitbucket.org/"
+                   "carlodef/s2p.git %s" % s2p_dir)
+            os.system(cmd)
         else:
             print 's2p_src directory found, doing a git pull'
             os.system("cd %s && git pull && cd -" % s2p_dir)
@@ -113,32 +83,73 @@ class app(base_app):
         return
 
     @cherrypy.expose
+    def index(self):
+        """
+        demo presentation and input menu
+        """
+        # read the input index as a dict
+        input_dict = config.file_dict(self.input_dir)
+        tn_size = int(cherrypy.config.get('input.thumbnail.size', '192'))
+        # TODO: build via list-comprehension
+        for (input_id, input_info) in input_dict.items():
+            # convert the files to a list of file names
+            # by splitting at blank characters
+            # and generate thumbnails and thumbnail urls
+            fnames = input_info['prv'].split()
+            # generate thumbnails even for files in subdirectories of input
+            input_dict[input_id]['tn_url'] = [self.input_url +'/'+ os.path.dirname(f) + '/' +
+                        os.path.basename(thumbnail(self.input_dir + f, (tn_size, tn_size)))
+                        for f in fnames]
+            input_dict[input_id]['url'] = [self.input_url + os.path.basename(f)
+                                       for f in fnames]
+
+        return self.tmpl_out("input.html", inputd=input_dict)
+
+    @cherrypy.expose
+    @init_app
     def input_select(self, **kwargs):
         """
         use the selected available input images
         """
-        self.new_key()
         self.init_cfg()
 
+        # get the dataset id
         # kwargs contains input_id.x and input_id.y
         input_id = kwargs.keys()[0].split('.')[0]
         assert input_id == kwargs.keys()[1].split('.')[0]
 
-        # get the images
+        # create symlinks to the previews
         input_dict = config.file_dict(self.input_dir)
-        fnames = input_dict[input_id]['files'].split()
-        fnames_absolute = [self.input_url + f for f in fnames]
-        nb_img = input_dict[input_id]['nb_img']
-        color = input_dict[input_id]['color']
+        prv_files = input_dict[input_id]['prv'].split()
+        prv_files_abs = [os.path.join(self.input_dir, f) for f in prv_files]
+        for i, f in enumerate(prv_files_abs):
+            os.symlink(f, os.path.join(self.work_dir, 'prv_%02d.png' % (i+1)))
+
+        # create symlinks to the full images and rpc files. There must be the
+        # same number of image files and rpc files. The number of previews
+        # doesn't matter.
+        img_files = input_dict[input_id]['img'].split()
+        rpc_files = input_dict[input_id]['rpc'].split()
+        assert len(img_files) == len(rpc_files)
+
+        img_files_abs = [os.path.join(self.input_dir, f) for f in img_files]
+        rpc_files_abs = [os.path.join(self.input_dir, f) for f in rpc_files]
+        for i in range(len(img_files)):
+            os.symlink(img_files_abs[i], os.path.join(self.work_dir,
+                'img_%02d.tif' % (i+1)))
+            os.symlink(rpc_files_abs[i], os.path.join(self.work_dir,
+                'rpc_%02d.xml' % (i+1)))
+
+        # save params of the dataset
         self.log("input selected : %s" % input_id)
-        self.cfg['meta']['original'] = True
+        self.cfg['meta']['original'] = False
         self.cfg['meta']['input_id'] = input_id
-        self.cfg['meta']['nb_img'] = nb_img
-        self.cfg['meta']['color'] = color
+        self.cfg['meta']['nb_img'] = len(img_files)
+        self.cfg['meta']['color'] = input_dict[input_id]['color']
         self.cfg.save()
 
         # jump to the params page
-        return self.params(key=self.key, fnames=fnames_absolute)
+        return self.params(key=self.key)
 
     @cherrypy.expose
     @init_app
@@ -221,7 +232,7 @@ class app(base_app):
         """
         if newrun:
             self.clone_input()
-        return self.tmpl_out("params.html", input=fnames)
+        return self.tmpl_out("params.html")
 
 
     @cherrypy.expose
@@ -238,24 +249,17 @@ class app(base_app):
         self.cfg['param']['nb_img'] = nb_img
         self.cfg['param']['color'] = color
         self.cfg['param']['out_dir'] = 's2p_results'
+        self.cfg['param']['images'] = [
+          { "img" : "img_01.tif",
+            "rpc" : "rpc_01.xml" },
+          { "img" : "img_02.tif",
+            "rpc" : "rpc_02.xml" }
+          ]
         if nb_img == 3:
-           self.cfg['param']['images'] = [
-             { "img" : "data/%s/im02.tif" % input_id,
-               "rpc" : "data/%s/rpc02.xml"% input_id },
-             { "img" : "data/%s/im01.tif"% input_id,
-               "rpc" : "data/%s/rpc01.xml"% input_id },
-             { "img" : "data/%s/im03.tif"% input_id,
-               "rpc" : "data/%s/rpc03.xml"% input_id }
-             ]
-        if nb_img == 2:
-           self.cfg['param']['images'] = [
-             { "img" : "data/%s/im02.tif" % input_id,
-               "rpc" : "data/%s/rpc02.xml"% input_id },
-             { "img" : "data/%s/im01.tif"% input_id,
-               "rpc" : "data/%s/rpc01.xml"% input_id }
-             ]
+           self.cfg['param']['images'].append({"img" : "img_03.tif",
+               "rpc" : "rpc_03.xml"})
         if color == 'panchro_xs':
-            self.cfg['param']['images'][0]['clr'] = "data/%s/im02_color.tif" % input_id
+            self.cfg['param']['images'][0]['clr'] = "img_01_clr.tif"
         self.cfg['param']['roi'] = {}
         self.cfg['param']['roi']['w'] = int(kwargs['roi_width'])
         self.cfg['param']['roi']['h'] = int(kwargs['roi_height'])
@@ -274,12 +278,9 @@ class app(base_app):
         self.cfg['param']["preview_coordinate_system"] = True
         self.cfg['param']["tile_size"] = 1000
         self.cfg['param']["disp_range_method"] = "sift"
-
-        self.cfg['meta']["orig"] = True
         self.cfg.save()
 
         # write the parameters in a json file
-        import json
         fp = open(self.work_dir+'config.json', 'w')
         json.dump(self.cfg['param'], fp, indent=4)
         fp.close()
@@ -293,8 +294,6 @@ class app(base_app):
         """
         algo execution
         """
-        os.symlink(self.input_dir+'/data', self.work_dir+'/data')
-
         # run the algorithm
         try:
             self.run_algo()
@@ -310,21 +309,19 @@ class app(base_app):
         p = self.run_proc(['/bin/bash', 'zipresults.sh'])
 #        self.wait_proc(p, timeout=self.timeout)
 
-        # archive
-        if self.cfg['meta']['original']:
-            ar = self.make_archive()
-            ar.add_file("config.json", info="input")
-            ar.add_file("input_0.png", "input.png", info="input")
-            ar.add_file("dem_preview.png", info="output")
-            ar.add_file("roi_ref_preview.png", info="output")
-            ar.add_info({"roi": self.cfg['param']['roi'],
-                         "input_id": self.cfg['param']['input_id'],
-                         "nb_img": self.cfg['param']['nb_img']})
-            if self.cfg['meta']['color'] == 'panchro_xs':
-                ar.add_file("roi_color_ref_preview.png", info="output")
-            if self.cfg['meta']['color'] == 'pansharpened':
-                ar.add_file("roi_color_ref_preview.png", info="output")
-            ar.save()
+        # archive: all experiments are archived
+        ar = self.make_archive()
+        ar.add_file("config.json", info="input")
+        ar.add_file("prv_ref.png", "input.png", info="input")
+        ar.add_file("s2p_results/roi_ref_preview.png", info="input")
+        ar.add_file("s2p_results/roi_sec_preview.png", info="input")
+        ar.add_file("s2p_results/dem_preview.png", info="output")
+        ar.add_info({"roi": self.cfg['param']['roi'],
+                     "input_id": self.cfg['param']['input_id'],
+                     "nb_img": self.cfg['param']['nb_img']})
+        if self.cfg['meta']['color'] in ['panchro_xs', 'pansharpened']:
+            ar.add_file("s2p_results/roi_color_ref_preview.png", info="output")
+        ar.save()
 
         return self.tmpl_out("run.html")
 
@@ -335,7 +332,7 @@ class app(base_app):
         could also be called by a batch processor
         this one needs no parameter
         """
-        p = self.run_proc(['helper_convert_inputs.sh', 'config.json', 'input_0.png'])
+        p = self.run_proc(['helper_convert_inputs.sh', 'config.json', 'prv_01.png'])
         self.wait_proc(p, timeout=self.timeout)
 
         run_time = time.time()
@@ -357,5 +354,8 @@ class app(base_app):
         """
         display the algo results
         """
-        return self.tmpl_out("result.html", height=image(self.work_dir +
-            'roi_ref_preview.png').size[1])
+        f = open(os.path.join(self.work_dir, "config.json"))
+        s2p_cfg = json.load(f)
+        f.close()
+        h = int(s2p_cfg['roi']['h'])
+        return self.tmpl_out("result.html", height=h)

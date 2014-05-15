@@ -36,11 +36,3 @@ else
         wait
     done
 fi
-
-# cp output files in the root output folder for archive
-cp s2p_results/dem_preview.png .
-cp s2p_results/roi_ref_preview.png .
-cp s2p_results/roi_sec_preview.png .
-if [ -f s2p_results/roi_color_ref_preview.png ]; then
-    cp s2p_results/roi_color_ref_preview.png .
-fi
