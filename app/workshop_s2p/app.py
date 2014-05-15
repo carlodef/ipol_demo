@@ -157,19 +157,17 @@ class app(base_app):
         """
         upload images and rpcs
         """
-        self.new_key()
         self.init_cfg()
 
         # receive the input files
-        print kwargs.keys()
         for i in range(2):
-            img_up = kwargs['img_%i' % i]
+            img_up = kwargs['img_%i' % (i+1)]
             if not img_up.filename:
                 raise cherrypy.HTTPError(400, "Missing input file")
             extension = os.path.splitext(img_up.filename)[1].lower()
             if not extension in ['.tif', '.tiff']:
                 raise cherrypy.HTTPError(400, "image files must be TIFF")
-            img_save = file(self.work_dir + 'img_%i.tif' % i, 'wb')
+            img_save = file(self.work_dir + 'img_%02d.tif' % (i+1), 'wb')
             size = 0
             while True:
                 data = img_up.file.read(8192)
@@ -182,13 +180,13 @@ class app(base_app):
                 img_save.write(data)
             img_save.close()
 
-            rpc_up = kwargs['rpc_%i' % i]
+            rpc_up = kwargs['rpc_%i' % (i+1)]
             if not rpc_up.filename:
                 raise cherrypy.HTTPError(400, "Missing input file")
             extension = os.path.splitext(rpc_up.filename)[1].lower()
             if not extension in ['.xml', '.txt']:
                 raise cherrypy.HTTPError(400, "RPC files must be XML or TXT")
-            rpc_save = file("%s/rpc_%i%s" % (self.work_dir, i, extension), 'wb')
+            rpc_save = file("%s/rpc_%02d%s" % (self.work_dir, i+1, extension), 'wb')
             size = 0
             while True:
                 data = rpc_up.file.read(128)
@@ -200,29 +198,34 @@ class app(base_app):
                 rpc_save.write(data)
             rpc_save.close()
 
-        # process the input files, and save informations in the config file
-        fnames = self.process_input_files()
+        # create previews
+        self.process_input_files()
+
+        # save params of the dataset
         self.log("input uploaded")
         self.cfg['meta']['original'] = True
-        self.cfg['meta']['input_id'] = 'unknown'
+        self.cfg['meta']['input_id'] = 'uploaded'
         self.cfg['meta']['nb_img'] = 2
         self.cfg['meta']['color'] = 'panchro'
         self.cfg.save()
 
         # jump to the params page
-        return self.params(key=self.key, fnames=fnames)
+        return self.params(key=self.key)
 
 
     def process_input_files(self):
         """
         Process uploaded input data
-        * check that images are valid TIFF files
+        * check that images are valid TIFF files (TODO)
         * generates jpg previews of the image files
         """
         import utils
-        utils.generate_preview("%s/img_0.tif" % self.work_dir)
-        utils.generate_preview("%s/img_1.tif" % self.work_dir)
-        return ["%s/img_%d_prv.jpg" % (self.work_url, i) for i in [0, 1]]
+        prv1 = os.path.join(self.work_dir, "prv_01.png")
+        prv2 = os.path.join(self.work_dir, "prv_02.png")
+        img1 = os.path.join(self.work_dir, "img_01.tif")
+        img2 = os.path.join(self.work_dir, "img_02.tif")
+        utils.generate_preview(prv1, img1)
+        utils.generate_preview(prv2, img2)
 
 
     @init_app
@@ -242,10 +245,8 @@ class app(base_app):
         params handling and run redirection
         """
         # save the parameters in self.cfg['param']
-        input_id = self.cfg['meta']['input_id']
         nb_img = self.cfg['meta']['nb_img']
         color = self.cfg['meta']['color'] # panchro | panchro_xs | pansharpened
-        self.cfg['param']['input_id'] = input_id
         self.cfg['param']['nb_img'] = nb_img
         self.cfg['param']['color'] = color
         self.cfg['param']['out_dir'] = 's2p_results'
@@ -317,7 +318,7 @@ class app(base_app):
         ar.add_file("s2p_results/roi_sec_preview.png", info="input")
         ar.add_file("s2p_results/dem_preview.png", info="output")
         ar.add_info({"roi": self.cfg['param']['roi'],
-                     "input_id": self.cfg['param']['input_id'],
+                     "input_id": self.cfg['meta']['input_id'],
                      "nb_img": self.cfg['param']['nb_img']})
         if self.cfg['meta']['color'] in ['panchro_xs', 'pansharpened']:
             ar.add_file("s2p_results/roi_color_ref_preview.png", info="output")

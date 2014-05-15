@@ -96,17 +96,19 @@ def image_zoom_gdal(im, f, out=None, w=None, h=None):
     return out
 
 
-def generate_preview(im):
+def generate_preview(out, im):
     """
     Generates a small web-displayable preview image from a large tiff image
 
     Args:
+        out: path to the output image file
         im: path to the input tif image file
     """
     w, h = image_size_tiffinfo(im)
     w = float(w)
     h = float(h)
-    out = '%s_prv.jpg' % (os.path.splitext(im)[0])
+    if os.path.splitext(out)[1].lower() != '.png':
+        print "WARNING: generate_preview() can produce png files only"
     if w > 1366 or h > 768:
         if w/h > float(1366) / 768:
             f = w/1366
@@ -114,8 +116,8 @@ def generate_preview(im):
             f = h/768
         tmp = tmpfile('.tif')
         image_zoom_gdal(im, f, tmp, w, h)
-        run('gdal_translate -of jpeg -ot Byte -scale %s %s' % (tmp, out))
+        run('gdal_translate -of png -ot Byte -scale %s %s' % (tmp, out))
     else:
-        run('gdal_translate -of jpeg -ot Byte -scale %s %s' % (im, out))
+        run('gdal_translate -of png -ot Byte -scale %s %s' % (im, out))
     run('rm %s.aux.xml' % out)
     return out
