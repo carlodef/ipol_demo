@@ -22,7 +22,7 @@ class app(base_app):
     xlink_article = 'http://dev.ipol.im/~carlo/s2p_papers'
 
     input_nb = 2 # number of input images
-    input_img_max_weight = 1024 * 1024 * 1024 # max size (in bytes) of an input file
+    input_img_max_weight = 800 * 1024 * 1024 # max size (in bytes) of an input file
     input_rpc_max_weight = 2 * 1024 * 1024 # max size (in bytes) of an input file
     is_test = True       # switch to False for deployment
 
