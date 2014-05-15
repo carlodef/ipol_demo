@@ -109,7 +109,10 @@ class bucket(object):
         """
         # TODO add_file() and add_image()
         # source filename
-        src = os.path.basename(src)
+
+        # I commented the next line, in order add into the archive files that
+        # are located in subfolders of the self.work_dir. Carlo
+        #src = os.path.basename(src)
         src_fname = os.path.join(self.cwd, src)
         # destination filename
         if dst is None:
