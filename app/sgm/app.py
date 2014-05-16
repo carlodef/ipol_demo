@@ -89,6 +89,10 @@ class app(base_app):
         build.run("make -j -C %s all" % build_dir, stdout=log_file)
         shutil.copy(os.path.join(build_dir, "sgm"), prog_file)
 
+        # copy scripts to bin dir
+        import glob
+        for file in glob.glob(os.path.join(self.base_dir, 'scripts/*')):
+            shutil.copy(file, self.bin_dir)
         return
 
 
