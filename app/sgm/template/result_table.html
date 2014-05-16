@@ -5,7 +5,7 @@
        height = 360
     width = app.cfg['param']['image_width']*2 + 100
     if width < 800:
-       width = 800 
+       width = 800
 
     # gt is a variable to activate the groundtruth statistics
     gt = app.cfg['param']['ground_truth']
@@ -15,9 +15,9 @@
     gtmask = 0
     gtocc  = 0
     if  gt != '':
-       if os.path.isfile(app.work_dir+"/"+'ground_truth_mask.png'): 
+       if os.path.isfile(app.work_dir+"/"+'ground_truth_mask.png'):
           gtmask = 1
-       if os.path.isfile(app.work_dir+"/"+'ground_truth_occ.png'): 
+       if os.path.isfile(app.work_dir+"/"+'ground_truth_occ.png'):
           gtocc = 1
 
 
@@ -43,7 +43,7 @@ The algorithm result is displayed hereafter. It ran in ${"%0.2f" % app.cfg['info
 
      <li>
       <a href="#">
-	Secondary image
+	secondary image
 	<span>
 	  <table><tr><td style="vertical-align:top;">
 	  <img src="${app.work_url + 'right_image.png'}" alt="" />
@@ -51,10 +51,10 @@ The algorithm result is displayed hereafter. It ran in ${"%0.2f" % app.cfg['info
 	</span>
       </a>
      </li>
-     
+
     <li>
       <a href="#">
-	Reference image
+	reference image
 	<span>
 	  <table><tr><td style="vertical-align:top;">
 	  <img src="${app.work_url + 'left_image.png'}" alt="" />
@@ -62,10 +62,10 @@ The algorithm result is displayed hereafter. It ran in ${"%0.2f" % app.cfg['info
 	</span>
       </a>
      </li>
-     
+
     <li>
       <a href="#">
-	Disparity (sgm)
+	disparity (sgm)
 	<span>
 	  <table><tr>
 	  <td style="vertical-align:top;">
@@ -74,10 +74,24 @@ The algorithm result is displayed hereafter. It ran in ${"%0.2f" % app.cfg['info
 	</span>
       </a>
      </li>
-     
+
+%if  gt != '':
     <li>
       <a href="#">
-	Reference image
+    ground truth
+	<span>
+	  <table><tr>
+	  <td style="vertical-align:top;">
+	  <img src="${app.work_url + 'ground_truth.png'}" alt="" /><br>
+	  </td></tr></table>
+	</span>
+      </a>
+     </li>
+%endif
+
+    <li>
+      <a href="#">
+	reference image
 	<span>
 	  <table><tr><td style="vertical-align:top;">
 	  <img src="${app.work_url + 'left_image.png'}" alt="" />
