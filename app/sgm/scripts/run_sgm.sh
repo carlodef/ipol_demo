@@ -9,7 +9,7 @@ export PATH=$PATH:/usr/bin/:/usr/local/bin/:/bin:.
 # export SUBPIXEL=$subpixel
 
 # 1. Block-matching
-sgm left_image.tif right_image.tif disp_sgm.tif $min_disparity $max_disparity $lr $nb_iter $P1 $P2
+sgm left_image.tif right_image.tif disp_sgm.tif $min_disparity $max_disparity $lr 15 $nb_iter $P1 $P2
 
 # 2. Filtering
 # flatH left_image.tif filt_flat_std_bm.png $win_w
