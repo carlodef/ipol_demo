@@ -20,7 +20,7 @@ class app(base_app):
     input_max_pixels = 1024 * 1024 # max size (in pixels) of an input image
     is_test = True       # switch to False for deployment
     is_listed = True
-    xlink_article = 'www.ipol.im'
+    xlink_article = 'http://dev.ipol.im/~carlo/ipol_demo_testing/sgm/'
 
     def _build_rectify(self):
         """
