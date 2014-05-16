@@ -72,7 +72,7 @@ class app(base_app):
             os.mkdir(self.bin_dir)
         #self._build_rectify()
 
-        git_repo = "git@bitbucket.org:carlodef/sgm.git"
+        git_repo = "https://carlodef@bitbucket.org/carlodef/sgm.git"
         build_dir = os.path.join(self.src_dir, "src")
         prog_file = os.path.join(self.bin_dir, "sgm")
         log_file = os.path.join(self.base_dir, "build.log")
