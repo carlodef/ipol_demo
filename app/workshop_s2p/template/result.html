@@ -1,12 +1,27 @@
+<!-- Codes by Quackit.com -->
+<script type="text/javascript">
+// Popup window code
+function Popup(url) {
+   popupWindow = window.open(url, 'pointcloud', 'height=600, width=800,\
+           left=10, top=10, resizable=yes, scrollbars=no, toolbar=no,\
+           menubar=no, location=no, directories=no, status=no')
+}
+</script>
+<!-- example <a href="JavaScript:Popup('http://www.quackit.com/html/html_help.cfm');">Open a popup window</a> -->
+
+
+
 <%include file="header_ipol.html" />
 <p>
   The algorithm ran in ${"%0.2f" % app.cfg['info']['run_time']} seconds. The
-  selected region of interest (ROI) of the reference input image is displayed
-  hereafter, as well as the generated height map (resampled on the reference
-  image grid) and the generated 3D point cloud. These results may be best
-  viewed with a desktop point cloud viewer (e.g.: CloudCompare, MeshLab,
-  LidarViewer...), as well as the 12 bits input images. All the images are
-  requantized to 8 bits for displaying on this web page.
+  selected region of interest is displayed hereafter in the reference and
+  secondary images, as well as the generated height map (resampled on the
+  reference image grid). The <a
+  href="JavaScript:Popup('static/plyViewer.html?cloud=${app.work_url}/cloud_ascii.ply');">
+  generated 3D point cloud</a> is displayed in a pop-up window. These
+  results may be best viewed with a desktop point cloud viewer (e.g.:
+  CloudCompare, MeshLab, LidarViewer...), as well as the 12 bits input images.
+  All the images are requantized to 8 bits for displaying on this web page.
 </p>
 <p>
 Download all the results: <a href="${app.work_url + 's2p_results.zip'}">s2p_results.zip</a>
@@ -18,10 +33,9 @@ src="http://dev.ipol.im/~carlo/email.png" alt="email" style="vertical-align:
 -2.5px" height="16" width="210">
 </p>
 
-
 <form action="${app.base_url}" method="get">
   <div class="action">
-    Restart this algorithm with new data.
+    Restart this algorithm with new data:
     <input type="submit" value="new input" />
   </div>
 </form>
@@ -36,10 +50,22 @@ src="http://dev.ipol.im/~carlo/email.png" alt="email" style="vertical-align:
 </form> -->
 
 
-<h2>Input images and generated height map</h2>
+<!--<h2>Generated 3D point cloud, height map and input images</h2>-->
+<a href="JavaScript:Popup('static/plyViewer.html?cloud=${app.work_url}/cloud_ascii.ply');">
+<h3>Click here to display the 3D point cloud</h3>
+</a><br/>
+
 
 <div class="gallery" style="height:${height}px">
   <ul class="index">
+    <li>
+      <a href="#">height map
+	<span>
+	  <img src="${app.work_url + 's2p_results/dem_preview.png'}" alt="output" />
+	</span>
+      </a>
+    </li>
+
     <li>
       <a href="#">reference image
 	<span>
@@ -47,6 +73,7 @@ src="http://dev.ipol.im/~carlo/email.png" alt="email" style="vertical-align:
 	</span>
       </a>
     </li>
+
     <li>
       <a href="#">secondary image
 	<span>
@@ -61,34 +88,26 @@ src="http://dev.ipol.im/~carlo/email.png" alt="email" style="vertical-align:
 	</span>
       </a>
       </li> -->
-    <li>
-      <a href="#">height map
-	<span>
-	  <img src="${app.work_url + 's2p_results/dem_preview.png'}" alt="output" />
-	</span>
-      </a>
-    </li>
   </ul>
 </div>
 
-<h2>3D point cloud</h2>
 
-<div id="content">
-<canvas id="canvas" name="canvas" width="1000" height="800"></canvas><br>
-    <span>status: </span><span class="orangeText" id="fileStatus">STREAMING</span><br>
-    <input type="button" value="Zoom in" onclick="ipol_zoom_in();">
-    <input type="button" value="Zoom out" onclick="ipol_zoom_out();">
 
-    <script>
-        <!--ipol_3d_start("../js/XB-PointStream-master/clouds/acorn.asc");-->
-          ipol_3d_start("${app.work_url + 'cloud_ascii.ply'}");
-      </script>
-  </div>
+##<div id="content">
+##<canvas id="canvas" name="canvas" width="1000" height="800"></canvas><br>
+##    <span>status: </span><span class="orangeText" id="fileStatus">STREAMING</span><br>
+##    <input type="button" value="Zoom in" onclick="ipol_zoom_in();">
+##    <input type="button" value="Zoom out" onclick="ipol_zoom_out();">
+##
+##    <script>
+##        <!--ipol_3d_start("../js/XB-PointStream-master/clouds/acorn.asc");-->
+##          ipol_3d_start("${app.work_url + 'cloud_ascii.ply'}");
+##      </script>
+##  </div>
 
-      <br><br>
 
+<br><br>
 <%include file="archive_info.html" />
-
 <%include file="credits_en.html" />
 <%include file="logos.html" />
 <%include file="footer.html" />
