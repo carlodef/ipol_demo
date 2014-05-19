@@ -27,9 +27,9 @@
       <input type="submit" value="upload" />
     </div>
     <p class="note">
-      %if app.input_img_max_weight:
-      Upload size is limited to ${app.input_img_max_weight / (1024 *
-      1024)}MB per image file.
+      %if app.input_tot_max_weight:
+      Upload size is limited to ${app.input_tot_max_weight / (1024 *
+      1024)}MB for the whole dataset (4 files).
       %endif
       Image must be stored in TIFF files. RPC data must be stored in XML files
       (Pléiades or WorldView format) or TXT files (Ikonos format).
