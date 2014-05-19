@@ -321,8 +321,8 @@ class app(base_app):
         ar.add_info({"roi": self.cfg['param']['roi'],
                      "input_id": self.cfg['meta']['input_id'],
                      "nb_img": self.cfg['param']['nb_img']})
-        if self.cfg['meta']['color'] in ['panchro_xs', 'pansharpened']:
-            ar.add_file("s2p_results/roi_color_ref_preview.png", info="output")
+#        if self.cfg['meta']['color'] in ['panchro_xs', 'pansharpened']:
+#            ar.add_file("s2p_results/roi_color_ref_preview.png", info="output")
         ar.save()
 
         return self.tmpl_out("run.html")
