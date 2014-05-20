@@ -141,6 +141,12 @@ class app(base_app):
             os.symlink(rpc_files_abs[i], os.path.join(self.work_dir,
                 'rpc_%02d.xml' % (i+1)))
 
+        # if it's an xs dataset, create a link to the clr reference image
+        if 'clr' in input_dict[input_id]:
+            clr_files = input_dict[input_id]['clr'].split()
+            clr_files_abs = [os.path.join(self.input_dir, f) for f in clr_files]
+            os.symlink(img_files_abs[0], os.path.join(self.work_dir, 'img_01_clr.tif'))
+
         # save params of the dataset
         self.log("input selected : %s" % input_id)
         self.cfg['meta']['original'] = False
