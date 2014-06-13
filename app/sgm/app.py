@@ -63,14 +63,35 @@ class app(base_app):
             # cleanup the source dir
             shutil.rmtree(self.src_dir)
 
+    def _build_utils(self):
+        """
+        Builds utility programs used for data pre/post processing
+        """
+        git_repo = "https://github.com/carlodef/ipol_demo_utils.git"
+        src_dir = os.path.join(self.base_dir, "src_utils")
+        log_file = os.path.join(self.base_dir, "build_utils.log")
+        #binaries = ["iion", "qauto", "plambda", "disp_statistics"]
+
+        # Update or import the code from git repository
+        if os.path.isdir(src_dir):
+            os.chdir(src_dir)
+            os.system("git pull")
+            os.chdir(self.base_dir)
+        else:
+            os.system("git clone --depth 1 %s %s" % (git_repo, src_dir))
+
+        # build the binaries (the makefile builds them in the bin dir)
+        build.run("make -j -C %s all" % src_dir, stdout=log_file)
+        return
+
     def build(self):
         """
         program build/update
         """
-        #TODO: add automatic compilation of iion, qauto, plambda and disp_statistics
         if not os.path.isdir(self.bin_dir):
             os.mkdir(self.bin_dir)
         #self._build_rectify()
+        self._build_utils()
 
         git_repo = "https://carlodef@bitbucket.org/carlodef/sgm.git"
         build_dir = os.path.join(self.src_dir, "src")
