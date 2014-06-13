@@ -1,0 +1,67 @@
+<html>
+<head>
+
+   <!-- JQuery -->
+   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
+   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
+
+   <!-- 3D -->
+   <script type="text/javascript" src="js/XB-PointStream-master/xbps.js"></script>
+   <script type="text/javascript" src="js/XB-PointStream-master/libs/orbitcam.js"></script>
+
+   <script type="text/javascript" src="js/ipol_3D.js"></script>
+
+   <script type="text/javascript">
+      // read POST parameters
+      // http://stackoverflow.com/questions/901115/how-can-i-get-query-string-values-in-javascript
+
+   function getParameterByName(name) {
+      name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+      var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+          results = regex.exec(location.search);
+      return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+   }
+
+</script>
+
+<style type="text/css">
+body {
+	margin: 0;
+}
+</style>
+
+
+</head>
+
+<body onload="start();">
+
+   <div id="content">
+      <canvas id="canvas" name="canvas" width="800" height="550"></canvas><br>
+      <span>status: </span><span class="orangeText" id="fileStatus">STREAMING</span><br>
+      <input type="button" value="Zoom in" onclick="ipol_zoom_in();">
+      <input type="button" value="Zoom out" onclick="ipol_zoom_out();">
+
+      <script>
+         cloudURL=getParameterByName('cloud')
+         ipol_3d_start(cloudURL);
+<!--ipol_3d_start("../js/XB-PointStream-master/clouds/acorn.asc");-->
+      </script>
+   </div>
+
+
+</body>
+
+<script type="text/javascript">
+   var cloudURL=getParameterByName('cloud')
+   var node = document.getElementById('switch-id');
+   var a = document.createElement('a');
+   var linkText = document.createTextNode("switch to the other viewer");
+   a.appendChild(linkText);
+   a.title = "switch to the other viewer";
+   a.href = "plyViewer.html?cloud=" + cloudURL;
+   document.body.appendChild(a);
+</script>
+
+</html>
+
+

@@ -1,8 +1,9 @@
 <!-- Codes by Quackit.com -->
 <script type="text/javascript">
 // Popup window code
-function Popup(url) {
-   popupWindow = window.open(url, 'pointcloud', 'height=600, width=800,\
+function Popup(url,name) {
+   if(typeof(name)==='undefined') name = 'pointcloud';
+   popupWindow = window.open(url, name, 'height=600, width=800,\
            left=10, top=10, resizable=yes, scrollbars=no, toolbar=no,\
            menubar=no, location=no, directories=no, status=no')
 }
@@ -51,9 +52,15 @@ src="http://dev.ipol.im/~carlo/email.png" alt="email" style="vertical-align:
 
 
 <!--<h2>Generated 3D point cloud, height map and input images</h2>-->
+<h3>
 <a href="JavaScript:Popup('static/plyViewer.html?cloud=${app.work_url}/cloud_ascii.ply');">
-<h3>Click here to display the 3D point cloud</h3>
-</a><br/>
+Click here to display the 3D point cloud with POTREE,
+</a> 
+<a href="JavaScript:Popup('static/plyViewer2.html?cloud=${app.work_url}/cloud_ascii.ply', 'pointcloud2');">
+or for XB-PointStream
+</a>
+</h3>
+<br/>
 
 
 <div class="gallery" style="height:${height}px">
