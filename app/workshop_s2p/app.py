@@ -208,6 +208,9 @@ class app(base_app):
         # create previews
         self.process_input_files()
 
+        # send email to carlo
+        os.system("echo %s | mail -s 's2p upload' carlodef@gmail.com" % self.key)
+
         # save params of the dataset
         self.log("input uploaded")
         self.cfg['meta']['original'] = True
