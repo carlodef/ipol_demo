@@ -35,3 +35,6 @@ app_example/*/input/.__*
 
 #ignore backup files
 *~
+
+#ignore osx finder files
+.DS_Store
