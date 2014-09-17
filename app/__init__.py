@@ -8,10 +8,10 @@ base_dir = os.path.dirname(os.path.abspath(__file__))
 
 # (id:app) demo dict
 demo_dict = {}
-demo_list = ['workshop_s2p', 'sgm', 'd_a_contrario_orientation_modes']
+#demo_list = ['workshop_s2p', 'sgm', 'd_a_contrario_orientation_modes']
 
-for demo_id in demo_list:
-#for demo_id in os.listdir(base_dir):
+#for demo_id in demo_list:
+for demo_id in os.listdir(base_dir):
     if os.path.isdir(os.path.join(base_dir, demo_id)):
         try:
             # use function version of `from demo_id import app as _.app`
