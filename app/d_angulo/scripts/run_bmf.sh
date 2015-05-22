@@ -27,7 +27,7 @@ fi
 # 1. Do the block-matching: this is the time-consuming step
 stereoSSD-mean -w $win_w -h $win_h -r $3 -R $4 $left right_image_t$1_s$2.tif disp_t$1_s$2.tif cost_t$1_s$2.tif dispR_t$1_s$2.tif costR_t$1_s$2.tif 
 
-# 2. Filtering
+# 2. Rejection tests
 flatH $left filt_flat_t$1_s$2.png $win_w
 stereoLRRL2 disp_t$1_s$2.tif dispR_t$1_s$2.tif filt_LRRL_t$1_s$2.png 1
 if [ "${ground_truth_mask}" != "" ]; then
