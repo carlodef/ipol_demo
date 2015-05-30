@@ -1,0 +1,51 @@
+<%include file="header.html" />
+
+<p>
+Pushbroom camera attitude estimation.
+</p>
+
+<h1>Use an example:</h1>
+<table style="background:transparent">
+%for index,id in enumerate(sorted(inputd.keys())):
+%if id!="zzblank":
+%if (index%7)==0:
+<tr>
+%endif
+<td style="vertical-align:top">
+<form action="input_select" method="post">
+  <input type="hidden" name="zzblank.x" value="0">
+  <input type="hidden" name="zzblank.y" value="0">
+  <input type="hidden" name="zzblank" value="Draw Points">
+  <input type="hidden" name="zzblank.prev_points"
+         value="${inputd[id]['points']} ">
+  <input type="image" src="input/${inputd[id]['files']}"
+         width="100" style="border:1px solid"  />
+</form>
+<p class="note" style="text-align:center">
+${inputd[id]['title']}
+</p>
+</td>
+%endif
+%endfor
+</tr>
+</table>
+
+<br>
+
+<h1>Draw Points</h1>
+<form action="${app.base_url + 'input_select'}" method="post">
+  <div class="action">
+    <p>
+    <ul>
+      <li>Click "Draw Points" to start drawing points.</li>
+      <li>Optionally add random noise.</li>
+      <li>Once you have finished, click "Run" to run the detectors.</li>
+    </ul>
+    </p>
+    <div style="max-height:30em; overflow:auto;">
+      <input type="submit" name="zzblank" value="Draw Points">
+    </div>
+  </div>
+</form>
+
+<%include file="footer.html" />

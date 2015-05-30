@@ -1,0 +1,56 @@
+<%include file="header.html" />
+<script type="text/javascript">
+  <%include file="script.js" />
+</script>
+<body onload=draw_previous_points()>
+
+<div id="content">
+<%
+  width  = app.cfg['param']['img_width']
+  height = app.cfg['param']['img_height']
+  fg = app.work_url + 'foreground.gif'
+%>
+
+<form name="theform" action="${app.base_url + 'browser_error'}" method="post" >
+  <p>Click on the domain to add or remove points.</p>
+  <input type="hidden" name="points_x" value="" id="points_x">
+  <input type="hidden" name="points_y" value="" id="points_y">
+  <p>
+    <input type="hidden" id="key" name="key" value="${app.key}" />
+    Add <input type="text" id="noise_points" value="10" style="width:20px">
+    random points <input type="button"  value="Add" onclick="add_noise()">
+  </p>
+  <input type="submit" name="action" value="Run the algorithm"
+         onClick="return checkPoints('${app.base_url + 'wait'}');" >
+</form>
+
+<br>
+
+<!-- DIV CONTAINER TO DRAW POINTS -->
+<div id="canvas_div" onclick="click_point(event)" style = "background-image:url('${fg}');width:${width}px;height:${height}px;border: 1px solid black">
+
+<!-- IMPORT RAPHAEL JAVASCRIPT DRAWING LIBRARY -->
+<script language="JavaScript">
+  <%include file="raphael.js" />
+</script>
+
+<!-- JAVASCRIPT CODE TO MARK POINTS -->
+<script language="JavaScript">
+  // max width and height
+  WIDTH=${width};
+  HEIGHT=${height};
+
+  // array containers of lists of point coordinates
+  %if prev_xs:
+    var prev_xs=${prev_xs};  // fill with previous points
+    var prev_ys=${prev_ys};
+  %else:
+    var prev_xs=[];  // fill with previous points
+    var prev_ys=[];
+  %endif
+
+  <%include file="draw_points.js" />
+</script>
+<!-- END JAVASCRIPT -->
+
+<%include file="footer.html" />

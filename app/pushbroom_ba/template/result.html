@@ -1,0 +1,75 @@
+<%include file="header.html" />
+
+<p>
+  The algorithm result is displayed hereafter.
+</p>
+
+<form action="${app.base_url}" method="get">
+  <div class="action">
+    Restart this algorithm with new data.
+    <input type="submit" value="new input" />
+  </div>
+</form>
+
+<form action="${app.base_url}input_select" method="post">
+  <input type="hidden" name="zzblank.x" value="0">
+  <input type="hidden" name="zzblank.y" value="0">
+  <input type="hidden" name="zzblank" value="Draw Points">
+  <input type="hidden" name="zzblank.prev_points" value="${prev_points}">
+  <div class="action">
+    Modify this data and rerun the algorithm.
+    <input type="submit" value="modify points" />
+  </div>
+</form>
+
+<br>
+
+<h1>Result</h1>
+
+<p>
+  The algorithm ran in ${"%0.2f" % app.cfg['info']['run_time']}s.
+</p>
+
+<pre class="stdio">${open(app.work_dir + 'stdout.txt', 'r').read()}</pre>
+<!--
+<div class="gallery" style="height:${height}px">
+  <ul class="index">
+    <li>
+      <a href="#">Point Alignments
+        <span>
+           <img src="${app.work_url + "output.png"}" alt="alignments"
+           style="border:black 1px solid;" />
+        </span>
+      </a>
+    </li>
+    <li>
+      <a href="#">Input points
+        <span>
+           <img src="${app.work_url + "points.png"}"
+           alt="points" style="border:black 1px solid;" />
+        </span>
+      </a>
+    </li>
+    <li>
+      <a href="#">Point Alingments (more info)
+        <span>
+           <img src="${app.work_url + "output2.png"}"
+           alt="alignments, more information" style="border:black 1px solid;" />
+        </span>
+      </a>
+    </li>
+  </ul>
+</div>  
+-->
+
+<!--
+<p>Download data:
+<a href="${app.work_url + "points.txt"}">points.txt</a>,
+<a href="${app.work_url + "output.txt"}">output.txt</a>,
+<a href="${app.work_url + "points.eps"}">points.eps</a>,
+<a href="${app.work_url + "output.eps"}">output.eps</a>,
+<a href="${app.work_url + "output2.eps"}">output2.eps</a>.
+</p>
+-->
+
+<%include file="footer.html" />
