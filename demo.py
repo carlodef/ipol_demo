@@ -88,16 +88,13 @@ def do_run(demo_dict):
 
 def get_values_of_o_arguments(argv):
     """
-    return the -o options on the argument list, and remove them
+    return the -o options on the argument list.
     """
     r = []
     n = len(argv)
-    for j in range(n):
-        i = n-j-1
+    for i in reversed(range(n)):
         if i > 1 and argv[i-1] == "-o":
             r.append(argv[i])
-            del argv[i]
-            del argv[i-1]
     return r
 
 if __name__ == '__main__':
@@ -135,17 +132,13 @@ if __name__ == '__main__':
                 demo_dict.pop(demo_id)
 
     # now handle the remaining command-line options
-    # default action is "run"
-    if len(sys.argv) == 1:
-        sys.argv += ["run"]
-    for arg in sys.argv[1:]:
-        if "build" == arg:
-            do_build(demo_dict)
-        elif "run" == arg:
-            do_run(demo_dict)
-        else:
-            print """
-usage: %(argv0)s [action]
+    if len(sys.argv) > 1 and "build" == sys.argv[1]:
+        do_build(demo_dict)
+    elif len(sys.argv) > 1 and  "run" == sys.argv[1]:
+        do_run(demo_dict)
+    else:
+        print """
+usage: %(argv0)s action [-o demo_id1] [-o demo_id2] ...
 
 actions:
 * run     launch the web service (default)
