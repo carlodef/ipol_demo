@@ -42,16 +42,17 @@ class empty_app(object):
         self.cfg = dict()
 
         # static subfolders
-        for static_dir in [self.input_dir, self.tmp_dir, self.archive_dir, self.static_dir]:
+        for static_dir in [self.input_dir, self.tmp_dir, \
+                           self.archive_dir, self.static_dir]:
             # Create static subfolder
             if not os.path.isdir(static_dir):
                 os.mkdir(static_dir)
 
         # TODO : merge with getattr
         self.archive_index = os.path.join(self.archive_dir, "index.db")
-                
+
         # static folders
-        # mime types, override python mimetypes modules because is
+        # mime types, override python mimetypes modules because it
         # says .gz files are text/plain, which is right (gzip is an
         # encoding, not a mime type) but a problem (we use http gzip
         # compression on text/plain files)
@@ -60,19 +61,19 @@ class empty_app(object):
         self.input = \
             cherrypy.tools.staticdir(dir=self.input_dir,
                                      content_types=mime_types)\
-                                     (lambda x : None)
+                                     (lambda x: None)
         self.tmp = \
             cherrypy.tools.staticdir(dir=self.tmp_dir,
                                      content_types=mime_types)\
-                                     (lambda x : None)
+                                     (lambda x: None)
         self.arc = \
             cherrypy.tools.staticdir(dir=self.archive_dir,
                                      content_types=mime_types)\
-                                     (lambda x : None)
+                                     (lambda x: None)
         self.static = \
             cherrypy.tools.staticdir(dir=self.static_dir,
                                      content_types=mime_types)\
-                                     (lambda x : None)
+                                     (lambda x: None)
 
 
     def __getattr__(self, attr):
@@ -130,6 +131,16 @@ class empty_app(object):
         self.cfg.setdefault('info', {})
         self.cfg.setdefault('meta', {})
 
+    def get_MATLAB_path(self):
+        '''
+        Getter for the MATLAB path
+        '''
+        if 'demo.matlab_path' in cherrypy.config:
+            return cherrypy.config['demo.matlab_path']
+        else:
+            return None
+
+
     #
     # UPDATE
     #
@@ -153,20 +164,20 @@ class empty_app(object):
             keygen = hashlib.md5()
             seeds = [cherrypy.request.remote.ip,
                      # use port to improve discrimination
-                     # for proxied or NAT clients 
-                     cherrypy.request.remote.port, 
+                     # for proxied or NAT clients
+                     cherrypy.request.remote.port,
                      datetime.now(),
                      random()]
             for seed in seeds:
                 keygen.update(str(seed))
             key = keygen.hexdigest().upper()
-        
+
         self.key = key
 
         # check key
         if not (self.key
                 and self.key.isalnum()
-                and (self.tmp_dir == 
+                and (self.tmp_dir ==
                      os.path.commonprefix([self.work_dir, self.tmp_dir]))):
             # HTTP Bad Request
             raise cherrypy.HTTPError(400, "The key is invalid")
@@ -194,37 +205,62 @@ class empty_app(object):
     # SUBPROCESS
     #
 
-    def run_proc(self, args, stdin=None, stdout=None, stderr=None, env={}):
+    def run_proc(self, args, stdin=None, stdout=None, stderr=None, env=None):
         """
         execute a sub-process from the 'tmp' folder
         """
+
+        if env is None:
+            env = {}
         # update the environment
         newenv = os.environ.copy()
         # add local environment settings
         newenv.update(env)
+
         # TODO clear the PATH, hard-rewrite the exec arg0
         # TODO use shell-string execution
-        newenv.update({'PATH' : self.bin_dir})
+
+        # Add PATH in configuration
+        path = self.bin_dir
+        # Check if there are extra paths
+        if 'demo.extra_path' in cherrypy.config:
+            p = cherrypy.config['demo.extra_path']
+            path = path + ":" + p
+        #
+        p = self.get_MATLAB_path()
+        if p is None:
+            cherrypy.log("warning: MATLAB path directory %s does not exist" % p,
+                         context='SETUP/%s' % self.id, traceback=False)
+        else:
+            path = path + ":" + p
+        #
+        newenv.update({'PATH' : path})
+
         # run
         return Popen(args, stdin=stdin, stdout=stdout, stderr=stderr,
                      env=newenv, cwd=self.work_dir)
 
-    def wait_proc(self, process, timeout=False):
+
+    @staticmethod
+    def wait_proc(process, timeout=False):
         """
         wait for the end of a process execution with an optional timeout
         timeout: False (no timeout) or a numeric value (seconds)
         process: a process or a process list, tuple, ...
         """
 
-        if not (cherrypy.config['server.environment'] == 'production'):
-            # no timeout if just testing
-            timeout = False
+        # If production and timeout is not set, assign a security value
+        if cherrypy.config['server.environment'] == 'production' and \
+           not timeout:
+            timeout = 60*15 # Avoid misconfigured demos running forever.
+
         if isinstance(process, Popen):
             # require a list
             process_list = [process]
         else:
             # duck typing, suppose we have an iterable
             process_list = process
+
         if not timeout:
             # timeout is False, None or 0
             # wait until everything is finished
@@ -262,15 +298,20 @@ class empty_app(object):
         """
         create an archive bucket
         """
-        
+
         ar = archive.bucket(path=self.archive_dir,
                             cwd=self.work_dir,
                             key=self.key)
         ar.cfg['meta']['public'] = self.cfg['meta']['public']
 
         def hook_index():
+            """
+            hook index
+            """
+
             return archive.index_add(self.archive_index,
-                                     bucket=ar,
+                                     buc=ar,
                                      path=self.archive_dir)
         ar.hook['post-save'] = hook_index
         return ar
+
