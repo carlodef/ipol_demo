@@ -204,8 +204,7 @@ class app(base_app):
 #            #ar.add_info({"points" : self.cfg['param']['points']})
 #            ar.save()
 
-        http.refresh(self.base_url + 'result?key=%s' % key)
-        return self.tmpl_out("run.html")
+        return self.result(key=self.key)
 
     #---------------------------------------------------------------------------
     # core algorithm runner
