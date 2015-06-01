@@ -15,15 +15,14 @@ import json
 import time
 
 from lib import base_app, http
-from lib.misc import app_expose, ctime
-from lib.base_app import init_app, config
+from lib.base_app import init_app
 
 #-------------------------------------------------------------------------------
 # Demo main class
 #-------------------------------------------------------------------------------
 class app(base_app):
     # IPOL demo system configuration
-    title = 'Pushbroom camera attitude estimation'
+    title = 'Attitude estimation for orbiting pushbroom cameras'
     xlink_article = 'http://dev.ipol.im/~carlo/a.pdf'
 
     # Global variables for this demo
