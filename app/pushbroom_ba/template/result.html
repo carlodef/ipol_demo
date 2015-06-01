@@ -1,29 +1,3 @@
-<%include file="header.html" />
-
-<p>
-  The algorithm result is displayed hereafter.
-</p>
-
-<form action="${app.base_url}" method="get">
-  <div class="action">
-    Restart this algorithm with new data.
-    <input type="submit" value="new input" />
-  </div>
-</form>
-
-<form action="${app.base_url}input_select" method="post">
-  <input type="hidden" name="zzblank.x" value="0">
-  <input type="hidden" name="zzblank.y" value="0">
-  <input type="hidden" name="zzblank" value="Draw Points">
-  <input type="hidden" name="zzblank.prev_points" value="${prev_points}">
-  <div class="action">
-    Modify this data and rerun the algorithm.
-    <input type="submit" value="modify points" />
-  </div>
-</form>
-
-<br>
-
 <h1>Result</h1>
 
 <p>
@@ -71,5 +45,3 @@
 <a href="${app.work_url + "output2.eps"}">output2.eps</a>.
 </p>
 -->
-
-<%include file="footer.html" />

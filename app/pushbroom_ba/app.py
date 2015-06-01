@@ -24,7 +24,7 @@ import shutil
 class app(base_app):
     # IPOL demo system configuration
     title = 'Pushbroom camera attitude estimation'
-    xlink_article = 'a.pdf'
+    xlink_article = 'http://dev.ipol.im/~carlo/a.pdf'
 
     # Global variables for this demo
     sizeX = 512
@@ -38,17 +38,6 @@ class app(base_app):
         base_dir = os.path.dirname(os.path.abspath(__file__))
         base_app.__init__(self, base_dir)
 
-        # select the base_app steps to expose
-        # index() and input_xxx() are generic
-        base_app.index.im_func.exposed = True
-        base_app.input_select.im_func.exposed = True
-        # input_upload() is modified from the template
-        base_app.input_upload.im_func.exposed = True
-        # params() is modified from the template
-        base_app.params.im_func.exposed = True
-        # result() is modified from the template
-        base_app.result.im_func.exposed = True
-
     # --------------------------------------------------------------------------
     # INPUT STEP
     # --------------------------------------------------------------------------
@@ -58,7 +47,6 @@ class app(base_app):
         """
         use the selected available input images
         """
-        self.new_key()
         self.init_cfg()
 
         try:
@@ -84,17 +72,18 @@ class app(base_app):
         # initilize parameters
         self.cfg['param'] = {'img_width'  : self.sizeX,
                              'img_height' : self.sizeY,
-                             'points'     : json.dumps( [] )}
+                             'points'     : json.dumps([]),
+                             'has_already_run' : False}
         self.cfg.save()
 
         # generate dots image
-        self.draw_points( self.cfg['param'] )
+        self.draw_points(self.cfg['param'])
 
         # return the parameters page
         if newrun:
             self.clone_input()
 
-        return self.tmpl_out('params.html',prev_xs=prev_xs,prev_ys=prev_ys)
+        return self.tmpl_out('paramresult.html')
 
     #---------------------------------------------------------------------------
     # draw points
@@ -130,11 +119,9 @@ class app(base_app):
     @init_app
     def wait(self, **kwargs):
         kwargs = kwargs
-        print kwargs
         try:
             points_x = kwargs['points_x'].split(',')
             points_y = kwargs['points_y'].split(',')
-            print points_x
         except:
             points_x = self.cfg['param']['points_x'].split(',')
             points_y = self.cfg['param']['points_y'].split(',')
@@ -204,7 +191,8 @@ class app(base_app):
 #            #ar.add_info({"points" : self.cfg['param']['points']})
 #            ar.save()
 
-        return self.result(key=self.key)
+        http.redir_303(self.base_url + 'result?key=%s' % self.key)
+        return self.tmpl_out("run.html")
 
     #---------------------------------------------------------------------------
     # core algorithm runner
@@ -223,12 +211,16 @@ class app(base_app):
     #---------------------------------------------------------------------------
     @cherrypy.expose
     @init_app
-    def result(self, public=None):
+    def result(self):
+
         f = open(os.path.join(self.work_dir, 'params.json'), 'r')
         points = json.load(f)['points']
         f.close()
 
-        return self.tmpl_out('result.html',
+        self.cfg['param']['has_already_run'] = True
+        self.cfg.save()
+
+        return self.tmpl_out('paramresult.html',
                              with_png=os.path.isfile(self.work_dir
                                                      + 'output.png'),
                              height=self.sizeX,

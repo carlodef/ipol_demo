@@ -1,13 +1,11 @@
-<%include file="header.html" />
 <script type="text/javascript">
   <%include file="script.js" />
 </script>
 <body onload=draw_previous_points()>
 
-<div id="content">
 <%
-  width  = app.cfg['param']['img_width']
-  height = app.cfg['param']['img_height']
+  width  = 512
+  height = 512
   fg = app.work_url + 'foreground.gif'
 %>
 
@@ -27,7 +25,9 @@
 <br>
 
 <!-- DIV CONTAINER TO DRAW POINTS -->
-<div id="canvas_div" onclick="click_point(event)" style = "background-image:url('${fg}');width:${width}px;height:${height}px;border: 1px solid black">
+<div id="canvas_div" onclick="click_point(event)" style = "width:${width}px;
+    height:${height}px; border: 1px solid black">
+</div>
 
 <!-- IMPORT RAPHAEL JAVASCRIPT DRAWING LIBRARY -->
 <script language="JavaScript">
@@ -52,5 +52,3 @@
   <%include file="draw_points.js" />
 </script>
 <!-- END JAVASCRIPT -->
-
-<%include file="footer.html" />
