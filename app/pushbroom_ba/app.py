@@ -1,22 +1,22 @@
 #-------------------------------------------------------------------------------
+# Attitude estimation for orbiting pushbroom cameras - IPOL demo
+# by Carlo de Franchis, Gabriele Facciolo, Enric Meinhardt
+# May 2015
+#
+# The javascript tool to plot points was copied from
 # Point alignment detection demo
 # by jose lezama, rafael grompone von gioi
 # October 23, 2013
 #-------------------------------------------------------------------------------
-
-from lib import base_app, http, image
-from lib.misc import app_expose, ctime
-from lib.base_app import init_app
+import subprocess
 import cherrypy
-from cherrypy import TimeoutError
 import os.path
 import json
-import subprocess
 import time
 
-# for custom input_select:
-from lib.base_app import config
-import shutil
+from lib import base_app, http
+from lib.misc import app_expose, ctime
+from lib.base_app import init_app, config
 
 #-------------------------------------------------------------------------------
 # Demo main class
@@ -71,7 +71,7 @@ class app(base_app):
         self.cfg.save()
 
         # generate dots image
-        self.draw_points(self.cfg['param'])
+        #self.draw_points(self.cfg['param'])
 
         # return the parameters page
         if newrun:
@@ -112,7 +112,7 @@ class app(base_app):
     @cherrypy.expose
     @init_app
     def wait(self, **kwargs):
-        kwargs = kwargs
+
         try:
             points_x = kwargs['points_x'].split(',')
             points_y = kwargs['points_y'].split(',')
@@ -122,30 +122,26 @@ class app(base_app):
 
         try:
             self.cfg['meta']['original'] = kwargs['original']
-            self.cfg.save()
         except:
             pass
 
         # convert strings to floats
-        points_x = map(float, points_x)
-        points_y = map(float, points_y)
-        points_xy = zip(points_x, points_y)
+        points_x = [float(x) for x in points_x]
+        points_y = [float(x) for x in points_y]
+
+        # save the displayed points coordinates
+        self.cfg['param']['points'] = [[x, y] for x, y in zip(points_x,
+                                                              points_y)]
+        self.cfg.save()
+
+        # rescale points coordinates according to image dimensions
+        points_x = [40000 * float(x) for x in points_x]
+        points_y = [40000 * float(x) for x in points_y]
 
         # write points coordinates to json file
         f = open(os.path.join(self.work_dir, 'params.json'), 'w')
         json.dump({'points': zip(points_x, points_y)}, f)
         f.close()
-        
-#        # write to text file
-#        points = self.work_dir + "points.txt"
-#        of = file(points, 'w')
-#        of.writelines('%g %g\n' % (x, y) for (x, y) in points_xy)
-#        of.close()
-
-        # generate dots image
-#        self.cfg['param']['points'] = json.dumps(points_xy)
-#        self.cfg.save()
-#        self.draw_points( self.cfg['param'] )
 
         http.refresh(self.base_url + 'run?key=%s' % self.key)
         return self.tmpl_out("wait.html")
@@ -156,17 +152,13 @@ class app(base_app):
     @cherrypy.expose
     @init_app
     def run(self, **kwargs):
-        print "MYLOG, in beggining of run, key is %s" % self.key
-        key=self.key
-
-        kwargs=kwargs
 
         try:
             run_time = time.time()
             self.run_algo()
             self.cfg['info']['run_time'] = time.time() - run_time
             self.cfg.save()
-        except TimeoutError:
+        except cherrypy.TimeoutError:
             return self.error(errcode='timeout')
         except RuntimeError:
             return self.error(errcode='runtime')
@@ -207,14 +199,11 @@ class app(base_app):
     @init_app
     def result(self):
 
-        f = open(os.path.join(self.work_dir, 'params.json'), 'r')
-        points = json.load(f)['points']
-        f.close()
-
         self.cfg['param']['has_already_run'] = True
         self.cfg.save()
 
-        return self.tmpl_out('paramresult.html', prev_points=points)
+        return self.tmpl_out('paramresult.html',
+                             prev_points=self.cfg['param']['points'])
 
     #---------------------------------------------------------------------------
     # browser error
@@ -223,5 +212,3 @@ class app(base_app):
     @init_app
     def browser_error(self, **kwargs):
         return self.tmpl_out('browser-error.html')
-
-#-------------------------------------------------------------------------------
