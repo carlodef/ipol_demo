@@ -50,24 +50,18 @@ class app(base_app):
         self.init_cfg()
 
         try:
-            prev_points = kwargs['zzblank.prev_points']
-            prev_xs = []
-            prev_ys = []
-            for x, y in json.loads(prev_points):
-                prev_xs.append(x)
-                prev_ys.append(y)
+            prev_points = json.loads(kwargs['zzblank.prev_points'])
         except:
-            prev_xs = None
-            prev_ys = None
+            prev_points = None
 
-        return self.params(key=self.key, prev_xs=prev_xs, prev_ys=prev_ys)
+        return self.params(key=self.key, prev_points=prev_points)
 
     #---------------------------------------------------------------------------
     # generate point selection page
     #---------------------------------------------------------------------------
     @cherrypy.expose
     @init_app
-    def params(self, newrun=False, msg=None, prev_xs=None, prev_ys=None):
+    def params(self, newrun=False, msg=None, prev_points=None):
 
         # initilize parameters
         self.cfg['param'] = {'img_width'  : self.sizeX,
@@ -83,7 +77,7 @@ class app(base_app):
         if newrun:
             self.clone_input()
 
-        return self.tmpl_out('paramresult.html')
+        return self.tmpl_out('paramresult.html', prev_points=prev_points)
 
     #---------------------------------------------------------------------------
     # draw points
@@ -220,11 +214,7 @@ class app(base_app):
         self.cfg['param']['has_already_run'] = True
         self.cfg.save()
 
-        return self.tmpl_out('paramresult.html',
-                             with_png=os.path.isfile(self.work_dir
-                                                     + 'output.png'),
-                             height=self.sizeX,
-                             prev_points=points)
+        return self.tmpl_out('paramresult.html', prev_points=points)
 
     #---------------------------------------------------------------------------
     # browser error

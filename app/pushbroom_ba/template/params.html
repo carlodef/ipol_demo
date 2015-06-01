@@ -1,6 +1,3 @@
-<script type="text/javascript">
-  <%include file="script.js" />
-</script>
 <body onload=draw_previous_points()>
 
 <%
@@ -41,12 +38,10 @@
   HEIGHT=${height};
 
   // array containers of lists of point coordinates
-  %if prev_xs:
-    var prev_xs=${prev_xs};  // fill with previous points
-    var prev_ys=${prev_ys};
+  %if prev_points:
+    var prev_points=${prev_points};  // fill with previous points
   %else:
-    var prev_xs=[];  // fill with previous points
-    var prev_ys=[];
+    var prev_points=[];
   %endif
 
   <%include file="draw_points.js" />

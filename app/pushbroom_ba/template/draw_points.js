@@ -8,8 +8,8 @@ var points_y=[];
 var circles=[];
 
 function draw_previous_points(){
-    for (var i =0; i<prev_xs.length; i++){
-        draw_point(prev_xs[i],prev_ys[i]);
+    for (var i =0; i<prev_points.length; i++){
+        draw_point(prev_points[i][0],prev_points[i][1]);
     }
 }
 
