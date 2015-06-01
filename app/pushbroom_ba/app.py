@@ -112,35 +112,39 @@ class app(base_app):
     @init_app
     def wait(self, **kwargs):
 
-        try:
-            points_x = kwargs['points_x'].split(',')
-            points_y = kwargs['points_y'].split(',')
-        except:
-            points_x = self.cfg['param']['points_x'].split(',')
-            points_y = self.cfg['param']['points_y'].split(',')
-
-        try:
-            self.cfg['meta']['original'] = kwargs['original']
-        except:
-            pass
+        # read points coordinates
+        points_x = kwargs['points_x'] if kwargs.has_key('points_x') else self.cfg['param']['points_x']
+        points_y = kwargs['points_y'] if kwargs.has_key('points_y') else self.cfg['param']['points_y']
 
         # convert strings to floats
-        points_x = [float(x) for x in points_x]
-        points_y = [float(x) for x in points_y]
+        points_x = [float(x) for x in points_x.split(',')]
+        points_y = [float(x) for x in points_y.split(',')]
 
         # save the displayed points coordinates
         self.cfg['param']['points'] = [[x, y] for x, y in zip(points_x,
                                                               points_y)]
         self.cfg.save()
 
-        # rescale points coordinates according to image dimensions
+        # create a json file containing the parameters for the algo
+        algo_params = {}
+
+        # points coordinates, rescaled to image dimensions
         points_x = [40000 * float(x) for x in points_x]
         points_y = [40000 * float(x) for x in points_y]
+        algo_params['points'] = zip(points_x, points_y)
 
-        # write points coordinates to json file
+        # noise parameters
+        algo_params['sigma'] = [float(kwargs[x]) for x in ['sigma_pixels',
+                                                           'sigma_meters']]
+
+        # write to json file
         f = open(os.path.join(self.work_dir, 'params.json'), 'w')
-        json.dump({'points': zip(points_x, points_y)}, f)
+        json.dump(algo_params, f)
         f.close()
+
+        # meta info
+        if kwargs.has_key('original'):
+            self.cfg['meta']['original'] = kwargs['original']
 
         http.refresh(self.base_url + 'run?key=%s' % self.key)
         return self.tmpl_out("wait.html")

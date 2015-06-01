@@ -7,6 +7,14 @@
 %>
 
 <form name="theform" action="${app.base_url + 'browser_error'}" method="post" >
+  <p>
+    Perturbate coordinates of the points by a zero-mean Gaussian random
+    variable with std dev <input type="text" name="sigma_pixels" value="0.2"
+    style="width:20px"> pixels <br>
+    Perturbate coordinates of the points by a zero-mean Gaussian random
+    variable with std dev <input type="text" name="sigma_meters" value="0.1"
+    style="width:20px"> meters
+  </p>
   <p>Click on the domain to add or remove points.</p>
   <input type="hidden" name="points_x" value="" id="points_x">
   <input type="hidden" name="points_y" value="" id="points_y">
