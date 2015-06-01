@@ -37,6 +37,22 @@ class app(base_app):
         base_dir = os.path.dirname(os.path.abspath(__file__))
         base_app.__init__(self, base_dir)
 
+
+    def build(self):
+        """
+        update local copy of pushbroom_ba source from its git repository
+        """
+        if not os.path.isdir(self.bin_dir):
+            print 'bin directory not found, doing a git clone'
+            cmd = ("git clone -b ipol --single-branch --depth 1"
+                   " git@github.com:carlodef/pushbroom_calibration.git %s" % self.bin_dir)
+            os.system(cmd)
+        else:
+            print 'bin directory found, doing a git pull'
+            os.system("cd %s && pwd && git pull && cd -" % self.bin_dir)
+
+        return
+
     # --------------------------------------------------------------------------
     # INPUT STEP
     # --------------------------------------------------------------------------
