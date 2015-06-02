@@ -25,10 +25,6 @@ class app(base_app):
     title = 'Attitude estimation for orbiting pushbroom cameras'
     xlink_article = 'http://dev.ipol.im/~carlo/a.pdf'
 
-    # Global variables for this demo
-    sizeX = 512
-    sizeY = 512
-
     #---------------------------------------------------------------------------
     # set up application
     #---------------------------------------------------------------------------
@@ -79,10 +75,7 @@ class app(base_app):
     def params(self, newrun=False, msg=None, prev_points=None):
 
         # initilize parameters
-        self.cfg['param'] = {'img_width'  : self.sizeX,
-                             'img_height' : self.sizeY,
-                             'points'     : json.dumps([]),
-                             'has_already_run' : False}
+        self.cfg['param'] = {'points': json.dumps([]), 'has_already_run': False}
         self.cfg.save()
 
         # generate dots image
@@ -145,9 +138,9 @@ class app(base_app):
         algo_params = {}
 
         # points coordinates, rescaled to image dimensions
-        points_x = [40000 * float(x) for x in points_x]
-        points_y = [40000 * float(x) for x in points_y]
-        algo_params['points'] = zip(points_x, points_y)
+        rows = [40000 * float(a) for a in points_y]
+        cols = [40000 * float(a) for a in points_x]
+        algo_params['points'] = zip(rows, cols)
 
         # noise parameters
         algo_params['sigma'] = [float(kwargs[x]) for x in ['sigma_pixels',
@@ -205,8 +198,8 @@ class app(base_app):
     #---------------------------------------------------------------------------
     def run_algo(self):
         stdout = open(os.path.join(self.work_dir, 'stdout.txt'), 'w')
-        p = self.run_proc(['run_single_image_problem.py', 'params.json'],
-                          stdout=stdout)
+        p = self.run_proc(['run_single_image_problem.py', 'params.json',
+                           'gcp.txt'], stdout=stdout)
         self.wait_proc(p)
         stdout.close()
         return
