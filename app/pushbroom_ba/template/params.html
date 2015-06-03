@@ -18,6 +18,36 @@ function Popup(url) {
    <input type="text" ${tagproperties} id="${name}" name="${name}" value="${value}"  />
 </%def>
 
+<%def name="radioAuto(name,value,text,defaultchecked=0)">
+   <%
+   # GENERATE A LIST OF NAMES
+   if name in app.cfg['param']:
+      if app.cfg['param'][name]!='' and type(app.cfg['param'][name]) == str and app.cfg['param'][name][0] == '[':
+         cklist = eval(app.cfg['param'][name])
+      else:
+         cklist=[ app.cfg['param'][name] ]
+         if app.cfg['param'][name] !='':
+             cklist = [ app.cfg['param'][name] ]
+         else:
+             cklist = []
+         endif
+      endif
+   else:
+      cklist = []
+   endif
+   %>
+
+   <input type="radio" name=${name} value="${value}"    
+   %if value in cklist:
+      checked
+   %else:
+      %if cklist==[] and defaultchecked==1:
+         checked
+      %endif
+   %endif
+   /><label>${text}</label>
+</%def>
+
 <%
   width  = 400
   height = 400
@@ -27,6 +57,32 @@ function Popup(url) {
   <input type="hidden" name="key" value="${app.key}">
   <input type="hidden" name="points_x" value="" id="points_x">
   <input type="hidden" name="points_y" value="" id="points_y">
+
+  <div style="float:left; width:100%;">
+      <fieldset style="padding-top:0.0ex">
+          <legend style="font-weight:bold;">Pushbroom camera parameters</legend>
+          <span style="float:left; margin-right:2em">
+              Choose a type of camera to set the sensor internals and the orbit parameters:<br>
+              <span style="float:left; margin-left:1em">
+                ${radioAuto('camera_type', 'pleiades', 'Pleiades &nbsp; ', 1)}
+                ${radioAuto('camera_type', 'wv1','WorldView-1 &nbsp; ')}
+                ${radioAuto('camera_type', 'wv2','WorldView-2 &nbsp; ')}
+                ${radioAuto('camera_type', 'wv3','WorldView-3 &nbsp; ')}
+              </span>
+          </span>
+      </fieldset>
+  </div>
+
+  <div style="float:left; width:100%;">
+      <fieldset style="padding-top:0.0ex">
+          <legend style="font-weight:bold;">Initial roll and pitch angles (degrees)</legend>
+          <span style="float:left; margin-right:2em">
+                  roll: ${textareaAuto('psi_x','0.0', 'size="5"')} &nbsp;
+                  pitch: ${textareaAuto('psi_y','0.0', 'size="5"')}
+          </span>
+      </fieldset>
+  </div>
+
   <p>
     Click on the image domain to add or remove ground control points.
     <input type="button"  value="Add" onclick="add_noise()"> <input type="text"
@@ -34,26 +90,26 @@ function Popup(url) {
   </p>
 
 
-<!-- DIV CONTAINER TO DRAW POINTS -->
-<div id="canvas_div" onclick="click_point(event)" style = "width:${width}px;
-    height:${height}px; border: 1px solid black">
-</div>
+  <!-- DIV CONTAINER TO DRAW POINTS -->
+  <div id="canvas_div" onclick="click_point(event)" style = "width:${width}px;
+      height:${height}px; border: 1px solid black">
+  </div>
 
-<div style="float:left; width:100%;">
-    <fieldset style="padding-top:0.0ex">
-        <legend style="font-weight:bold;">Perturbate coordinates</legend>
-        <span style="float:left; margin-right:2em">
-            Add zero-mean Gaussian random variables to the image and 3-space
-            point coordinates.<br>
-            <span style="float:left; margin-left:1em">
-                image sigma: ${textareaAuto('sigma_pixels','0.2', 'size="5"')}
-                pixels<br>
-                space sigma: ${textareaAuto('sigma_meters','0.1', 'size="5"')}
-                meters<br>
-            </span>
-        </span>
-    </fieldset>
-</div>
+  <div style="float:left; width:100%;">
+      <fieldset style="padding-top:0.0ex">
+          <legend style="font-weight:bold;">Perturbate coordinates</legend>
+          <span style="float:left; margin-right:2em">
+              Add zero-mean Gaussian random variables to the image and 3-space
+              point coordinates.<br>
+              <span style="float:left; margin-left:1em">
+                  image sigma: ${textareaAuto('sigma_pixels','0.2', 'size="5"')}
+                  pixels<br>
+                  space sigma: ${textareaAuto('sigma_meters','0.1', 'size="5"')}
+                  meters<br>
+              </span>
+          </span>
+      </fieldset>
+  </div>
 
   <input type="submit" name="action" value="Run the algorithm"
          onClick="return checkPoints('${app.base_url + 'wait'}');" >

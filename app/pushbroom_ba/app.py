@@ -128,6 +128,17 @@ class app(base_app):
         # create a json file containing the parameters for the algo
         algo_params = {}
 
+        # camera type
+        self.cfg['param']['camera_type'] = kwargs['camera_type']
+        self.cfg['param']['psi_x'] = kwargs['psi_x']
+        self.cfg['param']['psi_y'] = kwargs['psi_y']
+        algo_params['camera'] = {}
+        algo_params['camera']['instrument'] = kwargs['camera_type']
+        algo_params['camera']['orbit'] = kwargs['camera_type']
+        algo_params['camera']['view'] = {}
+        algo_params['camera']['view']['psi_x'] = kwargs['psi_x']
+        algo_params['camera']['view']['psi_y'] = kwargs['psi_y']
+
         # points coordinates, rescaled to image dimensions
         rows = [40000 * float(a) for a in points_y]
         cols = [40000 * float(a) for a in points_x]
