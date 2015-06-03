@@ -134,9 +134,10 @@ class app(base_app):
         algo_params['points'] = zip(rows, cols)
 
         # noise parameters
-        algo_params['sigma'] = [float(kwargs[x]) for x in ['sigma_pixels',
-                                                           'sigma_meters']]
-        self.cfg['param']['sigma'] = algo_params['sigma']
+        self.cfg['param']['sigma_pixels'] = float(kwargs['sigma_pixels'])
+        self.cfg['param']['sigma_meters'] = float(kwargs['sigma_meters'])
+        algo_params['sigma'] = [self.cfg['param']['sigma_pixels'],
+                                self.cfg['param']['sigma_meters']]
 
         # write to json file
         f = open(os.path.join(self.work_dir, 'params.json'), 'w')
@@ -177,7 +178,8 @@ class app(base_app):
         ar.add_file('stdout.txt', info='algo output')
         ar.add_file('points.png', info='input points')
         ar.add_info({"nb points" : int(self.cfg['param']['npts'])})
-        ar.add_info({"sigma" : self.cfg['param']['sigma']})
+        ar.add_info({"sigma" : [self.cfg['param']['sigma_pixels'],
+                                self.cfg['param']['sigma_meters']]})
         ar.save()
 
         http.redir_303(self.base_url + 'result?key=%s' % self.key)
