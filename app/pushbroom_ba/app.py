@@ -13,6 +13,8 @@ import cherrypy
 import os.path
 import json
 import time
+from cherrypy.lib import profiler
+
 
 from lib import base_app, http
 from lib.base_app import init_app
@@ -24,6 +26,8 @@ class app(base_app):
     # IPOL demo system configuration
     title = 'Attitude estimation for orbiting pushbroom cameras'
     xlink_article = 'http://dev.ipol.im/~carlo/a.pdf'
+
+    p = profiler.Profiler("/tmp/kkprof")
 
     #---------------------------------------------------------------------------
     # set up application
@@ -120,6 +124,10 @@ class app(base_app):
     @cherrypy.expose
     @init_app
     def wait(self, **kwargs):
+        self.p.run(self._wait, **kwargs)
+
+    @init_app
+    def _wait(self, **kwargs):
 
         # read points coordinates
         points_x = kwargs['points_x'] if kwargs.has_key('points_x') else self.cfg['param']['points_x']
