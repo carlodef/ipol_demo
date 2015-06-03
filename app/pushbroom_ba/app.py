@@ -13,6 +13,7 @@ import cherrypy
 import os.path
 import json
 import time
+import pylab
 from cherrypy.lib import profiler
 
 
@@ -78,7 +79,7 @@ class app(base_app):
     @init_app
     def params(self, newrun=False, msg=None, prev_points=None):
 
-        # initilize parameters
+        # initialize parameters
         self.cfg['param'] = {'points': json.dumps([]), 'has_already_run': False}
         self.cfg.save()
 
@@ -94,29 +95,11 @@ class app(base_app):
     #---------------------------------------------------------------------------
     # draw points
     #---------------------------------------------------------------------------
-    def draw_points(self, param):
-        points = json.loads( param['points'] )
-        width  = param['img_width']
-        height = param['img_height']
+    def draw_points(self, pts_x, pts_y, width, height):
+        pylab.plot(pts_x, pts_y, marker='o', color='r', ls='')
+        pylab.savefig(os.path.join(self.work_dir, 'points.png'),
+                      bbox_inches='tight')
 
-        gifparam = 'GIF:' + self.work_dir + 'foreground.gif'
-        ss = str(width) + 'x' + str(height)
-
-        ptargs = []
-        ptrad = 3
-        ptcolor = '#FF0000'
-
-        if len(points) > 0 :
-            ptargs =  ['-stroke', ptcolor]
-            ptargs += ['-strokewidth', '1.5', '-fill', ptcolor]
-            ptargs += ['-draw', ' '.join(['circle %(x)i,%(y)i %(x)i,%(y_r)i'
-                                          % {'x' : int(x*width),
-                                             'y' : int(y*height),
-                                             'y_r' : int(y*height) - ptrad}
-                                            for (x,y) in points])]
-        cmdrun = ['convert', '-quality', '100', '+antialias',
-                  '-size', ss, 'xc:transparent'] + ptargs + [gifparam]
-        subprocess.Popen( cmdrun ).wait()
 
     #---------------------------------------------------------------------------
     # input handling and run redirection
@@ -140,7 +123,10 @@ class app(base_app):
         # save the displayed points coordinates
         self.cfg['param']['points'] = [[x, y] for x, y in zip(points_x,
                                                               points_y)]
-        self.cfg.save()
+        self.cfg['param']['npts'] = len(self.cfg['param']['points'])
+        self.cfg['param']['img_width'] = 512
+        self.cfg['param']['img_height'] = 512
+        self.draw_points(points_x, points_y, 512, 512)
 
         # create a json file containing the parameters for the algo
         algo_params = {}
@@ -153,6 +139,7 @@ class app(base_app):
         # noise parameters
         algo_params['sigma'] = [float(kwargs[x]) for x in ['sigma_pixels',
                                                            'sigma_meters']]
+        self.cfg['param']['sigma'] = algo_params['sigma']
 
         # write to json file
         f = open(os.path.join(self.work_dir, 'params.json'), 'w')
@@ -163,6 +150,7 @@ class app(base_app):
         if kwargs.has_key('original'):
             self.cfg['meta']['original'] = kwargs['original']
 
+        self.cfg.save()
         http.refresh(self.base_url + 'run?key=%s' % self.key)
         return self.tmpl_out("wait.html")
 
@@ -183,19 +171,17 @@ class app(base_app):
         except RuntimeError:
             return self.error(errcode='runtime')
 
-#        # Archive
-#        if self.cfg['meta']['original']:
-#            ar = self.make_archive()
-#            ar.add_file('points.txt', info='input points')
-#            ar.add_file('points.eps', info='input points EPS')
-#            ar.add_file('points.png', info='input points PNG')
-#            ar.add_file('output.txt', info='output')
-#            ar.add_file('output.eps', info='output EPS')
-#            ar.add_file('output.png', info='output PNG')
-#            ar.add_file('output2.eps', info='output EPS')
-#            ar.add_file('output2.png', info='output PNG')
-#            #ar.add_info({"points" : self.cfg['param']['points']})
-#            ar.save()
+        # Archive
+        ar = self.make_archive()
+        ar.add_file('params.json', info='input parameters and point coordinates')
+        ar.add_file('gcp.txt', info='list of (row, col, alt, lon, lat)'
+                                    ' correspondences actually used (ie after'
+                                    ' noise addition) to estimate the attitudes')
+        ar.add_file('stdout.txt', info='algo output')
+        ar.add_file('points.png', info='input points')
+        ar.add_info({"nb points" : int(self.cfg['param']['npts'])})
+        ar.add_info({"sigma" : self.cfg['param']['sigma']})
+        ar.save()
 
         http.redir_303(self.base_url + 'result?key=%s' % self.key)
         return self.tmpl_out("run.html")
