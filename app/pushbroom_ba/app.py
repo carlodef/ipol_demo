@@ -14,7 +14,7 @@ import os.path
 import json
 import time
 import pylab
-from cherrypy.lib import profiler
+import cherrypy.lib.profiler
 
 
 from lib import base_app, http
@@ -28,7 +28,7 @@ class app(base_app):
     title = 'Attitude estimation for orbiting pushbroom cameras'
     xlink_article = 'http://dev.ipol.im/~carlo/a.pdf'
 
-    p = profiler.Profiler("/tmp/kkprof")
+    p = cherrypy.lib.profiler.Profiler("/tmp/kkprof")
 
     #---------------------------------------------------------------------------
     # set up application
@@ -82,9 +82,6 @@ class app(base_app):
         # initialize parameters
         self.cfg['param'] = {'points': json.dumps([]), 'has_already_run': False}
         self.cfg.save()
-
-        # generate dots image
-        #self.draw_points(self.cfg['param'])
 
         # return the parameters page
         if newrun:
@@ -171,7 +168,7 @@ class app(base_app):
         except RuntimeError:
             return self.error(errcode='runtime')
 
-        # Archive
+        # archive
         ar = self.make_archive()
         ar.add_file('params.json', info='input parameters and point coordinates')
         ar.add_file('gcp.txt', info='list of (row, col, alt, lon, lat)'
