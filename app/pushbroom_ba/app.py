@@ -136,13 +136,14 @@ class app(base_app):
         algo_params['camera']['instrument'] = kwargs['camera_type']
         algo_params['camera']['orbit'] = kwargs['camera_type']
         algo_params['camera']['view'] = {}
-        algo_params['camera']['view']['psi_x'] = kwargs['psi_x']
-        algo_params['camera']['view']['psi_y'] = kwargs['psi_y']
+        algo_params['camera']['view']['psi_x'] = float(kwargs['psi_x'])
+        algo_params['camera']['view']['psi_y'] = float(kwargs['psi_y'])
 
         # points coordinates, rescaled to image dimensions
         rows = [40000 * float(a) for a in points_y]
         cols = [40000 * float(a) for a in points_x]
-        algo_params['points'] = zip(rows, cols)
+        alts = [0 for a in points_x]
+        algo_params['points'] = zip(rows, cols, alts)
 
         # noise parameters
         self.cfg['param']['sigma_pixels'] = float(kwargs['sigma_pixels'])
