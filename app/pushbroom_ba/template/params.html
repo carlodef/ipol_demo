@@ -65,25 +65,17 @@ function Popup(url) {
   <div style="float:left; width:100%;">
       <fieldset style="padding-top:0.0ex">
           <legend style="font-weight:bold;">Pushbroom camera parameters</legend>
-          <span style="float:left; margin-right:2em">
-              Choose a type of camera to set the sensor internals and the orbit parameters:<br>
-              <span style="float:left; margin-left:1em">
-                ${radioAuto('camera_type', 'pleiades', 'Pleiades &nbsp; ', 1)}
-                ${radioAuto('camera_type', 'wv1','WorldView-1 &nbsp; ')}
-                ${radioAuto('camera_type', 'wv2','WorldView-2 &nbsp; ')}
-                ${radioAuto('camera_type', 'wv3','WorldView-3 &nbsp; ')}
-              </span>
-          </span>
-      </fieldset>
-  </div>
-
-  <div style="float:left; width:100%;">
-      <fieldset style="padding-top:0.0ex">
-          <legend style="font-weight:bold;">Initial roll and pitch angles (degrees)</legend>
-          <span style="float:left; margin-right:2em">
-                  roll: ${textareaAuto('psi_x','0.0', 'size="5"')} &nbsp;
-                  pitch: ${textareaAuto('psi_y','0.0', 'size="5"')}
-          </span>
+          <div style="float:left; width:150px;">
+              ${radioAuto('camera_type', 'pleiades', 'Pleiades', 1)}<br>
+              ${radioAuto('camera_type', 'wv1','WorldView-1')}<br>
+              ${radioAuto('camera_type', 'wv2','WorldView-2')}<br>
+              ${radioAuto('camera_type', 'wv3','WorldView-3')}<br>
+          </div>
+          <div style="float:left">
+              Initial pointing angles (degrees):<br>
+              &Psi;<sub>x</sub> &nbsp; ${textareaAuto('psi_x','0.0', 'size="5"')} roll<br>
+              &Psi;<sub>y</sub> &nbsp; ${textareaAuto('psi_y','0.0', 'size="5"')} pitch<br>
+          </div>
       </fieldset>
   </div>
 
@@ -105,8 +97,8 @@ function Popup(url) {
           <span style="float:left; margin-right:2em">
               Add zero-mean Gaussian random variables to the image and 3-space
               point coordinates.
-          </span><br><br><span style="float:left; margin-left:1em">
-              image sigma: ${textareaAuto('sigma_pixels','0.2', 'size="5"')} pixels
+          </span><br><span style="float:left; margin-left:1em">
+              &sigma;<sub>img</sub> &nbsp; ${textareaAuto('sigma_pixels','0.2', 'size="5"')} pixels
           </span>
           <!-- code for slider -->
           <div id="sigma_pixels_slider" name="sigma_pixels_slider" style="width:150px;float:left;margin-top:5px;margin-left:3em;font-size:10pt"></div>
@@ -116,10 +108,10 @@ function Popup(url) {
                   createLinkedSlider('#sigma_pixels', '#sigma_pixels_slider', 0, 2, .1);
               });
           </script>
-          <div style="clear:both"></div><br>
+          <div style="clear:both"></div>
           <!-- end of code for slider -->
           <span style="float:left; margin-left:1em">
-              space sigma: ${textareaAuto('sigma_meters','0.1', 'size="5"')} meters
+              &sigma;<sub>xyz</sub> &nbsp; ${textareaAuto('sigma_meters','0.1', 'size="5"')} meters
           </span>
           <!-- code for slider -->
           <div id="sigma_meters_slider" name="sigma_meters_slider" style="width:150px;float:left;margin-top:5px;margin-left:3em;font-size:10pt"></div>
@@ -129,7 +121,7 @@ function Popup(url) {
                   createLinkedSlider('#sigma_meters', '#sigma_meters_slider', 0, 5, .2);
               });
           </script>
-          <div style="clear:both"></div><br>
+          <div style="clear:both"></div>
           <!-- end of code for slider -->
       </fieldset>
   </div>
