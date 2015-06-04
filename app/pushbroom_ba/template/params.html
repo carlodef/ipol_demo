@@ -73,9 +73,32 @@ function Popup(url) {
           </div>
           <div style="float:left">
               Initial pointing angles (degrees):<br>
-              &Psi;<sub>x</sub> &nbsp; ${textareaAuto('psi_x','0.0', 'size="5"')} roll<br>
-              &Psi;<sub>y</sub> &nbsp; ${textareaAuto('psi_y','0.0', 'size="5"')} pitch<br>
-          </div>
+          <span style="float:left; margin-left:5px">
+              &Psi;<sub>x</sub> &nbsp; ${textareaAuto('psi_x','0.0', 'size="5"')} roll
+          </span>
+          <!-- code for slider -->
+          <div id="psi_x_slider" name="psi_x_slider" style="width:150px;float:left;margin-top:5px;margin-left:21px;font-size:10pt"></div>
+          <script type="text/javascript">
+              // Turn DIV slider into a slider linked to scale
+              $(document).ready(function() {
+                  createLinkedSlider('#psi_x', '#psi_x_slider', -20, 20, 1);
+              });
+          </script>
+          <div style="clear:both"></div>
+          <!-- end of code for slider -->
+          <span style="float:left; margin-left:5px">
+              &Psi;<sub>y</sub> &nbsp; ${textareaAuto('psi_y','0.0', 'size="5"')} pitch
+          </span>
+          <!-- code for slider -->
+          <div id="psi_y_slider" name="psi_y_slider" style="width:150px;float:left;margin-top:5px;margin-left:10px;font-size:10pt"></div>
+          <script type="text/javascript">
+              // Turn DIV slider into a slider linked to scale
+              $(document).ready(function() {
+                  createLinkedSlider('#psi_y', '#psi_y_slider', -20, 20, 1);
+              });
+          </script>
+          <div style="clear:both"></div>
+          <!-- end of code for slider -->
       </fieldset>
   </div>
 
@@ -101,7 +124,7 @@ function Popup(url) {
               &sigma;<sub>img</sub> &nbsp; ${textareaAuto('sigma_pixels','0.2', 'size="5"')} pixels
           </span>
           <!-- code for slider -->
-          <div id="sigma_pixels_slider" name="sigma_pixels_slider" style="width:150px;float:left;margin-top:5px;margin-left:3em;font-size:10pt"></div>
+          <div id="sigma_pixels_slider" name="sigma_pixels_slider" style="width:150px;float:left;margin-top:5px;margin-left:20px"></div>
           <script type="text/javascript">
               // Turn DIV slider into a slider linked to scale
               $(document).ready(function() {
@@ -114,7 +137,7 @@ function Popup(url) {
               &sigma;<sub>xyz</sub> &nbsp; ${textareaAuto('sigma_meters','0.1', 'size="5"')} meters
           </span>
           <!-- code for slider -->
-          <div id="sigma_meters_slider" name="sigma_meters_slider" style="width:150px;float:left;margin-top:5px;margin-left:3em;font-size:10pt"></div>
+          <div id="sigma_meters_slider" name="sigma_meters_slider" style="width:150px;float:left;margin-top:5px;margin-left:14px"></div>
           <script type="text/javascript">
               // Turn DIV slider into a slider linked to scale
               $(document).ready(function() {
