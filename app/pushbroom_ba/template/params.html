@@ -3,8 +3,12 @@
 <script type="text/javascript">
 // Popup window code
 function Popup(url) {
-   popupWindow = window.open(url,'help','height=400,width=800,left=10,top=10,resizable=yes,scrollbars=yes,toolbar=no,menubar=no,location=no,directories=no,status=no')
-}
+        popupWindow = window.open(url,'help','height=400,width=800,left=10,top=10,resizable=yes,scrollbars=yes,toolbar=no,menubar=no,location=no,directories=no,status=no')
+    }
+</script>
+
+<script type="text/javascript"
+    src="http://demo.ipol.im/demo/js/createlinkedslider.js">
 </script>
 
 <%def name="textareaAuto(name,defaultvalue,tagproperties='')">
@@ -37,7 +41,7 @@ function Popup(url) {
    endif
    %>
 
-   <input type="radio" name=${name} value="${value}"    
+   <input type="radio" name=${name} value="${value}"
    %if value in cklist:
       checked
    %else:
@@ -100,14 +104,33 @@ function Popup(url) {
           <legend style="font-weight:bold;">Perturbate coordinates</legend>
           <span style="float:left; margin-right:2em">
               Add zero-mean Gaussian random variables to the image and 3-space
-              point coordinates.<br>
-              <span style="float:left; margin-left:1em">
-                  image sigma: ${textareaAuto('sigma_pixels','0.2', 'size="5"')}
-                  pixels<br>
-                  space sigma: ${textareaAuto('sigma_meters','0.1', 'size="5"')}
-                  meters<br>
-              </span>
+              point coordinates.
+          </span><br><br><span style="float:left; margin-left:1em">
+              image sigma: ${textareaAuto('sigma_pixels','0.2', 'size="5"')} pixels
           </span>
+          <!-- code for slider -->
+          <div id="sigma_pixels_slider" name="sigma_pixels_slider" style="width:150px;float:left;margin-top:5px;margin-left:3em;font-size:10pt"></div>
+          <script type="text/javascript">
+              // Turn DIV slider into a slider linked to scale
+              $(document).ready(function() {
+                  createLinkedSlider('#sigma_pixels', '#sigma_pixels_slider', 0, 2, .1);
+              });
+          </script>
+          <div style="clear:both"></div><br>
+          <!-- end of code for slider -->
+          <span style="float:left; margin-left:1em">
+              space sigma: ${textareaAuto('sigma_meters','0.1', 'size="5"')} meters
+          </span>
+          <!-- code for slider -->
+          <div id="sigma_meters_slider" name="sigma_meters_slider" style="width:150px;float:left;margin-top:5px;margin-left:3em;font-size:10pt"></div>
+          <script type="text/javascript">
+              // Turn DIV slider into a slider linked to scale
+              $(document).ready(function() {
+                  createLinkedSlider('#sigma_meters', '#sigma_meters_slider', 0, 5, .2);
+              });
+          </script>
+          <div style="clear:both"></div><br>
+          <!-- end of code for slider -->
       </fieldset>
   </div>
 
