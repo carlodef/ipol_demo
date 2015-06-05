@@ -26,7 +26,7 @@ from lib.base_app import init_app
 class app(base_app):
     # IPOL demo system configuration
     title = 'Attitude estimation for orbiting pushbroom cameras'
-    xlink_article = 'http://dev.ipol.im/~carlo/a.pdf'
+    xlink_article = 'http://boucantrin.ovh.hw.ipol.im/~carlo/2015_ipol_pushbroom_camera_estimation.pdf'
 
     p = cherrypy.lib.profiler.Profiler("/tmp/kkprof")
 
