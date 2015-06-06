@@ -14,6 +14,7 @@ app_example/*/bin
 app/*/dl
 app/*/src
 app/*/bin
+
 # build log
 app_available/*/*.log
 app_example/*/*.log
