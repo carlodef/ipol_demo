@@ -54,26 +54,34 @@ class app(base_app):
         # store common file path in variables
         log_detection = self.base_dir + 'build_detection.log'
         log_addnoise = self.base_dir + 'build_addnoise.log'
-        
+
         # Create bin dir (delete the previous one if exists)
         if os.path.isdir(self.bin_dir):
             shutil.rmtree(self.bin_dir)
         os.mkdir(self.bin_dir)
-                 
-        # get code from git repo and compile it
-        os.system("git clone http://dev.ipol.im/git/carlo/modes.git "+self.src_dir)
-        build.run("make -j -C %s %s" % (self.src_dir + 'detection', 'ipol'), stdout=log_detection)
-        build.run("make -j -C %s %s" % (self.src_dir + 'addnoise', 'ipol'), stdout=log_addnoise)
-        
-        # cleanup the source dir
-        shutil.rmtree(self.src_dir)
+
+        # update local copy of src code
+        if not os.path.isdir(self.src_dir):
+            print 'src directory not found, doing a git clone'
+            cmd = ("git clone --depth 1 "
+                   "git@github.com:carlodef/orientation_modes.git %s" % self.src_dir)
+            os.system(cmd)
+        else:
+            print 'src directory found, doing a git pull'
+            os.system("cd %s && git pull && cd -" % self.src_dir)
+
+        # compile
+        build.run("make -j -C %s ipol" % os.path.join(self.src_dir, 'detection'),
+                  stdout=log_detection)
+        build.run("make -j -C %s ipol" % os.path.join(self.src_dir, 'addnoise'),
+                  stdout=log_addnoise)
 
         # link all the scripts to the bin dir : it works only if the scripts are not already there
         for file in glob.glob( os.path.join( self.base_dir, 'scripts/*')):
             os.symlink(file, os.path.join( self.bin_dir , os.path.basename(file)))
-        
+
         return
-    
+
     @cherrypy.expose
     def get_params_from_url(self, input_id=None, x=None, y=None, r=None, n_bins= None, sigma=None):
         """
@@ -82,7 +90,7 @@ class app(base_app):
         """
         self.new_key()
         self.init_cfg()
-        
+
         # get the images
         input_dict = config.file_dict(self.input_dir)
         fnames = input_dict[input_id]['files'].split()
@@ -94,7 +102,7 @@ class app(base_app):
         self.cfg['meta']['original'] = False
         self.cfg['meta']['input_id'] = input_id
         self.cfg.save()
-        
+
         # jump to the wait page
         return self.wait(key=self.key, newrun=False, xold="0", yold="0",
                           x=x, y=y, r=r, sigma=sigma, n_bins=n_bins)
@@ -215,8 +223,8 @@ class app(base_app):
         sizeY=im.size[1]
 
         return self.tmpl_out("result.html", sizeX=sizeX, sizeY=sizeY)
-    
-    
+
+
     @cherrypy.expose
     def crop_download(self):
         """
@@ -224,24 +232,24 @@ class app(base_app):
         Download the results
         """
         print '********************* Crop and download ************************'
-        
+
         # Get the coordinates of the keypoint
         x = int(self.cfg['param']['x'])
         y = int(self.cfg['param']['y'])
         r = int(self.cfg['param']['r'])
-        
+
         # Vertex of the square to crop
         x1 = x-2*r
         y1 = y-2*r
         x2 = x+2*r
         y2 = y+2*r
-        
+
         # Do the crop
         crop_image(self.work_dir + 'output_ac.png', x1, y1, x2, y2, \
                            self.work_dir + 'output_ac_cropped.png')
         crop_image(self.work_dir + 'output_lowe.png', x1, y1, x2, y2, \
                            self.work_dir + 'output_lowe_cropped.png')
-        
+
         # Get the other parameters
         n_bins = int(self.cfg['param']['n_bins'])
         sigma = int(self.cfg['param']['sigma'])
@@ -251,7 +259,7 @@ class app(base_app):
             '&r='+str(self.cfg['param']['r'])+\
             '&n_bins='+str(self.cfg['param']['n_bins'])+\
             '&sigma='+str(self.cfg['param']['sigma'])
-        
+
         # Write them in a txt file
         f = open(self.work_dir + 'params.txt', 'w')
         f.write(str(r)+'\n')
@@ -259,16 +267,16 @@ class app(base_app):
         f.write(str(sigma)+'\n')
         f.write(url)
         f.close()
-        
+
         # Put the files in a tar
         p = self.run_proc(['/bin/bash', 'zip_results.sh'])
         #self.wait_proc(p, timeout=self.timeout)
         #the above line makes python fail...
-        
+
         # Go back on the result page
         im=Image.open(self.work_dir + 'input_0.png')
         sizeX=im.size[0]
         sizeY=im.size[1]
         return self.tmpl_out("result_with_links.html", sizeX=sizeX, sizeY=sizeY)
-        
+
 
