@@ -8,7 +8,7 @@ base_dir = os.path.dirname(os.path.abspath(__file__))
 
 # (id:app) demo dict
 demo_dict = {}
-#demo_list = ['workshop_s2p', 'sgm', 'd_a_contrario_orientation_modes']
+#demo_list = ['workshop_s2p', 'sgm', 'orientation_modes']
 
 #for demo_id in demo_list:
 for demo_id in os.listdir(base_dir):
