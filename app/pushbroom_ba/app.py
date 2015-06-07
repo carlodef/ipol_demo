@@ -45,7 +45,7 @@ class app(base_app):
         """
         if not os.path.isdir(self.bin_dir):
             print 'bin directory not found, doing a git clone'
-            cmd = ("git clone -b ipol --single-branch --depth 1"
+            cmd = ("git clone -b ipol --depth 1"
                    " git@github.com:carlodef/pushbroom_calibration.git %s" % self.bin_dir)
             os.system(cmd)
         else:
