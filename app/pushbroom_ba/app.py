@@ -139,6 +139,10 @@ class app(base_app):
         algo_params['camera']['view']['psi_x'] = float(kwargs['psi_x'])
         algo_params['camera']['view']['psi_y'] = float(kwargs['psi_y'])
 
+        # perturbation
+        self.cfg['param']['perturbation_amplitude'] = kwargs['perturbation_amplitude']
+        algo_params['perturbation_amplitude'] = float(kwargs['perturbation_amplitude'])
+
         # points coordinates, rescaled to image dimensions
         rows = [40000 * float(a) for a in points_y]
         cols = [40000 * float(a) for a in points_x]

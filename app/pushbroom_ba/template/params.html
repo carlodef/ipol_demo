@@ -71,34 +71,53 @@ function Popup(url) {
               ${radioAuto('camera_type', 'wv2','WorldView-2')}<br>
               ${radioAuto('camera_type', 'wv3','WorldView-3')}<br>
           </div>
-          <div style="float:left">
+
+          <div style="float:left; width:300px;">
               Initial pointing angles (degrees):<br>
-          <span style="float:left; margin-left:5px">
-              &Psi;<sub>x</sub> &nbsp; ${textareaAuto('psi_x','0.0', 'size="5"')} roll
-          </span>
-          <!-- code for slider -->
-          <div id="psi_x_slider" name="psi_x_slider" style="width:150px;float:left;margin-top:5px;margin-left:21px;font-size:10pt"></div>
-          <script type="text/javascript">
-              // Turn DIV slider into a slider linked to scale
-              $(document).ready(function() {
-                  createLinkedSlider('#psi_x', '#psi_x_slider', -20, 20, 1);
-              });
-          </script>
-          <div style="clear:both"></div>
-          <!-- end of code for slider -->
-          <span style="float:left; margin-left:5px">
-              &Psi;<sub>y</sub> &nbsp; ${textareaAuto('psi_y','0.0', 'size="5"')} pitch
-          </span>
-          <!-- code for slider -->
-          <div id="psi_y_slider" name="psi_y_slider" style="width:150px;float:left;margin-top:5px;margin-left:10px;font-size:10pt"></div>
-          <script type="text/javascript">
-              // Turn DIV slider into a slider linked to scale
-              $(document).ready(function() {
-                  createLinkedSlider('#psi_y', '#psi_y_slider', -20, 20, 1);
-              });
-          </script>
-          <div style="clear:both"></div>
-          <!-- end of code for slider -->
+              <span style="float:left; margin-left:5px">
+                  &Psi;<sub>x</sub> &nbsp; ${textareaAuto('psi_x','0.0', 'size="5"')} roll
+              </span>
+              <!-- code for slider -->
+              <div id="psi_x_slider" name="psi_x_slider" style="width:150px;float:left;margin-top:5px;margin-left:21px;font-size:10pt"></div>
+              <script type="text/javascript">
+                  // Turn DIV slider into a slider linked to scale
+                  $(document).ready(function() {
+                      createLinkedSlider('#psi_x', '#psi_x_slider', -20, 20, 1);
+                  });
+              </script>
+              <div style="clear:both"></div>
+              <!-- end of code for slider -->
+              <span style="float:left; margin-left:5px">
+                  &Psi;<sub>y</sub> &nbsp; ${textareaAuto('psi_y','0.0', 'size="5"')} pitch
+              </span>
+              <!-- code for slider -->
+              <div id="psi_y_slider" name="psi_y_slider" style="width:150px;float:left;margin-top:5px;margin-left:10px;font-size:10pt"></div>
+              <script type="text/javascript">
+                  // Turn DIV slider into a slider linked to scale
+                  $(document).ready(function() {
+                      createLinkedSlider('#psi_y', '#psi_y_slider', -20, 20, 1);
+                  });
+              </script>
+              <div style="clear:both"></div>
+              <!-- end of code for slider -->
+          </div>
+
+          <div style="float:left">
+              Amplitude of the attitude perturbations (micro rad):<br>
+              <span style="float:left; margin-left:5px">
+                  ${textareaAuto('perturbation_amplitude','0.0', 'size="5"')}
+              </span>
+              <!-- code for slider -->
+              <div id="perturbation_amplitude_slider" name="perturbation_amplitude_slider" style="width:150px;float:left;margin-top:5px;margin-left:21px;font-size:10pt"></div>
+              <script type="text/javascript">
+                  // Turn DIV slider into a slider linked to scale
+                  $(document).ready(function() {
+                      createLinkedSlider('#perturbation_amplitude', '#perturbation_amplitude_slider', 0, 100, 1);
+                  });
+              </script>
+              <div style="clear:both"></div>
+              <!-- end of code for slider -->
+          </div>
       </fieldset>
   </div>
 
