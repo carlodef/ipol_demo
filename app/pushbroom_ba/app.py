@@ -141,7 +141,7 @@ class app(base_app):
 
         # perturbation
         self.cfg['param']['perturbation_amplitude'] = kwargs['perturbation_amplitude']
-        algo_params['perturbation_amplitude'] = float(kwargs['perturbation_amplitude'])
+        algo_params['perturbation_amplitude'] = 1e-6 * float(kwargs['perturbation_amplitude'])
 
         # points coordinates, rescaled to image dimensions
         rows = [40000 * float(a) for a in points_y]
