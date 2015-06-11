@@ -143,11 +143,10 @@ class app(base_app):
         self.cfg['param']['perturbation_amplitude'] = kwargs['perturbation_amplitude']
         algo_params['perturbation_amplitude'] = 1e-6 * float(kwargs['perturbation_amplitude'])
 
-        # points coordinates, rescaled to image dimensions
-        rows = [40000 * float(a) for a in points_y]
-        cols = [40000 * float(a) for a in points_x]
+        # normalized points coordinates
         alts = [0 for a in points_x]
-        algo_params['points'] = zip(rows, cols, alts)
+        algo_params['points'] = zip(points_y, points_x, alts)
+        algo_params['normalized_points'] = True
 
         # noise parameters
         self.cfg['param']['sigma_pixels'] = float(kwargs['sigma_pixels'])
