@@ -206,10 +206,12 @@ class app(base_app):
     #---------------------------------------------------------------------------
     def run_algo(self):
         stdout = open(os.path.join(self.work_dir, 'stdout.txt'), 'w')
+        stderr = open(os.path.join(self.work_dir, 'stderr.txt'), 'w')
         p = self.run_proc(['run_single_image_problem.py', 'params.json',
-                           'gcp.txt'], stdout=stdout)
+                           'gcp.txt'], stdout=stdout, stderr=stderr)
         self.wait_proc(p)
         stdout.close()
+        stderr.close()
         return
 
     #---------------------------------------------------------------------------
