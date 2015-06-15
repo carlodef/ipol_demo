@@ -94,6 +94,7 @@ class app(base_app):
     #---------------------------------------------------------------------------
     def draw_points(self, pts_x, pts_y, width, height):
         pylab.plot(pts_x, pts_y, marker='o', color='r', ls='')
+        pylab.axis('off')
         pylab.savefig(os.path.join(self.work_dir, 'points.png'),
                       bbox_inches='tight')
 
@@ -194,6 +195,9 @@ class app(base_app):
                                     ' noise addition) to estimate the attitudes')
         ar.add_file('stdout.txt', info='algo output')
         ar.add_file('points.png', info='input points')
+        ar.add_file('attitude_residuals.png', info='attitude errors')
+        ar.add_file('attitude_estimated_vs_measured_vs_truth.png',
+                    info='attitudes (estimated, measured and true)')
         ar.add_info({"nb points" : int(self.cfg['param']['npts'])})
         ar.add_info({"sigma" : [self.cfg['param']['sigma_pixels'],
                                 self.cfg['param']['sigma_meters']]})
