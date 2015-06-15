@@ -95,9 +95,8 @@ class app(base_app):
     def draw_points(self, pts_x, pts_y, width, height):
         pylab.clf()
         pylab.plot(pts_x, [1-y for y in pts_y], marker='o', color='r', ls='')
-        pylab.xlim(0, 1)
-        pylab.ylim(0, 1)
-        pylab.margins(0.01)
+        pylab.xlim(-.05, 1.05)
+        pylab.ylim(-.05, 1.05)
         pylab.axis('off')
         pylab.savefig(os.path.join(self.work_dir, 'points.png'),
                       bbox_inches='tight')
