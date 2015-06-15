@@ -103,9 +103,22 @@ function Popup(url) {
           </div>
 
           <div style="float:left">
-              Amplitude of the attitude perturbations (micro rad):<br>
+              Attitude perturbations:<br>
               <span style="float:left; margin-left:5px">
-                  ${textareaAuto('perturbation_amplitude','40', 'size="5"')}
+                  degree <i>d</i> ${textareaAuto('perturbation_degree','3', 'size="5"')}
+              </span>
+              <!-- code for slider -->
+              <div id="perturbation_degree_slider" name="perturbation_degree_slider" style="width:150px;float:left;margin-top:5px;margin-left:21px;font-size:10pt"></div>
+              <script type="text/javascript">
+                  // Turn DIV slider into a slider linked to scale
+                  $(document).ready(function() {
+                      createLinkedSlider('#perturbation_degree', '#perturbation_degree_slider', 0, 3, 1);
+                  });
+              </script>
+              <div style="clear:both"></div>
+              <!-- end of code for slider -->
+              <span style="float:left; margin-left:5px">
+                  amplitude <i>a</i> (&mu;rad) ${textareaAuto('perturbation_amplitude','40', 'size="5"')}
               </span>
               <!-- code for slider -->
               <div id="perturbation_amplitude_slider" name="perturbation_amplitude_slider" style="width:150px;float:left;margin-top:5px;margin-left:21px;font-size:10pt"></div>

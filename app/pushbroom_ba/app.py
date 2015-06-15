@@ -142,6 +142,8 @@ class app(base_app):
         # perturbation
         self.cfg['param']['perturbation_amplitude'] = kwargs['perturbation_amplitude']
         algo_params['perturbation_amplitude'] = 1e-6 * float(kwargs['perturbation_amplitude'])
+        self.cfg['param']['perturbation_degree'] = kwargs['perturbation_degree']
+        algo_params['perturbation_degree'] = int(kwargs['perturbation_degree'])
 
         # normalized points coordinates
         alts = [0 for a in points_x]
