@@ -1,0 +1,167 @@
+<script src="input/js/openseadragon/openseadragon.min.js"></script>
+<script src="input/js/jquery/jquery-1.11.3.js"></script>
+
+ROI coordinates (x, y, w, h):
+<span id="Info">select a rectangle by dragging with right-click</span>
+
+<div id="toolbarDiv" class="toolbar" style="position: relative;">
+    <span style='float:right;margin:10px 20px 0 0'>
+        | <a id="zoom-in" href="#zoom-in">Zoom In</a>
+        | <a id="zoom-out" href="#zoom-out">Zoom Out</a>
+        | <a id="home" href="#home">Home</a>
+        | <a id="full-page" href="#full-page">Full Page</a>
+    </span>
+    <span style='float:left;margin:10px 0 0 20px'>
+    &lt;&nbsp;
+        <a id="previous" href="#previous-page">Previous</a>
+        | <a id="next" href="#next-page">Next</a>
+        &nbsp;&gt;
+        <span id='currentpage'> 1 of 3 </span>
+    </span>
+</div>
+
+<div id="image-display" class="openseadragon">
+
+<style>
+    .highlight{
+        opacity:    0.4;
+        filter:     alpha(opacity=40);
+        border:     2px solid #0A7EbE;
+        /*
+        outline:    10px auto #0A7EbE;
+        */
+        background-color: white;
+    }
+    .highlight:hover, .highlight:focus{
+        background-color: transparent;
+        /*
+        opacity:    0.7;
+        filter:     alpha(opacity=70);
+        */
+    }
+    /*
+    .navigator{
+        opacity:    0.4;
+        filter:     alpha(opacity=40);
+        border:     2px solid #900;
+        outline:    none;
+        background-color: #900;
+    }
+    .filter{
+        opacity:    0.2;
+        filter:     alpha(opacity=20);
+        background-color: #7FFF00;
+    }
+    */
+</style>
+
+<script type="text/javascript">
+    // canvas
+    var viewer = OpenSeadragon({
+        id: "image-display",
+        //prefixUrl: "/openseadragon/images/",
+        tileSources: ${list_of_paths_to_dzi_files},
+        sequenceMode: true,
+        preserveViewport: true,
+        preserveOverlays: true,
+        showNavigator: true,
+        gestureSettingsMouse: {flickEnabled: false, flickMomentum: 0.0, clickToZoom: true},
+        //toolbar: "toolbarDiv",
+        zoomInButton: "zoom-in",
+        zoomOutButton:  "zoom-out",
+        homeButton:     "home",
+        fullPageButton: "full-page",
+        nextButton:     "next",
+        previousButton: "previous"
+    });
+
+    // disable context menu with right click on top of OpenSeaDragon container
+    // https://github.com/sul-dlss/sul-embed/issues/232
+    $('body').on('contextmenu', '.openseadragon-container', function() {return false;});
+
+    // enable keyboard navigation
+    document.getElementById('image-display').querySelector('.openseadragon-canvas').focus();
+
+    // max ROI dimensions, in pixels
+    var MAX_W = 2000;
+    var MAX_H = 2000;
+
+    // first right-click coordinates in viewport and image space
+    var viewportClick = new OpenSeadragon.Point(0, 0);
+    var imageClick = new OpenSeadragon.Point(0, 0);
+
+    // ROI coordinates in viewport and image space, updated by events
+    var viewportRoi = new OpenSeadragon.Rect(0, 0, 0, 0);
+    var imageRoi = new OpenSeadragon.Rect(0, 0, 0, 0);
+    var canvasPress = false;
+
+    // print the image index in the stereo sequence
+    viewer.addHandler("page", function (data) {
+        document.getElementById("currentpage").innerHTML = ( data.page + 1 ) + " of 3";
+    });
+
+    // wire the press event: recover coordinates on right click
+    // http://openseadragon.github.io/examples/viewport-coordinates
+    viewer.addHandler("canvas-nonprimary-press", function(e) {
+        viewportClick = viewer.viewport.pointFromPixel(e.position);
+        imageClick = viewer.viewport.viewportToImageCoordinates(viewportClick);
+	    canvasPress = true;
+        tracker.setTracking(true);
+
+	    viewer.removeOverlay("roi-selection");
+        var elt = document.createElement("div");
+        elt.id = "roi-selection";
+        elt.className = "highlight";
+        viewer.addOverlay({
+            element: elt,
+            location: new OpenSeadragon.Rect(0, 0, 0, 0)
+        });
+    });
+
+    viewer.addHandler("canvas-nonprimary-release", function(e) {
+        canvasPress = false;
+        tracker.setTracking(false);
+    });
+
+    // recover coordinates in real time thanks to object OpenSeaDragon MouseTracker object
+    // http://openseadragon.github.io/examples/viewport-coordinates
+    var tracker = new OpenSeadragon.MouseTracker({
+        element: viewer.container,
+        moveHandler: function(event) {
+            var viewportPoint = viewer.viewport.pointFromPixel(event.position);
+            var imagePoint = viewer.viewport.viewportToImageCoordinates(viewportPoint);
+            imageRoi.x = Math.min(imagePoint.x, imageClick.x);
+            imageRoi.y = Math.min(imagePoint.y, imageClick.y);
+            imageRoi.width  = Math.abs(imagePoint.x - imageClick.x);
+            imageRoi.height = Math.abs(imagePoint.y - imageClick.y);
+            if (imageRoi.width > MAX_W) {
+                imageRoi.width = MAX_W;
+                if (imagePoint.x < imageClick.x) {
+                    imageRoi.x = imageClick.x - MAX_W;
+                }
+            }
+            if (imageRoi.height > MAX_H) {
+                imageRoi.height = MAX_H;
+                if (imagePoint.y < imageClick.y) {
+                    imageRoi.y = imageClick.y - MAX_H;
+                }
+            }
+            viewportRoi = viewer.viewport.imageToViewportRectangle(imageRoi)
+            // var zoom = viewer.viewport.getZoom(true);
+            // var imageZoom = viewer.viewport.viewportToImageZoom(zoom);
+
+            // HACK! should be done by notifying some other thing
+	        if(canvasPress) {
+                viewer.updateOverlay("roi-selection", viewportRoi)
+                document.getElementById("Info").innerHTML =
+                    imageRoi.x.toFixed(0).concat(", ",
+                            imageRoi.y.toFixed(0), ", ",
+                            imageRoi.width.toFixed(0), ", ",
+                            imageRoi.height.toFixed(0));
+                //document.getElementById("Info").innerHTML = imageRoi.toString();
+	        }
+        }
+    });
+
+</script>
+</div>
