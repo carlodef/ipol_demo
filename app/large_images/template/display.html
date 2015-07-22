@@ -16,7 +16,7 @@ ROI coordinates (x, y, w, h):
         <a id="previous" href="#previous-page">Previous</a>
         | <a id="next" href="#next-page">Next</a>
         &nbsp;&gt;
-        <span id='currentpage'> 1 of 3 </span>
+        <span id='currentpage'> 1 of ${len(list_of_paths_to_dzi_files)}</span>
     </span>
 </div>
 
@@ -27,10 +27,10 @@ ROI coordinates (x, y, w, h):
         opacity:    0.4;
         filter:     alpha(opacity=40);
         border:     2px solid #0A7EbE;
+        background-color: white;
         /*
         outline:    10px auto #0A7EbE;
         */
-        background-color: white;
     }
     .highlight:hover, .highlight:focus{
         background-color: transparent;
@@ -38,6 +38,9 @@ ROI coordinates (x, y, w, h):
         opacity:    0.7;
         filter:     alpha(opacity=70);
         */
+    }
+    .highlight-during-selection{
+        border:     2px solid #0A7EbE;
     }
     /*
     .navigator{
@@ -59,7 +62,6 @@ ROI coordinates (x, y, w, h):
     // canvas
     var viewer = OpenSeadragon({
         id: "image-display",
-        //prefixUrl: "/openseadragon/images/",
         tileSources: ${list_of_paths_to_dzi_files},
         sequenceMode: true,
         preserveViewport: true,
@@ -87,17 +89,17 @@ ROI coordinates (x, y, w, h):
     var MAX_H = 2000;
 
     // first right-click coordinates in viewport and image space
-    var viewportClick = new OpenSeadragon.Point(0, 0);
-    var imageClick = new OpenSeadragon.Point(0, 0);
+    var viewportClick = new OpenSeadragon.Point(0., 0.);
+    var imageClick = new OpenSeadragon.Point(0., 0.);
 
     // ROI coordinates in viewport and image space, updated by events
-    var viewportRoi = new OpenSeadragon.Rect(0, 0, 0, 0);
-    var imageRoi = new OpenSeadragon.Rect(0, 0, 0, 0);
+    var viewportRoi = new OpenSeadragon.Rect(0., 0., 0., 0.);
+    var imageRoi = new OpenSeadragon.Rect(0., 0., 0., 0.);
     var canvasPress = false;
 
     // print the image index in the stereo sequence
     viewer.addHandler("page", function (data) {
-        document.getElementById("currentpage").innerHTML = ( data.page + 1 ) + " of 3";
+        document.getElementById("currentpage").innerHTML = ( data.page + 1 ) + " of ${len(list_of_paths_to_dzi_files)}";
     });
 
     // wire the press event: recover coordinates on right click
@@ -111,16 +113,17 @@ ROI coordinates (x, y, w, h):
 	    viewer.removeOverlay("roi-selection");
         var elt = document.createElement("div");
         elt.id = "roi-selection";
-        elt.className = "highlight";
+        elt.className = "highlight-during-selection";
         viewer.addOverlay({
             element: elt,
-            location: new OpenSeadragon.Rect(0, 0, 0, 0)
+            location: new OpenSeadragon.Rect(0., 0., 0., 0.)
         });
     });
 
     viewer.addHandler("canvas-nonprimary-release", function(e) {
         canvasPress = false;
         tracker.setTracking(false);
+        document.getElementById("roi-selection").className = "highlight";
     });
 
     // recover coordinates in real time thanks to object OpenSeaDragon MouseTracker object
@@ -146,7 +149,8 @@ ROI coordinates (x, y, w, h):
                     imageRoi.y = imageClick.y - MAX_H;
                 }
             }
-            viewportRoi = viewer.viewport.imageToViewportRectangle(imageRoi)
+            viewportRoi = viewer.viewport.imageToViewportRectangle(imageRoi);
+            //console.log(viewportRoi);
             // var zoom = viewer.viewport.getZoom(true);
             // var imageZoom = viewer.viewport.viewportToImageZoom(zoom);
 
