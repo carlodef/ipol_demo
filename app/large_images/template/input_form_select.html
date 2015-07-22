@@ -23,6 +23,14 @@
       %endif
 </%def>
 
+<!--Overwrite css style to make img thumbnails larger-->
+<style>
+form .select_input input[type="image"] {
+    width: 5cm;
+    height: 5cm;
+    background: white;
+    border: 1px solid #DDDDDD; }
+</style>
 
 %if inputd:
 <form action="${app.base_url + 'input_select'}" method="get">
@@ -41,7 +49,7 @@ Click on an images to use it as the algorithm input.
 			${imgflip(inputd[id]['tn_url'],inputd[id]['title'],id)}
 			##%for url in inputd[id]['tn_url']:
 			##%endfor
-            <span class="label">${inputd[id]['title'] | h}</br>${inputd[id]['date']}</span>
+            <span class="label">${inputd[id]['title'] | h}</br>${inputd[id]['date']}</br>${inputd[id]['nb_img']} images</span>
 			</div>
 		%endif
 	%endif
@@ -58,7 +66,7 @@ Click on an images to use it as the algorithm input.
 			${imgflip(inputd[id]['tn_url'],inputd[id]['title'],id)}
 			##%for url in inputd[id]['tn_url']:
 			##%endfor
-            <span class="label">${inputd[id]['title'] | h}</br>${inputd[id]['date']}</span>
+            <span class="label">${inputd[id]['title'] | h}</br>${inputd[id]['date']}</br>${inputd[id]['nb_img']} images</span>
 			</div>
 		%endif
 	%endif
