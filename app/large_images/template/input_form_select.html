@@ -33,15 +33,15 @@ Click on an images to use it as the algorithm input.
 <div style="max-height:60em; overflow:auto;">
 
    <fieldset>
-      <legend>Triplets</legend>
+      <legend>Pleiades 1A</legend>
 %for id in sorted(inputd.keys()):
-	%if inputd[id]['nb_img'] == 3:
+	%if inputd[id]['satellite'] == 'Pleiades 1A':
 		%if 'hidden' not in inputd[id].keys():
 			<div class="select_input">
 			${imgflip(inputd[id]['tn_url'],inputd[id]['title'],id)}
 			##%for url in inputd[id]['tn_url']:
 			##%endfor
-            <span class="label">${inputd[id]['title'] | h}</br>${inputd[id]['date']}</br>${inputd[id]['satellite']}</span>
+            <span class="label">${inputd[id]['title'] | h}</br>${inputd[id]['date']}</span>
 			</div>
 		%endif
 	%endif
@@ -50,15 +50,15 @@ Click on an images to use it as the algorithm input.
 
 
    <fieldset>
-      <legend>Pairs</legend>
+      <legend>Pleiades 1B</legend>
 %for id in sorted(inputd.keys()):
-	%if inputd[id]['nb_img'] == 2:
+	%if inputd[id]['satellite'] == 'Pleiades 1B':
 		%if 'hidden' not in inputd[id].keys():
 			<div class="select_input">
 			${imgflip(inputd[id]['tn_url'],inputd[id]['title'],id)}
 			##%for url in inputd[id]['tn_url']:
 			##%endfor
-            <span class="label">${inputd[id]['title'] | h}</br>${inputd[id]['date']}</br>${inputd[id]['satellite']}</span>
+            <span class="label">${inputd[id]['title'] | h}</br>${inputd[id]['date']}</span>
 			</div>
 		%endif
 	%endif

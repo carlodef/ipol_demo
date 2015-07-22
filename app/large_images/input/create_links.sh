@@ -18,12 +18,21 @@ function create_links ()
             # dzi files
             link_name=`printf im$suffix\_%02d_files $i`
             ln -sf ${image%.*}_files $dataset/$link_name
-            # preview - the wildcard '*' does the job if we assume there is
-            # ONLY ONE image per folder
+
+            # WARNING: the wildcard '*' works if there is ONLY ONE image per folder
+            # preview
             abs_path=`dirname $image`/PREVIEW_*.JPG
             link_name=`printf prev$suffix\_%02d.jpg $i`
             cp $abs_path $dataset/
             ln -sf `basename $abs_path` $dataset/$link_name
+            # rpc
+            abs_path=`dirname $image`/RPC_*.XML
+            link_name=`printf rpc$suffix\_%02d.xml $i`
+            ln -sf $abs_path $dataset/$link_name
+            # dim (other xml file with dimensions informations)
+            abs_path=`dirname $image`/DIM_*.XML
+            link_name=`printf dim$suffix\_%02d.xml $i`
+            ln -sf $abs_path $dataset/$link_name
     done
 }
 
@@ -47,8 +56,14 @@ if [ ! -d $pleiades_dir ] ; then
     exit
 fi
 
+# create 'pleiades' dir
+mkdir -p pleiades
+mv index.cfg index.cfg.bak
+cd pleiades
+
 # step 1: parse the pleiades data folder to extract the paths to *.dzi images
 for f in $pleiades_dir/*; do
+#for f in $pleiades_dir/mercedes; do
     if [ -d $f ]; then
         mkdir -p `basename $f`
         if ls $f/dataset_* &> /dev/null; then
@@ -56,14 +71,14 @@ for f in $pleiades_dir/*; do
             for ff in $f/dataset_*; do
                 mkdir -p `basename $f`/`basename $ff`
                 find $ff -not \( -path *_files -prune \) -type f -name "*_P_*16BITS.dzi" | sort > `basename $f`/`basename $ff`/paths_panchro.txt
-                find $ff -not \( -path *_files -prune \) -type f -name "*_MS_*16BITS.dzi" | sort > `basename $f`/`basename $ff`/paths_ms.txt
-                find $ff -not \( -path *_files -prune \) -type f -name "*_PXS_*16BITS.dzi" | sort > `basename $f`/`basename $ff`/paths_pxs.txt
+                # find $ff -not \( -path *_files -prune \) -type f -name "*_MS_*16BITS.dzi" | sort > `basename $f`/`basename $ff`/paths_ms.txt
+                # find $ff -not \( -path *_files -prune \) -type f -name "*_PXS_*16BITS.dzi" | sort > `basename $f`/`basename $ff`/paths_pxs.txt
             done
         else
             # the dataset has no subdatasets
             find $f -not \( -path *_files -prune \) -type f -name "*_P_*16BITS.dzi" | sort > `basename $f`/paths_panchro.txt
-            find $f -not \( -path *_files -prune \) -type f -name "*_MS_*16BITS.dzi" | sort > `basename $f`/paths_ms.txt
-            find $f -not \( -path *_files -prune \) -type f -name "*_PXS_*16BITS.dzi" | sort > `basename $f`/paths_pxs.txt
+            # find $f -not \( -path *_files -prune \) -type f -name "*_MS_*16BITS.dzi" | sort > `basename $f`/paths_ms.txt
+            # find $f -not \( -path *_files -prune \) -type f -name "*_PXS_*16BITS.dzi" | sort > `basename $f`/paths_pxs.txt
         fi
     fi
 done
@@ -72,11 +87,12 @@ done
 for dataset in `find * -type d`; do
     if [ -s "$dataset/paths_panchro.txt" ] ; then
         create_links $dataset "paths_panchro.txt" "_panchro"
+        python ../print_cfg.py $dataset
     fi
-    if [ -s "$dataset/paths_ms.txt" ] ; then
-        create_links $dataset "paths_ms.txt" "_ms"
-    fi
-    if [ -s "$dataset/paths_pxs.txt" ] ; then
-        create_links $dataset "paths_pxs.txt" "_pxs"
-    fi
+    # if [ -s "$dataset/paths_ms.txt" ] ; then
+    #     create_links $dataset "paths_ms.txt" "_ms"
+    # fi
+    # if [ -s "$dataset/paths_pxs.txt" ] ; then
+    #     create_links $dataset "paths_pxs.txt" "_pxs"
+    # fi
 done
