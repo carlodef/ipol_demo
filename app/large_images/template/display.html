@@ -9,6 +9,9 @@ ROI coordinates (x, y, w, h):
 <span><span>brightness</span><input type="range" oninput="set('brightness', this.valueAsNumber);" value="2" step="0.1" min="0" max="10"></span>
 <span><span>contrast</span><input type="range" oninput="set('contrast', this.valueAsNumber);" value="1" step="0.1" min="0" max="10"></span>
 
+<div class="demoarea"/>
+<div id="navigatorDiv" class="openseadragon-small"></div>
+
 <div id="toolbarDiv" class="toolbar" style="position: relative;">
     <span style='float:right;margin:10px 20px 0 0'>
         | <a id="zoom-in" href="#zoom-in">Zoom In</a>
@@ -25,7 +28,17 @@ ROI coordinates (x, y, w, h):
     </span>
 </div>
 
-<div id="image-display" class="openseadragon">
+<div id="image-display" class="openseadragon"> </div>
+</div>
+
+<form action="${app.base_url + 'crop'}" method="get">
+    <input type="hidden" id="roi_x" name="x" value="0"/>
+    <input type="hidden" id="roi_y" name="y" value="0"/>
+    <input type="hidden" id="roi_w" name="w" value="0"/>
+    <input type="hidden" id="roi_h" name="h" value="0"/>
+    <input type="hidden" name="key" value="${app.key}">
+    <input type="submit" value="crop"/>
+</form>
 
 <style>
     .highlight{
@@ -47,7 +60,6 @@ ROI coordinates (x, y, w, h):
     .highlight-during-selection{
         border:     2px solid #0A7EbE;
     }
-    /*
     .navigator{
         opacity:    0.4;
         filter:     alpha(opacity=40);
@@ -55,6 +67,7 @@ ROI coordinates (x, y, w, h):
         outline:    none;
         background-color: #900;
     }
+    /*
     .filter{
         opacity:    0.2;
         filter:     alpha(opacity=20);
@@ -72,7 +85,9 @@ ROI coordinates (x, y, w, h):
         preserveViewport: true,
         preserveOverlays: true,
         showNavigator: true,
-        gestureSettingsMouse: {flickEnabled: false, flickMomentum: 0.0, clickToZoom: true},
+        //navigatorId:   "navigatorDiv",
+        gestureSettingsMouse: {flickEnabled: true, flickMomentum: 0.0, clickToZoom: true},
+        viewport: {zoomSpring: {animationTime: 0.0}, centerSpringX: {animationTime: 0.0}, centerSpringY: {animationTime: 0.0}},
         //toolbar: "toolbarDiv",
         zoomInButton: "zoom-in",
         zoomOutButton:  "zoom-out",
@@ -129,6 +144,12 @@ ROI coordinates (x, y, w, h):
         canvasPress = false;
         tracker.setTracking(false);
         document.getElementById("roi-selection").className = "highlight";
+
+        // pass roi coordinates to the GET form, for the crop
+        document.getElementById("roi_x").value = imageRoi.x.toFixed(0);
+        document.getElementById("roi_y").value = imageRoi.y.toFixed(0);
+        document.getElementById("roi_w").value = imageRoi.width.toFixed(0);
+        document.getElementById("roi_h").value = imageRoi.height.toFixed(0);
     });
 
     // recover coordinates in real time thanks to object OpenSeaDragon MouseTracker object
@@ -194,4 +215,3 @@ function render() {
   el.style.webkitFilter = val;
 }
 </script>
-</div>

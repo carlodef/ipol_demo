@@ -12,6 +12,8 @@ import shutil
 import time
 import numpy as np
 import json
+import ast
+import subprocess
 
 class app(base_app):
     """
@@ -68,6 +70,7 @@ class app(base_app):
         return self.tmpl_out("input.html", inputd=input_dict)
 
     @cherrypy.expose
+    @init_app
     def input_select(self, **kwargs):
         """
         use the selected available input images
@@ -94,14 +97,33 @@ class app(base_app):
 #            clr_files_abs = [os.path.join(self.input_dir, f) for f in clr_files]
 #            os.symlink(img_files_abs[0], os.path.join(self.work_dir, 'img_01_clr.tif'))
 
-        # jump to the display page
+        # save paths to the tiff images
         input_dict = config.file_dict(self.input_dir)
-        dzi_paths = input_dict[input_id]['dzi'].split()
-        return self.display(dzi_paths)
+        self.cfg['param']['tif_paths'] = input_dict[input_id]['tif'].split()
+        self.cfg['param']['dzi_paths'] = input_dict[input_id]['dzi16'].split()
+        self.cfg.save()
+
+        # jump to the display page
+        return self.display(key=self.key)
 
 
-    def display(self, dzi_paths, msg=None):
+    @init_app
+    def display(self):
         """
         Render the display page 
         """
+        dzi_paths = self.cfg['param']['dzi_paths']
         return self.tmpl_out("display.html", list_of_paths_to_dzi_files=dzi_paths)
+
+
+    @cherrypy.expose
+    @init_app
+    def crop(self, x, y, w, h):
+        """
+        """
+        tif_paths = ast.literal_eval(self.cfg['param']['tif_paths'])
+        p = subprocess.Popen(['/usr/bin/gdal_translate', '-srcwin', str(x),
+            str(y), str(w), str(h), os.path.join(self.input_dir, tif_paths[0]),
+            os.path.join(self.work_dir, 'crop_1.tif')])
+        return self.tmpl_out("result.html", height=h)
+
