@@ -12,12 +12,25 @@ function create_links ()
     for image in `cat $dataset/$files_list`
         do
             i=$(($i+1))
-            # dzi image
-            link_name=`printf im$suffix\_%02d.dzi $i`
+            # tif image
+            link_name=`printf im$suffix\_%02d.tif $i`
             ln -sf $image $dataset/$link_name
-            # dzi files
-            link_name=`printf im$suffix\_%02d_files $i`
-            ln -sf ${image%.*}_files $dataset/$link_name
+
+            # dzi 8BITS image
+            link_name=`printf im$suffix\_8BITS\_%02d.dzi $i`
+            ln -sf ${image%%.*}_8BITS.dzi $dataset/$link_name
+
+            # dzi 8BITS files
+            link_name=`printf im$suffix\_8BITS\_%02d_files $i`
+            ln -sf ${image%%.*}_8BITS_files $dataset/$link_name
+
+            # dzi 16BITS image
+            link_name=`printf im$suffix\_16BITS\_%02d.dzi $i`
+            ln -sf ${image%%.*}_16BITS.dzi $dataset/$link_name
+
+            # dzi 16BITS files
+            link_name=`printf im$suffix\_16BITS\_%02d_files $i`
+            ln -sf ${image%%.*}_16BITS_files $dataset/$link_name
 
             # WARNING: the wildcard '*' works if there is ONLY ONE image per folder
             # preview
@@ -25,10 +38,12 @@ function create_links ()
             link_name=`printf prev$suffix\_%02d.jpg $i`
             cp $abs_path $dataset/
             ln -sf `basename $abs_path` $dataset/$link_name
+
             # rpc
             abs_path=`dirname $image`/RPC_*.XML
             link_name=`printf rpc$suffix\_%02d.xml $i`
             ln -sf $abs_path $dataset/$link_name
+
             # dim (other xml file with dimensions informations)
             abs_path=`dirname $image`/DIM_*.XML
             link_name=`printf dim$suffix\_%02d.xml $i`
@@ -61,7 +76,7 @@ mkdir -p pleiades
 mv index.cfg index.cfg.bak
 cd pleiades
 
-# step 1: parse the pleiades data folder to extract the paths to *.dzi images
+# step 1: parse the pleiades data folder to extract the paths to *.JP2.TIF images
 for f in $pleiades_dir/*; do
 #for f in $pleiades_dir/mercedes; do
     if [ -d $f ]; then
@@ -70,15 +85,15 @@ for f in $pleiades_dir/*; do
             # the dataset has subdatasets (multidate)
             for ff in $f/dataset_*; do
                 mkdir -p `basename $f`/`basename $ff`
-                find $ff -not \( -path *_files -prune \) -type f -name "*_P_*16BITS.dzi" | sort > `basename $f`/`basename $ff`/paths_panchro.txt
-                # find $ff -not \( -path *_files -prune \) -type f -name "*_MS_*16BITS.dzi" | sort > `basename $f`/`basename $ff`/paths_ms.txt
-                # find $ff -not \( -path *_files -prune \) -type f -name "*_PXS_*16BITS.dzi" | sort > `basename $f`/`basename $ff`/paths_pxs.txt
+                find $ff -not \( -path *_files -prune \) -type f -name "*_P_*.JP2.TIF" | sort > `basename $f`/`basename $ff`/paths_panchro.txt
+                # find $ff -not \( -path *_files -prune \) -type f -name "*_MS_*.JP2.TIF" | sort > `basename $f`/`basename $ff`/paths_ms.txt
+                # find $ff -not \( -path *_files -prune \) -type f -name "*_PXS_*.JP2.TIF" | sort > `basename $f`/`basename $ff`/paths_pxs.txt
             done
         else
             # the dataset has no subdatasets
-            find $f -not \( -path *_files -prune \) -type f -name "*_P_*16BITS.dzi" | sort > `basename $f`/paths_panchro.txt
-            # find $f -not \( -path *_files -prune \) -type f -name "*_MS_*16BITS.dzi" | sort > `basename $f`/paths_ms.txt
-            # find $f -not \( -path *_files -prune \) -type f -name "*_PXS_*16BITS.dzi" | sort > `basename $f`/paths_pxs.txt
+            find $f -not \( -path *_files -prune \) -type f -name "*_P_*.JP2.TIF" | sort > `basename $f`/paths_panchro.txt
+            # find $f -not \( -path *_files -prune \) -type f -name "*_MS_*.JP2.TIF" | sort > `basename $f`/paths_ms.txt
+            # find $f -not \( -path *_files -prune \) -type f -name "*_PXS_*.JP2.TIF" | sort > `basename $f`/paths_pxs.txt
         fi
     fi
 done

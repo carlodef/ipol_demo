@@ -51,7 +51,9 @@ def main(dataset, out):
 
     # build lists of paths to dzi and previews files 
     prv_paths = ' '.join([os.path.join('pleiades', dataset, 'prev_panchro_%02d.jpg' % (i+1)) for i in xrange(n)]) 
-    dzi_paths = ' '.join([os.path.join('input', 'pleiades', dataset, 'im_panchro_%02d.dzi' % (i+1)) for i in xrange(n)]) 
+    tif_paths = ' '.join([os.path.join('pleiades', dataset, 'im_panchro_%02d.tif' % (i+1)) for i in xrange(n)]) 
+    dzi8_paths  = ' '.join([os.path.join('input', 'pleiades', dataset, 'im_panchro_8BITS_%02d.dzi' % (i+1)) for i in xrange(n)]) 
+    dzi16_paths = ' '.join([os.path.join('input', 'pleiades', dataset, 'im_panchro_16BITS_%02d.dzi' % (i+1)) for i in xrange(n)]) 
 
     # read infos in DIM*.XML file
     dim_xml_file = os.path.join(dataset, 'dim_panchro_01.xml')
@@ -61,7 +63,9 @@ def main(dataset, out):
     # print to input.cfg
     print('[pleiades/%s]' % dataset, file=out)
     print('prv = ', prv_paths, file=out)
-    print('dzi = ', dzi_paths, file=out)
+    print('tif = ', tif_paths, file=out)
+    print('dzi8 = ', dzi8_paths, file=out)
+    print('dzi16 = ', dzi16_paths, file=out)
     s = os.path.split(dataset)
     if s[0]:  # ie the path is of the kind 'reunion/dataset_1'
         print('title = %s (%s)' % (s[0].capitalize(), s[1][-1]), file=out)  # ie 'Reunion (1)'
