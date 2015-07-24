@@ -1,35 +1,37 @@
-<%include file="header.html" />
+<%def name="visual(file,title)">
+<li>
+  <a href="#">${title}
+    <span>
+      <img src="${app.work_url + file}" alt="${title}" title="${title}"/>
+    </span>
+  </a>
+</li>
+</%def>
 
-##<%
-##    max_size = max(sizeY,2*30)
-##    # gt is a variable to activate the groundtruth crop download 
-##    gt = app.cfg['param']['ground_truth']
-##%>
+<%def name="link(file,title)">
+  <a href="${app.base_url}tmp/${app.key}/${file}">${title}</a> 
+</%def>
 
-   <p>
-   The cropped images are displayed below.
-    </p>
-    
-    <div class="gallery" style="height:${height}px;">
-    <ul class="index">
+<%include file="header_ipol.html" />
 
-     <li>
-      <a href="#">
-img	
-	<span>
-	  <table><tr><td style="vertical-align:top;">
-	  <img src="${app.work_url + 'crop_1.png'}" alt="" />
-	  </td></tr></table>
-	</span>
-      </a>
-     </li>
+<p>
+The cropped images are displayed below. They undergone <i>simplest color
+balance</i> to be encoded on 8 bits. Download the crops from the original 12
+bits images (encoded as 16 bits tiff files) to explore the whole dynamic range:
+%for i in range(1, n+1):
+    ${link("crop_%02d.tif" % i, "crop_%02d.tif" % i)}
+%endfor
+</p>
 
-    </ul>
-	</div>
+<div class="gallery" style="height:${height}px;">
+  <ul class="index">
+    %for i in range(1, n+1):
+        ${visual("crop_%02d.png" % i, "crop %02d (8 bits)" % i)}
+    %endfor
+  </ul>
+</div>
 	
-## <p>
-## 	Download (tif): <a href="${app.base_url}tmp/${app.key}/out_0.tif">first image</a>,
-## 	<a href="${app.base_url}tmp/${app.key}/out_1.tif">second image</a>,
+## <a href="${app.base_url}tmp/${app.key}/out_1.tif">second image</a>,
 ## %if  gt != '':
 ## 	<a href="${app.base_url}tmp/${app.key}/out_gt.tif">ground truth</a>,
 ## %endif

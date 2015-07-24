@@ -15,6 +15,8 @@ import json
 import ast
 import subprocess
 
+import utils
+
 class app(base_app):
     """
     Display of large images
@@ -110,20 +112,49 @@ class app(base_app):
     @init_app
     def display(self):
         """
-        Render the display page 
+        Render the display page
         """
-        dzi_paths = self.cfg['param']['dzi_paths']
+        print self.key
+        dzi_paths = ast.literal_eval(self.cfg['param']['dzi_paths'])
         return self.tmpl_out("display.html", list_of_paths_to_dzi_files=dzi_paths)
 
 
     @cherrypy.expose
     @init_app
-    def crop(self, x, y, w, h):
+    def run(self, x, y, w, h, i=None):
         """
         """
-        tif_paths = ast.literal_eval(self.cfg['param']['tif_paths'])
-        p = subprocess.Popen(['/usr/bin/gdal_translate', '-srcwin', str(x),
-            str(y), str(w), str(h), os.path.join(self.input_dir, tif_paths[0]),
-            os.path.join(self.work_dir, 'crop_1.tif')])
-        return self.tmpl_out("result.html", height=h)
+        # save params
+        self.cfg['param']['x'] = x
+        self.cfg['param']['y'] = y
+        self.cfg['param']['w'] = w
+        self.cfg['param']['h'] = h
+        self.cfg.save()
 
+        # do the job
+        tif_paths = ast.literal_eval(self.cfg['param']['tif_paths'])
+        if i is not None:
+            utils.crop(os.path.join(self.input_dir, tif_paths[i-1]),
+                    os.path.join(self.work_dir, 'crop_%02d.tif' % i), x, y, w, h)
+            utils.qauto(os.path.join(self.work_dir, 'crop_%02d.tif' % i),
+                    os.path.join(self.work_dir, 'crop_%02d.png' % i))
+        else:
+            for i in xrange(1, len(tif_paths)+1):
+                utils.crop(os.path.join(self.input_dir, tif_paths[i-1]),
+                        os.path.join(self.work_dir, 'crop_%02d.tif' % i), x, y,
+                        w, h)
+                utils.qauto(os.path.join(self.work_dir, 'crop_%02d.tif' % i),
+                        os.path.join(self.work_dir, 'crop_%02d.png' % i))
+
+        http.redir_303(self.base_url + 'result?key=%s' % self.key)
+        return self.tmpl_out("run.html")
+
+
+    @cherrypy.expose
+    @init_app
+    def result(self):
+        """
+        """
+        img_height = self.cfg['param']['h'] 
+        nb_img = len(ast.literal_eval(self.cfg['param']['tif_paths']))
+        return self.tmpl_out("result.html", height=img_height, n=nb_img)

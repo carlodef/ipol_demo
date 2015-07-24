@@ -9,8 +9,6 @@ ROI coordinates (x, y, w, h):
 <span><span>brightness</span><input type="range" oninput="set('brightness', this.valueAsNumber);" value="2" step="0.1" min="0" max="10"></span>
 <span><span>contrast</span><input type="range" oninput="set('contrast', this.valueAsNumber);" value="1" step="0.1" min="0" max="10"></span>
 
-<div class="demoarea"/>
-<div id="navigatorDiv" class="openseadragon-small"></div>
 
 <div id="toolbarDiv" class="toolbar" style="position: relative;">
     <span style='float:right;margin:10px 20px 0 0'>
@@ -27,11 +25,12 @@ ROI coordinates (x, y, w, h):
         <span id='currentpage'> 1 of ${len(list_of_paths_to_dzi_files)}</span>
     </span>
 </div>
+<br>
+<br>
 
 <div id="image-display" class="openseadragon"> </div>
-</div>
 
-<form action="${app.base_url + 'crop'}" method="get">
+<form action="${app.base_url + 'run'}" method="get">
     <input type="hidden" id="roi_x" name="x" value="0"/>
     <input type="hidden" id="roi_y" name="y" value="0"/>
     <input type="hidden" id="roi_w" name="w" value="0"/>
