@@ -121,30 +121,35 @@ class app(base_app):
 
     @cherrypy.expose
     @init_app
-    def run(self, x, y, w, h, i=None):
+    def run(self, x, y, w, h, i, crop_whole_sequence=False):
         """
         """
+        # convert strings to ints
+        x, y, w, h, i = map(int, [x, y, w, h, i])
+
         # save params
         self.cfg['param']['x'] = x
         self.cfg['param']['y'] = y
         self.cfg['param']['w'] = w
         self.cfg['param']['h'] = h
+        self.cfg['param']['img_index'] = i
+        self.cfg['param']['crop_whole_sequence'] = crop_whole_sequence
         self.cfg.save()
 
         # do the job
         tif_paths = ast.literal_eval(self.cfg['param']['tif_paths'])
-        if i is not None:
-            utils.crop(os.path.join(self.input_dir, tif_paths[i-1]),
-                    os.path.join(self.work_dir, 'crop_%02d.tif' % i), x, y, w, h)
-            utils.qauto(os.path.join(self.work_dir, 'crop_%02d.tif' % i),
-                    os.path.join(self.work_dir, 'crop_%02d.png' % i))
-        else:
+        if crop_whole_sequence:
             for i in xrange(1, len(tif_paths)+1):
                 utils.crop(os.path.join(self.input_dir, tif_paths[i-1]),
                         os.path.join(self.work_dir, 'crop_%02d.tif' % i), x, y,
                         w, h)
                 utils.qauto(os.path.join(self.work_dir, 'crop_%02d.tif' % i),
                         os.path.join(self.work_dir, 'crop_%02d.png' % i))
+        else:
+            utils.crop(os.path.join(self.input_dir, tif_paths[i-1]),
+                    os.path.join(self.work_dir, 'crop_%02d.tif' % i), x, y, w, h)
+            utils.qauto(os.path.join(self.work_dir, 'crop_%02d.tif' % i),
+                    os.path.join(self.work_dir, 'crop_%02d.png' % i))
 
         http.redir_303(self.base_url + 'result?key=%s' % self.key)
         return self.tmpl_out("run.html")
@@ -155,6 +160,9 @@ class app(base_app):
     def result(self):
         """
         """
-        img_height = self.cfg['param']['h'] 
-        nb_img = len(ast.literal_eval(self.cfg['param']['tif_paths']))
-        return self.tmpl_out("result.html", height=img_height, n=nb_img)
+        img_height = self.cfg['param']['h']
+        whole_seq = self.cfg['param']['crop_whole_sequence']
+        nb_img = len(ast.literal_eval(self.cfg['param']['tif_paths'])) if whole_seq else 1
+        img_index = self.cfg['param']['img_index']
+        return self.tmpl_out("result.html", height=img_height, n=nb_img,
+                             img_index=img_index)

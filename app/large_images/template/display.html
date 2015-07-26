@@ -35,8 +35,10 @@ ROI coordinates (x, y, w, h):
     <input type="hidden" id="roi_y" name="y" value="0"/>
     <input type="hidden" id="roi_w" name="w" value="0"/>
     <input type="hidden" id="roi_h" name="h" value="0"/>
-    <input type="hidden" name="key" value="${app.key}">
+    <input type="hidden" name="key" value="${app.key}"/>
+    <input type="hidden" id="img_index" name="i" value="1"/>
     <input type="submit" value="crop"/>
+    <input type="checkbox" name="crop_whole_sequence" value="True"/> all the images of the sequence
 </form>
 
 <style>
@@ -119,6 +121,7 @@ ROI coordinates (x, y, w, h):
     // print the image index in the stereo sequence
     viewer.addHandler("page", function (data) {
         document.getElementById("currentpage").innerHTML = ( data.page + 1 ) + " of ${len(list_of_paths_to_dzi_files)}";
+        document.getElementById("img_index").value = data.page;
     });
 
     // wire the press event: recover coordinates on right click
