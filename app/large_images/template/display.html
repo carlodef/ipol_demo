@@ -3,8 +3,23 @@
 
 <%include file="header_ipol.html" />
 
-ROI coordinates (x, y, w, h):
-<span id="Info">select a rectangle by dragging with right-click</span><br>
+<p>
+Explore the image with zoom (mouse wheel) and pan (drag with left click or
+keyboard arrows). Select a crop by dragging with the right click. Current crop
+coordinates (size is limited to 2000 x 2000 pixels) x, y, w, h:
+<span id="Info">----</span>
+<form style="display:inline;" action="${app.base_url + 'run'}" method="get">
+    <input type="hidden" id="roi_x" name="x" value="0"/>
+    <input type="hidden" id="roi_y" name="y" value="0"/>
+    <input type="hidden" id="roi_w" name="w" value="0"/>
+    <input type="hidden" id="roi_h" name="h" value="0"/>
+    <input type="hidden" name="key" value="${app.key}">
+    <input type="hidden" id="img_index" name="i" value="1"/>
+    <input type="submit" style="height:20px; width:50px" value="crop"/>
+    <input type="checkbox" name="crop_whole_sequence" value="True"/> all the images of the sequence
+</form>
+
+<p>
 
 <span><span>brightness</span><input type="range" oninput="set('brightness', this.valueAsNumber);" value="2" step="0.1" min="0" max="10"></span>
 <span><span>contrast</span><input type="range" oninput="set('contrast', this.valueAsNumber);" value="1" step="0.1" min="0" max="10"></span>
@@ -29,17 +44,6 @@ ROI coordinates (x, y, w, h):
 <br>
 
 <div id="image-display" class="openseadragon"> </div>
-
-<form action="${app.base_url + 'run'}" method="get">
-    <input type="hidden" id="roi_x" name="x" value="0"/>
-    <input type="hidden" id="roi_y" name="y" value="0"/>
-    <input type="hidden" id="roi_w" name="w" value="0"/>
-    <input type="hidden" id="roi_h" name="h" value="0"/>
-    <input type="hidden" name="key" value="${app.key}"/>
-    <input type="hidden" id="img_index" name="i" value="1"/>
-    <input type="submit" value="crop"/>
-    <input type="checkbox" name="crop_whole_sequence" value="True"/> all the images of the sequence
-</form>
 
 <style>
     .highlight{
