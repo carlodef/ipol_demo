@@ -84,14 +84,13 @@ coordinates (size is limited to 2000 x 2000 pixels) x, y, w, h:
 
 <script type="text/javascript">
 
-    function checkPoints(url) {
-        if (points_x.length == 0) {
+    function checkROI(url) {
+        if (!roiSelected) {
             alert("You need to select a crop!")
-            return false;
         } else {
            document.theform.action = url;
-           return true;
         }
+        return roiSelected
     }
     // canvas
     var viewer = OpenSeadragon({
@@ -132,6 +131,7 @@ coordinates (size is limited to 2000 x 2000 pixels) x, y, w, h:
     var viewportRoi = new OpenSeadragon.Rect(0., 0., 0., 0.);
     var imageRoi = new OpenSeadragon.Rect(0., 0., 0., 0.);
     var canvasPress = false;
+    var roiSelected = false;
 
     // print the image index in the stereo sequence
     viewer.addHandler("page", function (data) {
@@ -160,6 +160,7 @@ coordinates (size is limited to 2000 x 2000 pixels) x, y, w, h:
     viewer.addHandler("canvas-nonprimary-release", function(e) {
         canvasPress = false;
         tracker.setTracking(false);
+        roiSelected = true;
         document.getElementById("roi-selection").className = "highlight";
 
         // pass roi coordinates to the GET form, for the crop

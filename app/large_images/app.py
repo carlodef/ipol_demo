@@ -121,7 +121,7 @@ class app(base_app):
 
     @cherrypy.expose
     @init_app
-    def run(self, x, y, w, h, i, crop_whole_sequence=False):
+    def run(self, x, y, w, h, i, crop_whole_sequence=False, **kwargs):
         """
         """
         # convert strings to ints
