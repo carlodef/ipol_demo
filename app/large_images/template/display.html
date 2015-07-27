@@ -8,14 +8,15 @@ Explore the image with zoom (mouse wheel) and pan (drag with left click or
 keyboard arrows). Select a crop by dragging with the right click. Current crop
 coordinates (size is limited to 2000 x 2000 pixels) x, y, w, h:
 <span id="Info">----</span>
-<form style="display:inline;" action="${app.base_url + 'run'}" method="get">
+<form style="display:inline;" action="${app.base_url + 'browser_error'}" method="get" name="theform">
     <input type="hidden" id="roi_x" name="x" value="0"/>
     <input type="hidden" id="roi_y" name="y" value="0"/>
     <input type="hidden" id="roi_w" name="w" value="0"/>
     <input type="hidden" id="roi_h" name="h" value="0"/>
     <input type="hidden" name="key" value="${app.key}">
     <input type="hidden" id="img_index" name="i" value="1"/>
-    <input type="submit" style="height:20px; width:50px" value="crop"/>
+    <input type="submit" style="height:20px; width:50px" value="crop" name="action"
+         onClick="return checkROI('${app.base_url + 'run'}');"/>
     <input type="checkbox" name="crop_whole_sequence" value="True"/> all the images of the sequence
 </form>
 
@@ -82,6 +83,16 @@ coordinates (size is limited to 2000 x 2000 pixels) x, y, w, h:
 </style>
 
 <script type="text/javascript">
+
+    function checkPoints(url) {
+        if (points_x.length == 0) {
+            alert("You need to select a crop!")
+            return false;
+        } else {
+           document.theform.action = url;
+           return true;
+        }
+    }
     // canvas
     var viewer = OpenSeadragon({
         id: "image-display",

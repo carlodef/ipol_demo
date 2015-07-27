@@ -166,3 +166,9 @@ class app(base_app):
         img_index = self.cfg['param']['img_index']
         return self.tmpl_out("result.html", height=img_height, n=nb_img,
                              img_index=img_index)
+
+
+    @cherrypy.expose
+    @init_app
+    def browser_error(self, **kwargs):
+        return self.tmpl_out('browser-error.html')
