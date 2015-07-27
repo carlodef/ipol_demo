@@ -8927,7 +8927,7 @@ function onCanvasClick( event ) {
 
     // If we don't have keyboard focus, request it.
     if ( !haveKeyboardFocus ) {
-        this.canvas.focus();
+//        this.canvas.focus();
     }
 
     if ( !event.preventDefaultAction && this.viewport && event.quick ) {
