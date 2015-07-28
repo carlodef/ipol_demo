@@ -5,6 +5,27 @@ from __future__ import print_function
 import subprocess
 import sys
 import os
+import re
+
+
+def extract_date_from_pleiades_filename(filename):
+    """
+    """
+    date = re.split('_', os.path.basename(filename))[3]
+    # we assume that the date has the following format: 201210051030181
+    return '%s-%s-%s' % (date[:4], date[4:6], date[6:8])
+    
+
+def extract_satellite_from_pleiades_filename(filename):
+    """
+    """
+    satellite = re.split('_', os.path.basename(filename))[1]
+    if satellite == 'PHR1A':
+        return '1A'
+    elif satellite == 'PHR1B':
+        return '1B'
+    else:
+        return '1X'
 
 
 def grep_xml(xml_file, tag):
@@ -57,8 +78,12 @@ def main(dataset, out):
 
     # read infos in DIM*.XML file
     dim_xml_file = os.path.join(dataset, 'dim_panchro_01.xml')
-    date = grep_xml(dim_xml_file, "IMAGING_DATE")
-    satellite = grep_xml(dim_xml_file, "INSTRUMENT_INDEX")
+    if os.path.isfile(dim_xml_file):  # check if the link points to an existing file
+        date = grep_xml(dim_xml_file, "IMAGING_DATE")
+        satellite = grep_xml(dim_xml_file, "INSTRUMENT_INDEX")
+    else:
+        date = extract_date_from_pleiades_filename(os.readlink(os.path.join(dataset, 'im_panchro_01.tif')))
+        satellite = extract_satellite_from_pleiades_filename(os.readlink(os.path.join(dataset, 'im_panchro_01.tif')))
 
     # print to input.cfg
     print('[pleiades/%s]' % dataset, file=out)

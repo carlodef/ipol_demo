@@ -17,20 +17,25 @@ function create_links ()
             ln -sf $image $dataset/$link_name
 
             # dzi 8BITS image
-            link_name=`printf im$suffix\_8BITS\_%02d.dzi $i`
-            ln -sf ${image%%.*}_8BITS.dzi $dataset/$link_name
+            if [ -s ${image%%.*}_8BITS.dzi ]; then
+                link_name=`printf im$suffix\_8BITS\_%02d.dzi $i`
+                ln -sf ${image%%.*}_8BITS.dzi $dataset/$link_name
 
-            # dzi 8BITS files
-            link_name=`printf im$suffix\_8BITS\_%02d_files $i`
-            ln -sf ${image%%.*}_8BITS_files $dataset/$link_name
+                # dzi files
+                link_name=`printf im$suffix\_8BITS\_%02d_files $i`
+                ln -sf ${image%%.*}_8BITS_files $dataset/$link_name
+            fi
+
 
             # dzi 16BITS image
-            link_name=`printf im$suffix\_16BITS\_%02d.dzi $i`
-            ln -sf ${image%%.*}_16BITS.dzi $dataset/$link_name
+            if [ -s ${image%%.*}_16BITS.dzi ]; then
+                link_name=`printf im$suffix\_16BITS\_%02d.dzi $i`
+                ln -sf ${image%%.*}_16BITS.dzi $dataset/$link_name
 
-            # dzi 16BITS files
-            link_name=`printf im$suffix\_16BITS\_%02d_files $i`
-            ln -sf ${image%%.*}_16BITS_files $dataset/$link_name
+                # dzi 16BITS files
+                link_name=`printf im$suffix\_16BITS\_%02d_files $i`
+                ln -sf ${image%%.*}_16BITS_files $dataset/$link_name
+            fi
 
             # WARNING: the wildcard '*' works if there is ONLY ONE image per folder
             # preview

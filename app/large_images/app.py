@@ -102,7 +102,10 @@ class app(base_app):
         # save paths to the tiff images
         input_dict = config.file_dict(self.input_dir)
         self.cfg['param']['tif_paths'] = input_dict[input_id]['tif'].split()
-        self.cfg['param']['dzi_paths'] = input_dict[input_id]['dzi16'].split()
+        if input_dict[input_id]['dzi8']:  # this is a string
+            self.cfg['param']['dzi_paths'] = input_dict[input_id]['dzi8'].split()
+        else:
+            self.cfg['param']['dzi_paths'] = input_dict[input_id]['dzi16'].split()
         self.cfg.save()
 
         # jump to the display page
