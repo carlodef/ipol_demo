@@ -12,7 +12,7 @@ def crop(tif_in, tif_out, x, y, w, h):
     """
     Crop a tif image with gdal.
     """
-    p = subprocess.Popen(['/usr/bin/gdal_translate', '-srcwin',
+    p = subprocess.Popen(['/usr/local/bin/gdal_translate', '-srcwin',
                           str(x), str(y), str(w), str(h), tif_in, tif_out])
     p.wait()
 
