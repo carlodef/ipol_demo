@@ -35,10 +35,10 @@ form .select_input input[type="image"] {
 %if inputd:
 <form action="${app.base_url + 'input_select'}" method="get">
 <div class="action">
-<!--<p>
-Click on an images to use it as the algorithm input.
-</p>-->
-<div style="max-height:60em; overflow:auto;">
+
+<p>
+Select a dataset from Pléiades 1A or 1B by clicking on an image thumbnail
+</p>
 
    <fieldset>
       <legend>Pleiades 1A</legend>
@@ -56,7 +56,8 @@ Click on an images to use it as the algorithm input.
 %endfor
    </fieldset>
 
-
+   <br>
+   <br>
    <fieldset>
       <legend>Pleiades 1B</legend>
 %for id in sorted(inputd.keys()):
@@ -74,7 +75,6 @@ Click on an images to use it as the algorithm input.
    </fieldset>
 
 
-</div>
 
 %if any([inputd[id].has_key('credit') for id in inputd]):
 <p style="font-size: 80%">
