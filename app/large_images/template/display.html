@@ -62,7 +62,7 @@ order of 100 pixels when you flip between images.<br>
     .openseadragon {
             height:70vh;
     }
-    .highlight{
+    .highlight-blue{
         opacity:    0.4;
         filter:     alpha(opacity=40);
         border:     2px solid #0A7EbE;
@@ -71,15 +71,24 @@ order of 100 pixels when you flip between images.<br>
         outline:    10px auto #0A7EbE;
         */
     }
-    .highlight:hover, .highlight:focus{
+    .highlight-blue:hover, .highlight-blue:focus{
         background-color: transparent;
         /*
         opacity:    0.7;
         filter:     alpha(opacity=70);
         */
     }
-    .highlight-during-selection{
+    .highlight-red{
+        opacity:    0.0;
+        filter:     alpha(opacity=40);
+        border:     2px solid #FF0000;
+        background-color: white;
+    }
+    .highlight-during-selection-blue{
         border:     2px solid #0A7EbE;
+    }
+    .highlight-during-selection-red{
+        border:     2px solid #FF0000;
     }
     .navigator{
         opacity:    0.4;
@@ -162,8 +171,11 @@ order of 100 pixels when you flip between images.<br>
     var imageClick = new OpenSeadragon.Point(0., 0.);
 
     // ROI coordinates in viewport and image space, updated by events
+    // 'Free' version are to handle the red rectangle that follows the mouse
     var viewportRoi = new OpenSeadragon.Rect(0., 0., 0., 0.);
     var imageRoi = new OpenSeadragon.Rect(0., 0., 0., 0.);
+    var viewportRoiFree = new OpenSeadragon.Rect(0., 0., 0., 0.);
+    var imageRoiFree = new OpenSeadragon.Rect(0., 0., 0., 0.);
     var canvasPress = false;
     var roiSelected = false;
 
@@ -186,10 +198,18 @@ order of 100 pixels when you flip between images.<br>
 	    canvasPress = true;
         tracker.setTracking(true);
 
-	    viewer.removeOverlay("roi-selection");
+	    viewer.removeOverlay("roi-selection-free");
+	    viewer.removeOverlay("roi-selection-constrained");
         var elt = document.createElement("div");
-        elt.id = "roi-selection";
-        elt.className = "highlight-during-selection";
+        elt.id = "roi-selection-free";
+        elt.className = "highlight-during-selection-red";
+        viewer.addOverlay({
+            element: elt,
+            location: new OpenSeadragon.Rect(0., 0., 0., 0.)
+        });
+        var elt = document.createElement("div");
+        elt.id = "roi-selection-constrained";
+        elt.className = "highlight-during-selection-blue";
         viewer.addOverlay({
             element: elt,
             location: new OpenSeadragon.Rect(0., 0., 0., 0.)
@@ -200,7 +220,8 @@ order of 100 pixels when you flip between images.<br>
         canvasPress = false;
         tracker.setTracking(false);
         roiSelected = true;
-        document.getElementById("roi-selection").className = "highlight";
+        document.getElementById("roi-selection-constrained").className = "highlight-blue";
+        document.getElementById("roi-selection-free").className = "highlight-red";
 
         // pass roi coordinates to the GET form, for the crop
         document.getElementById("roi_x").value = imageRoi.x.toFixed(0);
@@ -220,6 +241,14 @@ order of 100 pixels when you flip between images.<br>
             imageRoi.y = Math.min(imagePoint.y, imageClick.y);
             imageRoi.width  = Math.abs(imagePoint.x - imageClick.x);
             imageRoi.height = Math.abs(imagePoint.y - imageClick.y);
+
+            // free roi that follows the mouse
+            imageRoiFree.x = imageRoi.x
+            imageRoiFree.y = imageRoi.y
+            imageRoiFree.width = imageRoi.width
+            imageRoiFree.height = imageRoi.height
+
+            // roi clipping
             if (imageRoi.width > MAX_W) {
                 imageRoi.width = MAX_W;
                 if (imagePoint.x < imageClick.x) {
@@ -233,13 +262,15 @@ order of 100 pixels when you flip between images.<br>
                 }
             }
             viewportRoi = viewer.viewport.imageToViewportRectangle(imageRoi);
+            viewportRoiFree = viewer.viewport.imageToViewportRectangle(imageRoiFree);
             //console.log(viewportRoi);
             // var zoom = viewer.viewport.getZoom(true);
             // var imageZoom = viewer.viewport.viewportToImageZoom(zoom);
 
             // HACK! should be done by notifying some other thing
 	        if(canvasPress) {
-                viewer.updateOverlay("roi-selection", viewportRoi)
+                viewer.updateOverlay("roi-selection-free", viewportRoiFree)
+                viewer.updateOverlay("roi-selection-constrained", viewportRoi)
                 document.getElementById("Info").innerHTML =
                     imageRoi.x.toFixed(0).concat(", ",
                             imageRoi.y.toFixed(0), ", ",
