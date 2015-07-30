@@ -4,10 +4,18 @@
 <%include file="header_ipol.html" />
 
 <p>
-Explore the image with zoom (mouse wheel, or click / shift+click) and pan (drag with left click or
-keyboard arrows). Select a crop by dragging with the right click. Current crop
-coordinates (size is limited to 2000 x 2000 pixels) x, y, w, h:
+Explore the image with zoom (mouse wheel, or click / shift+click) and pan (drag
+with left click or keyboard arrows). Select a crop by dragging with the right
+click. The crops with the original 12-bit depth (stored as uint16 tiffs) can be
+downloaded to be further examined with a viewer that allows to explore the
+dynamic range interactively, such as <a href="https://github.com/gfacciol/pvflip">pvflip</a>.
+</p><p>
+Current crop coordinates (size is limited to 2000 x 2000 pixels) x, y, w, h:
 <span id="Info">----</span>
+</p><p>
+Note that the images are not registered, thus there is a displacement of the
+order of 100 pixels when you flip between images.<br>
+
 <form style="display:inline;" action="${app.base_url + 'browser_error'}" method="get" name="theform">
     <input type="hidden" id="roi_x" name="x" value="0"/>
     <input type="hidden" id="roi_y" name="y" value="0"/>
@@ -19,27 +27,29 @@ coordinates (size is limited to 2000 x 2000 pixels) x, y, w, h:
          onClick="return checkROI('${app.base_url + 'run'}');"/>
     <input type="checkbox" name="crop_whole_sequence" value="True"/> all the images of the sequence
 </form>
-
-<p>
+</p>
 
 <span><span>brightness</span><input type="range" oninput="set('brightness', this.valueAsNumber);" value="2" step="0.1" min="0.01" max="5"></span>
 <span><span>contrast</span><input type="range" oninput="set('contrast', this.valueAsNumber);" value="1" step="0.1" min="0.01" max="3"></span>
 
 
 <div id="toolbarDiv" class="toolbar" style="position: relative;">
-    <span style='float:right;margin:10px 20px 0 0'>
+    <div style='float:right;margin:10px 20px 0 0'>
         | <a id="zoom-in" href="#zoom-in">Zoom In</a>
         | <a id="zoom-out" href="#zoom-out">Zoom Out</a>
         | <a id="home" href="#home">Home</a>
         | <a id="full-page" href="#full-page">Full Page</a>
-    </span>
-    <span style='float:left;margin:10px 0 0 20px'>
+    </div>
+    <div style='float:left;margin:10px 0 0 20px'>
     &lt;&nbsp;
         <a id="previous" href="#previous-page">Previous</a>
         | <a id="next" href="#next-page">Next</a>
         &nbsp;&gt;
         <span id='currentpage'> 1 of ${len(list_of_paths_to_dzi_files)}</span>
-    </span>
+    </div>
+    <div style='float:right;margin:10px 10px 0 0'>
+        <span id='currentzoom'>current zoom: 1&nbsp;</span>
+    </div>
 </div>
 <br>
 <br>
@@ -148,6 +158,11 @@ coordinates (size is limited to 2000 x 2000 pixels) x, y, w, h:
     viewer.addHandler("page", function (data) {
         document.getElementById("currentpage").innerHTML = ( data.page + 1 ) + " of ${len(list_of_paths_to_dzi_files)}";
         document.getElementById("img_index").value = data.page;
+    });
+
+    // print the current zoom level
+    viewer.addHandler("zoom", function (data) {
+        document.getElementById("currentzoom").innerHTML = "current zoom: " + viewer.viewport.viewportToImageZoom(viewer.viewport.getZoom()).toFixed(2) + "&nbsp;";
     });
 
     // wire the press event: recover coordinates on right click
