@@ -14,7 +14,7 @@ def extract_date_from_pleiades_filename(filename):
     date = re.split('_', os.path.basename(filename))[3]
     # we assume that the date has the following format: 201210051030181
     return '%s-%s-%s' % (date[:4], date[4:6], date[6:8])
-    
+
 
 def extract_satellite_from_pleiades_filename(filename):
     """
@@ -70,11 +70,20 @@ def main(dataset, out):
     f.close()
     n = len(path_list)
 
-    # build lists of paths to dzi and previews files 
-    prv_paths = ' '.join([os.path.join('pleiades', dataset, 'prev_panchro_%02d.jpg' % (i+1)) for i in xrange(n)]) 
-    tif_paths = ' '.join([os.path.join('pleiades', dataset, 'im_panchro_%02d.tif' % (i+1)) for i in xrange(n)]) 
-    dzi8_paths  = ' '.join([os.path.join('input', 'pleiades', dataset, 'im_panchro_8BITS_%02d.dzi' % (i+1)) for i in xrange(n)]) 
-    dzi16_paths = ' '.join([os.path.join('input', 'pleiades', dataset, 'im_panchro_16BITS_%02d.dzi' % (i+1)) for i in xrange(n)]) 
+    # build lists of paths to dzi and previews files
+    prv_paths = ' '.join([os.path.join('pleiades', dataset, 'prev_panchro_%02d.jpg' % (i+1)) for i in xrange(n)])
+    tif_paths = ' '.join([os.path.join('pleiades', dataset, 'im_panchro_%02d.tif' % (i+1)) for i in xrange(n)])
+    dzi8_paths, dzi16_paths = None, None
+    if os.path.isfile(os.path.abspath(os.path.join(dataset,
+                                                   'im_panchro_8BITS_01.dzi'))):
+        dzi8_paths  = ' '.join([os.path.join('input', 'pleiades', dataset,
+                                             'im_panchro_8BITS_%02d.dzi' %
+                                             (i+1)) for i in xrange(n)])
+    if os.path.isfile(os.path.abspath(os.path.join(dataset,
+                                                   'im_panchro_16BITS_01.dzi'))):
+        dzi16_paths = ' '.join([os.path.join('input', 'pleiades', dataset,
+                                             'im_panchro_16BITS_%02d.dzi' %
+                                             (i+1)) for i in xrange(n)])
 
     # read infos in DIM*.XML file
     dim_xml_file = os.path.join(dataset, 'dim_panchro_01.xml')
@@ -86,20 +95,23 @@ def main(dataset, out):
         satellite = extract_satellite_from_pleiades_filename(os.readlink(os.path.join(dataset, 'im_panchro_01.tif')))
 
     # print to input.cfg
-    print('[pleiades/%s]' % dataset, file=out)
-    print('prv = ', prv_paths, file=out)
-    print('tif = ', tif_paths, file=out)
-    print('dzi8 = ', dzi8_paths, file=out)
-    print('dzi16 = ', dzi16_paths, file=out)
-    s = os.path.split(dataset)
-    if s[0]:  # ie the path is of the kind 'reunion/dataset_1'
-        print('title = %s (%s)' % (s[0].capitalize(), s[1][-1]), file=out)  # ie 'Reunion (1)'
-    else:  # ie the path is of the kind 'reunion' 
-        print('title = %s' % s[1].capitalize(), file=out)  # ie 'Reunion'
-    print('date = %s' % date, file=out)
-    print('satellite = Pleiades %s' % satellite, file=out)
-    print('nb_img = %d' % n, file=out)
-    print('color = panchro', file=out)
+    if dzi8_paths or dzi16_paths:
+        print('[pleiades/%s]' % dataset, file=out)
+        print('prv = ', prv_paths, file=out)
+        print('tif = ', tif_paths, file=out)
+        if dzi8_paths:
+            print('dzi8 = ', dzi8_paths, file=out)
+        if dzi16_paths:
+            print('dzi16 = ', dzi16_paths, file=out)
+        s = os.path.split(dataset)
+        if s[0]:  # ie the path is of the kind 'reunion/dataset_1'
+            print('title = %s (%s)' % (s[0].capitalize(), s[1][-1]), file=out)  # ie 'Reunion (1)'
+        else:  # ie the path is of the kind 'reunion'
+            print('title = %s' % s[1].capitalize(), file=out)  # ie 'Reunion'
+        print('date = %s' % date, file=out)
+        print('satellite = Pleiades %s' % satellite, file=out)
+        print('nb_img = %d' % n, file=out)
+        print('color = panchro', file=out)
 
 if __name__ == '__main__':
     out = open('../index.cfg', 'a')

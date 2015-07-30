@@ -100,9 +100,10 @@ class app(base_app):
 #            os.symlink(img_files_abs[0], os.path.join(self.work_dir, 'img_01_clr.tif'))
 
         # save paths to the tiff images
+        # either one of the two keys dzi8 or dzi16 must exist
         input_dict = config.file_dict(self.input_dir)
         self.cfg['param']['tif_paths'] = input_dict[input_id]['tif'].split()
-        if input_dict[input_id]['dzi8']:  # this is a string
+        if input_dict[input_id].has_key('dzi8'):
             self.cfg['param']['dzi_paths'] = input_dict[input_id]['dzi8'].split()
         else:
             self.cfg['param']['dzi_paths'] = input_dict[input_id]['dzi16'].split()
