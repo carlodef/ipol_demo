@@ -8861,6 +8861,23 @@ function onCanvasKeyDown( event ) {
                 this.viewport.panBy(this.viewport.deltaPointsFromPixels(new $.Point(40, 0)));
                 this.viewport.applyConstraints();
                 return false;
+            case 32://space bar
+                if ( event.shift ) {
+                    // copied from the onPrevious() method
+                    var previous = this._sequenceIndex - 1;
+                    if(this.navPrevNextWrap && previous < 0){
+                        previous += this.tileSources.length;
+                    }
+                    this.goToPage( previous );
+                } else {
+                    // copied from the onNext() method
+                    var next = this._sequenceIndex + 1;
+                    if(this.navPrevNextWrap && next >= this.tileSources.length){
+                        next = 0;
+                    }
+                    this.goToPage( next );
+                }
+                return false;
             default:
                 //console.log( 'navigator keycode %s', event.keyCode );
                 return true;
