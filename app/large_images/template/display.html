@@ -105,6 +105,7 @@ order of 100 pixels when you flip between images.<br>
       a.onclick = function() {
           viewer.viewport.zoomTo(viewer.viewport.imageToViewportZoom(1), null, true);
           viewer.viewport.applyConstraints();
+          document.getElementById('image-display').querySelector('.openseadragon-canvas').focus();
           return false;
       }
     }
