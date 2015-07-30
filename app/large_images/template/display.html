@@ -1,6 +1,7 @@
 <script src="input/js/openseadragon/openseadragon.js"></script>
 <script src="input/js/jquery/jquery-1.11.3.js"></script>
 
+
 <%include file="header_ipol.html" />
 
 <p>
@@ -37,6 +38,7 @@ order of 100 pixels when you flip between images.<br>
     <div style='float:right;margin:10px 20px 0 0'>
         | <a id="zoom-in" href="#zoom-in">Zoom In</a>
         | <a id="zoom-out" href="#zoom-out">Zoom Out</a>
+        | <a id="zoom-one" href="#zoom-one">Zoom 1</a>
         | <a id="home" href="#home">Home</a>
         | <a id="full-page" href="#full-page">Full Page</a>
     </div>
@@ -96,6 +98,16 @@ order of 100 pixels when you flip between images.<br>
 </style>
 
 <script type="text/javascript">
+
+    // function for setting the zoom level to 1
+    window.onload = function() {
+      var a = document.getElementById("zoom-one");
+      a.onclick = function() {
+          viewer.viewport.zoomTo(viewer.viewport.imageToViewportZoom(1), null, true);
+          viewer.viewport.applyConstraints();
+          return false;
+      }
+    }
 
     function checkROI(url) {
         if (!roiSelected) {
