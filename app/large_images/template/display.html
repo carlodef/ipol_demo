@@ -106,14 +106,21 @@ coordinates (size is limited to 2000 x 2000 pixels) x, y, w, h:
         //navigatorId:   "navigatorDiv",
         gestureSettingsMouse: {flickEnabled: true, flickMomentum: 0.0, clickToZoom: true},
         viewport: {zoomSpring: {animationTime: 0.0}, centerSpringX: {animationTime: 0.0}, centerSpringY: {animationTime: 0.0}},
-        minPixelRatio: 1,
         //toolbar: "toolbarDiv",
         zoomInButton: "zoom-in",
         zoomOutButton:  "zoom-out",
         homeButton:     "home",
         fullPageButton: "full-page",
         nextButton:     "next",
-        previousButton: "previous"
+        previousButton: "previous",
+        navPrevNextWrap: "true",
+        // The higher the minPixelRatio, the lower the quality of the image
+        // that is considered sufficient to stop rendering a given zoom level. For
+        // example, if you are targeting mobile devices with less bandwith you may
+        // try setting this to 1.5 or higher.
+        minPixelRatio: 0.5,
+        immediateRender: "true",
+        maxZoomPixelRatio: 5  // max zoom-in level. default is 1.1
     });
 
     // disable context menu with right click on top of OpenSeaDragon container
