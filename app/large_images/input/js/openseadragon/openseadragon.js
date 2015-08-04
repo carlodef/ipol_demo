@@ -8862,21 +8862,20 @@ function onCanvasKeyDown( event ) {
                 this.viewport.applyConstraints();
                 return false;
             case 32://space bar
-                if ( event.shift ) {
-                    // copied from the onPrevious() method
-                    var previous = this._sequenceIndex - 1;
-                    if(this.navPrevNextWrap && previous < 0){
-                        previous += this.tileSources.length;
-                    }
-                    this.goToPage( previous );
-                } else {
-                    // copied from the onNext() method
-                    var next = this._sequenceIndex + 1;
-                    if(this.navPrevNextWrap && next >= this.tileSources.length){
-                        next = 0;
-                    }
-                    this.goToPage( next );
+                // copied from the onNext() method
+                var next = this._sequenceIndex + 1;
+                if(this.navPrevNextWrap && next >= this.tileSources.length){
+                    next = 0;
                 }
+                this.goToPage( next );
+                return false;
+            case 8://backspace
+                // copied from the onPrevious() method
+                var previous = this._sequenceIndex - 1;
+                if(this.navPrevNextWrap && previous < 0){
+                    previous += this.tileSources.length;
+                }
+                this.goToPage( previous );
                 return false;
             default:
                 //console.log( 'navigator keycode %s', event.keyCode );
