@@ -1,0 +1,45 @@
+.openseadragon {
+        height:70vh;
+}
+.highlight-blue{
+    opacity:    0.4;
+    filter:     alpha(opacity=40);
+    border:     2px solid #0A7EbE;
+    background-color: white;
+    /*
+    outline:    10px auto #0A7EbE;
+    */
+}
+.highlight-blue:hover, .highlight-blue:focus{
+    background-color: transparent;
+    /*
+    opacity:    0.7;
+    filter:     alpha(opacity=70);
+    */
+}
+.highlight-red{
+    opacity:    0.0;
+    filter:     alpha(opacity=40);
+    border:     2px solid #FF0000;
+    background-color: white;
+}
+.highlight-during-selection-blue{
+    border:     2px solid #0A7EbE;
+}
+.highlight-during-selection-red{
+    border:     2px solid #FF0000;
+}
+.navigator{
+    opacity:    0.4;
+    filter:     alpha(opacity=40);
+    border:     2px solid #900;
+    outline:    none;
+    background-color: #900;
+}
+/*
+.filter{
+    opacity:    0.2;
+    filter:     alpha(opacity=20);
+    background-color: #7FFF00;
+}
+*/

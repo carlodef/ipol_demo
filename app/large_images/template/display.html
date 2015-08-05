@@ -1,9 +1,25 @@
-<script src="input/js/openseadragon/openseadragon.js"></script>
-<script src="input/js/jquery/jquery-1.11.3.js"></script>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="language" content="en"/>
+    <link rel="icon" href="http://www.ipol.im/favicon.ico" type="image/x-icon"/>
+    <link rel="icon" href="http://www.ipol.im/favicon.png" type="image/png"/>
+    <link rel="stylesheet" href="http://www.ipol.im/style.css" type="text/css"/>
+    <link rel="stylesheet" href="http://www.ipol.im/local.css" type="text/css"/>
+    <link rel="stylesheet" href="http://www.ipol.im/demo.css" type="text/css"/>
+    <link rel="stylesheet" href="input/style/openseadragon.css" type="text/css"/>
+    <script src="input/js/openseadragon/openseadragon.js"></script>
+    <script src="input/js/jquery/jquery-1.11.3.js"></script>
+    <title>IPOL: ${app.title}</title>
+  </head>
 
-
-<%include file="header_ipol.html" />
-
+<body>
+  <div id="main" class="demo">
+    <div id="pagetitle"> ${app.title}</div>
+    <%include file="xlinks.html"/>
+    <div id="content">
 <p>
 Explore the image with zoom (mouse wheel, or click / shift+click) and pan (drag
 with left click or keyboard arrows). Select a crop by dragging with the right
@@ -33,7 +49,6 @@ order of 100 pixels when you flip between images.<br>-->
 <span><span>brightness</span><input type="range" oninput="set('brightness', this.valueAsNumber);" value="2" step="0.1" min="0.01" max="5"></span>
 <span><span>contrast</span><input type="range" oninput="set('contrast', this.valueAsNumber);" value="1" step="0.1" min="0.01" max="3"></span>
 
-
 <div id="toolbarDiv" class="toolbar" style="position: relative;">
     <div style='float:right;margin:10px 20px 0 0'>
         | <a id="zoom-in" href="#zoom-in">Zoom In</a>
@@ -57,54 +72,6 @@ order of 100 pixels when you flip between images.<br>-->
 <br>
 
 <div id="image-display" class="openseadragon"> </div>
-
-<style>
-    .openseadragon {
-            height:70vh;
-    }
-    .highlight-blue{
-        opacity:    0.4;
-        filter:     alpha(opacity=40);
-        border:     2px solid #0A7EbE;
-        background-color: white;
-        /*
-        outline:    10px auto #0A7EbE;
-        */
-    }
-    .highlight-blue:hover, .highlight-blue:focus{
-        background-color: transparent;
-        /*
-        opacity:    0.7;
-        filter:     alpha(opacity=70);
-        */
-    }
-    .highlight-red{
-        opacity:    0.0;
-        filter:     alpha(opacity=40);
-        border:     2px solid #FF0000;
-        background-color: white;
-    }
-    .highlight-during-selection-blue{
-        border:     2px solid #0A7EbE;
-    }
-    .highlight-during-selection-red{
-        border:     2px solid #FF0000;
-    }
-    .navigator{
-        opacity:    0.4;
-        filter:     alpha(opacity=40);
-        border:     2px solid #900;
-        outline:    none;
-        background-color: #900;
-    }
-    /*
-    .filter{
-        opacity:    0.2;
-        filter:     alpha(opacity=20);
-        background-color: #7FFF00;
-    }
-    */
-</style>
 
 <script type="text/javascript">
 
@@ -320,19 +287,22 @@ var FILTER_VALS = {};
 var el = document.getElementById('image-display').querySelector('.openseadragon-canvas');
 
 function set(filter, value) {
-  FILTER_VALS[filter] = typeof value == 'number' ? Math.round(value * 10) / 10 : value;
-  if (value == 0 || (typeof value == 'string' && value.indexOf('0') == 0)) {
-    delete FILTER_VALS[filter];
-  }
-  render();
+    FILTER_VALS[filter] = typeof value == 'number' ? Math.round(value * 10) / 10 : value;
+    if (value == 0 || (typeof value == 'string' && value.indexOf('0') == 0)) {
+        delete FILTER_VALS[filter];
+    }
+    render();
 }
 
 function render() {
-  var vals = [];
-  Object.keys(FILTER_VALS).sort().forEach(function(key, i) {
-    vals.push(key + '(' + FILTER_VALS[key] + ')');
-  });
-  var val = vals.join(' ');
-  el.style.webkitFilter = val;
+    var vals = [];
+    Object.keys(FILTER_VALS).sort().forEach(function(key, i) {
+            vals.push(key + '(' + FILTER_VALS[key] + ')');
+            });
+    var val = vals.join(' ');
+    el.style.webkitFilter = val;
 }
 </script>
+
+<div/> <!-- content -->
+<div/> <!-- main -->
