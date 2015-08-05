@@ -57,7 +57,7 @@ class app(base_app):
 
 
         # compile s2p 'c' folder
-        build.run("make -j -C %s/c" % s2p_dir, stdout=log_file)
+        build.run("make -j -C %s" % s2p_dir, stdout=log_file)
 
         # Create bin dir (delete the previous one if exists)
         if os.path.isdir(self.bin_dir):
