@@ -1,5 +1,6 @@
 <script src="input/js/openseadragon/openseadragon.js"></script>
 <script src="input/js/jquery/jquery-1.11.3.js"></script>
+<script src="input/js/rpc/rpc.js"></script>
 
 
 <%include file="header_ipol.html" />
@@ -14,8 +15,8 @@ dynamic range interactively, such as <a href="https://github.com/gfacciol/pvflip
 Current crop coordinates (size is limited to 2000 x 2000 pixels) x, y, w, h:
 <span id="Info">----</span>
 </p><p>
-Note that the images are not registered, thus there is a displacement of the
-order of 100 pixels when you flip between images.<br>
+<!--Note that the images are not registered, thus there is a displacement of the
+order of 100 pixels when you flip between images.<br>-->
 
 <form style="display:inline;" action="${app.base_url + 'browser_error'}" method="get" name="theform">
     <input type="hidden" id="roi_x" name="x" value="0"/>
@@ -156,6 +157,11 @@ order of 100 pixels when you flip between images.<br>
         return roiSelected
     }
     // canvas
+    OpenSeadragon.setString("Tooltips.PreviousPage","(Backspace)");
+    OpenSeadragon.setString("Tooltips.NextPage","(Space bar)");
+    OpenSeadragon.setString("Tooltips.Home","Reset view");
+    OpenSeadragon.setString("Tooltips.ZoomIn","(mouse wheel up)");
+    OpenSeadragon.setString("Tooltips.ZoomOut","(mouse wheel down)");
     var viewer = OpenSeadragon({
         id: "image-display",
         tileSources: ${list_of_paths_to_dzi_files},
@@ -207,6 +213,9 @@ order of 100 pixels when you flip between images.<br>
     var canvasPress = false;
     var roiSelected = false;
 
+    // index of the current image
+    var currentImage = 0;
+
     // print the image index in the stereo sequence
     viewer.addHandler("page", function (data) {
         document.getElementById("currentpage").innerHTML = ( data.page + 1 ) + " of ${len(list_of_paths_to_dzi_files)}";
@@ -216,6 +225,21 @@ order of 100 pixels when you flip between images.<br>
     // print the current zoom level
     viewer.addHandler("zoom", function (data) {
         document.getElementById("currentzoom").innerHTML = "current zoom: " + viewer.viewport.viewportToImageZoom(viewer.viewport.getZoom()).toFixed(2) + "&nbsp;";
+    });
+
+    // register the next image on the current one with a translation
+    viewer.addHandler("page", function (data) {
+            // assume we know the altitude h
+            var centerRef = viewer.viewport.viewportToImageCoordinates(viewer.viewport.getCenter(true));
+            var buf = Module._malloc(2*4); // malloc two floats
+            f = Module.cwrap('get_corresponding_pix', ['number', 'number', 'number', 'number', 'number', 'number'])
+            f(buf, currentImage, data.page, centerRef.x, centerRef.y, 1000)
+            var row = getValue(buf, 'float')
+            var col = getValue(buf+4, 'float')
+            var centerSec = new OpenSeadragon.Point(row, col)
+            //var centerSec = new OpenSeadragon.Point(1000, 1000);
+            viewer.viewport.panTo(viewer.viewport.imageToViewportCoordinates(centerSec), true)  // see openseadragon.js line 16365
+            currentImage = data.page  // update the current page index
     });
 
     // wire the press event: recover coordinates on right click
