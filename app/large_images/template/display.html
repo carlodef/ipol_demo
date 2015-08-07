@@ -56,7 +56,8 @@ order of 100 pixels when you flip between images.<br>-->
 <br>
 <br>
 
-<div id="image-display" class="openseadragon"> </div>
+<div id="image-display" class="openseadragon">
+<!--Dont close this div here, it prevents the ROI to be drawn in fullscreen mode -->
 
 <style>
     .openseadragon {
@@ -354,3 +355,4 @@ function render() {
   el.style.webkitFilter = val;
 }
 </script>
+</div>
