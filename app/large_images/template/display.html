@@ -71,7 +71,8 @@ order of 100 pixels when you flip between images.<br>-->
 <br>
 <br>
 
-<div id="image-display" class="openseadragon"> </div>
+<div id="image-display" class="openseadragon">
+<!--Dont close this div here, it prevents the ROI to be drawn in fullscreen mode -->
 
 <script type="text/javascript">
 
@@ -176,8 +177,18 @@ order of 100 pixels when you flip between images.<br>-->
     var imageRoi = new OpenSeadragon.Rect(0., 0., 0., 0.);
     var viewportRoiFree = new OpenSeadragon.Rect(0., 0., 0., 0.);
     var imageRoiFree = new OpenSeadragon.Rect(0., 0., 0., 0.);
+
+    // global variables changed by events
+    var fullScreen = false;
     var canvasPress = false;
     var roiSelected = false;
+    var currentImage = 0;
+
+    // to know if we are currently fullscreen
+    viewer.addHandler("pre-full-page", function (data) {
+        fullScreen = !fullScreen;
+        //console.log('entering/leaving fullpage')
+    });
 
     // print the image index in the stereo sequence
     viewer.addHandler("page", function (data) {
@@ -187,8 +198,12 @@ order of 100 pixels when you flip between images.<br>-->
 
     // print the current zoom level
     viewer.addHandler("zoom", function (data) {
-        document.getElementById("currentzoom").innerHTML = "current zoom: " + viewer.viewport.viewportToImageZoom(viewer.viewport.getZoom()).toFixed(2) + "&nbsp;";
+        if (!fullScreen) {
+            document.getElementById("currentzoom").innerHTML = "current zoom: " + viewer.viewport.viewportToImageZoom(viewer.viewport.getZoom()).toFixed(2) + "&nbsp;";
+        }
     });
+
+
 
     // wire the press event: recover coordinates on right click
     // http://openseadragon.github.io/examples/viewport-coordinates
@@ -224,10 +239,12 @@ order of 100 pixels when you flip between images.<br>-->
         document.getElementById("roi-selection-free").className = "highlight-red";
 
         // pass roi coordinates to the GET form, for the crop
-        document.getElementById("roi_x").value = imageRoi.x.toFixed(0);
-        document.getElementById("roi_y").value = imageRoi.y.toFixed(0);
-        document.getElementById("roi_w").value = imageRoi.width.toFixed(0);
-        document.getElementById("roi_h").value = imageRoi.height.toFixed(0);
+        if (!fullScreen) {
+            document.getElementById("roi_x").value = imageRoi.x.toFixed(0);
+            document.getElementById("roi_y").value = imageRoi.y.toFixed(0);
+            document.getElementById("roi_w").value = imageRoi.width.toFixed(0);
+            document.getElementById("roi_h").value = imageRoi.height.toFixed(0);
+        }
     });
 
     // recover coordinates in real time thanks to object OpenSeaDragon MouseTracker object
@@ -271,12 +288,14 @@ order of 100 pixels when you flip between images.<br>-->
 	        if(canvasPress) {
                 viewer.updateOverlay("roi-selection-free", viewportRoiFree)
                 viewer.updateOverlay("roi-selection-constrained", viewportRoi)
-                document.getElementById("Info").innerHTML =
-                    imageRoi.x.toFixed(0).concat(", ",
-                            imageRoi.y.toFixed(0), ", ",
-                            imageRoi.width.toFixed(0), ", ",
-                            imageRoi.height.toFixed(0));
-                //document.getElementById("Info").innerHTML = imageRoi.toString();
+                if (!fullScreen) {
+                    document.getElementById("Info").innerHTML =
+                        imageRoi.x.toFixed(0).concat(", ",
+                                imageRoi.y.toFixed(0), ", ",
+                                imageRoi.width.toFixed(0), ", ",
+                                imageRoi.height.toFixed(0));
+                    //document.getElementById("Info").innerHTML = imageRoi.toString();
+                }
 	        }
         }
     });
@@ -304,5 +323,6 @@ function render() {
 }
 </script>
 
-<div/> <!-- content -->
-<div/> <!-- main -->
+</div> <!-- image-display -->
+</div> <!-- content -->
+</div> <!-- main -->
