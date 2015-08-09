@@ -107,7 +107,6 @@ done
 for dataset in `find * -type d`; do
     if [ -s "$dataset/paths_panchro.txt" ] ; then
         create_links $dataset "paths_panchro.txt" "_panchro"
-        python ../print_cfg.py $dataset
     fi
     # if [ -s "$dataset/paths_ms.txt" ] ; then
     #     create_links $dataset "paths_ms.txt" "_ms"
