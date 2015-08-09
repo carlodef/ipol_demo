@@ -93,12 +93,16 @@ def main(dataset, n, out=sys.stdout):
 
     # read infos in DIM*.XML file
     dim_xml_file = os.path.join(dataset, 'dim_01.xml')
+    tif_file = os.path.join(dataset, 'im_panchro_01.tif')
     if os.path.isfile(dim_xml_file):  # check if the link points to an existing file
         date = grep_xml(dim_xml_file, "IMAGING_DATE")
         satellite = grep_xml(dim_xml_file, "INSTRUMENT_INDEX")
+    elif os.path.isfile(tif_file):
+        date = extract_date_from_pleiades_filename(os.readlink(tif_file))
+        satellite = extract_satellite_from_pleiades_filename(os.readlink(tif_file))
     else:
-        date = extract_date_from_pleiades_filename(os.readlink(os.path.join(dataset, 'im_panchro_01.tif')))
-        satellite = extract_satellite_from_pleiades_filename(os.readlink(os.path.join(dataset, 'im_panchro_01.tif')))
+        date = 'DD-MM-YYYY'
+        satellite = 'Pleiades 1X'
 
     # print to stdout
     if dzi8_paths or dzi16_paths:
