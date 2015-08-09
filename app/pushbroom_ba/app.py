@@ -18,7 +18,7 @@ import cherrypy.lib.profiler
 
 
 from lib import base_app, http
-from lib.base_app import init_app
+from lib.base_app import init_app, AppPool
 
 #-------------------------------------------------------------------------------
 # Demo main class
@@ -58,19 +58,36 @@ class app(base_app):
     # INPUT STEP
     # --------------------------------------------------------------------------
     @cherrypy.expose
-    @init_app
     def index(self, **kwargs):
         """
         use the selected available input images
         """
-        self.init_cfg()
+        # When we arrive here, self.key should be empty.
+        # If not, it means that another execution is concurrent.
+        # In that case, we need to clone the app object
+        key_is_empty = (self.key == "")
+        if key_is_empty:
+            self2 = base_app(self.base_dir)
+            self2.__class__ = self.__class__
+            self2.__dict__.update(self.__dict__)
+        else:
+            self2 = self
 
+        self2.new_key()
+        self2.init_cfg()
+
+        # Add to app object pool
+        if key_is_empty:
+            pool = AppPool.get_instance() # Singleton pattern
+            pool.add_app(self2.key, self2)
+
+        # do my stuff
         try:
             prev_points = json.loads(kwargs['zzblank.prev_points'])
         except:
             prev_points = None
 
-        return self.params(key=self.key, prev_points=prev_points)
+        return self2.params(key=self2.key, prev_points=prev_points)
 
     #---------------------------------------------------------------------------
     # generate point selection page

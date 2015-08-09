@@ -4,7 +4,7 @@ Display of large images
 
 from lib import base_app, build, http, image, config, thumbnail
 from lib.misc import app_expose, ctime
-from lib.base_app import init_app
+from lib.base_app import init_app, AppPool
 import cherrypy
 from cherrypy import TimeoutError
 import os.path
@@ -72,12 +72,29 @@ class app(base_app):
         return self.tmpl_out("input.html", inputd=input_dict)
 
     @cherrypy.expose
-    @init_app
     def input_select(self, **kwargs):
         """
         use the selected available input images
         """
-        self.init_cfg()
+        # When we arrive here, self.key should be empty.
+        # If not, it means that another execution is concurrent.
+        # In that case, we need to clone the app object
+        key_is_empty = (self.key == "")
+        if key_is_empty:
+            self2 = base_app(self.base_dir)
+            self2.__class__ = self.__class__
+            self2.__dict__.update(self.__dict__)
+        else:
+            self2 = self
+
+        self2.new_key()
+        self2.init_cfg()
+
+        # Add to app object pool
+        if key_is_empty:
+            pool = AppPool.get_instance() # Singleton pattern
+            pool.add_app(self2.key, self2)
+
 
         # get the dataset id
         # kwargs contains input_id.x and input_id.y
@@ -102,19 +119,19 @@ class app(base_app):
         # save paths to the tiff images
         # either one of the two keys dzi8 or dzi16 must exist
         input_dict = config.file_dict(self.input_dir)
-        self.cfg['param']['tif_paths'] = input_dict[input_id]['tif'].split()
+        self2.cfg['param']['tif_paths'] = input_dict[input_id]['tif'].split()
         if input_dict[input_id].has_key('dzi8'):
-            self.cfg['param']['dzi_paths'] = input_dict[input_id]['dzi8'].split()
+            self2.cfg['param']['dzi_paths'] = input_dict[input_id]['dzi8'].split()
         else:
-            self.cfg['param']['dzi_paths'] = input_dict[input_id]['dzi16'].split()
-        self.cfg.save()
+            self2.cfg['param']['dzi_paths'] = input_dict[input_id]['dzi16'].split()
+        self2.cfg.save()
 
         # jump to the display page
-        return self.display(key=self.key)
+        return self2.display(key=self2.key)
 
 
     @init_app
-    def display(self):
+    def display(self, **kwargs):
         """
         Render the display page
         """
