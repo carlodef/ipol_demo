@@ -11,6 +11,9 @@ import re
 
 
 def mkdir_p(path):
+    """
+    Creates a directory without complaining if it already exists.
+    """
     try:
         os.makedirs(path)
     except OSError as exc: # Python >2.5
@@ -20,6 +23,9 @@ def mkdir_p(path):
 
 
 def symlink_p(src, dst):
+    """
+    Creates a symlink without complaining if it already exists.
+    """
     try:
         os.symlink(src, dst)
     except OSError as exc: # Python >2.5
@@ -47,6 +53,9 @@ def list_images_in_dataset(f):
         preview file.
     """
     # list ms images
+    # the '-not \( -path *_files -prune \)' is to avoid entering in the dzi
+    # folders, which contains tens of thousands jpeg files and make the process
+    # very slow
     p = subprocess.Popen("find %s -not \( -path *_files -prune \) -type f -name \"PREV*_MS_*.JPG\"" % f, shell=True, stdout=subprocess.PIPE)
     ms_files = p.stdout.read().splitlines()
     p = subprocess.Popen("find %s -not \( -path *_files -prune \) -type f -name \"*_P_*.JP2.TIF\"" % f, shell=True, stdout=subprocess.PIPE)
