@@ -143,26 +143,26 @@ def create_links(list_of_paths, dest_dir, print_cfg_ipol=False):
         symlink_p(f, os.path.join(dest_dir, 'im_panchro_%02d.tif' % (i+1)))
 
         # dzi 8 bits
-        dzi = '%s_8BITS.dzi' % f[:-8]  # remove extension '.JP2.TIF' (8 chars)
-        files = '%s_8BITS_files' % f[:-8]
-        if not os.path.isfile(dzi):
-            print('file %s not found' % dzi, file=sys.stderr)
-        elif not os.path.isdir(files):
-            print('directory %s not found' % files, file=sys.stderr)
-        else:
-            symlink_p(dzi, os.path.join(dest_dir, 'im_panchro_8BITS_%02d.dzi' % (i+1)))
-            symlink_p(files, os.path.join(dest_dir, 'im_panchro_8BITS_%02d_files' % (i+1)))
+        dzi8_found = False
+        dzi8 = '%s_8BITS.dzi' % f[:-8]  # remove extension '.JP2.TIF' (8 chars)
+        files8 = '%s_8BITS_files' % f[:-8]
+        if os.path.isfile(dzi8) and os.path.isdir(files8):
+            symlink_p(dzi8, os.path.join(dest_dir, 'im_panchro_8BITS_%02d.dzi' % (i+1)))
+            symlink_p(files8, os.path.join(dest_dir, 'im_panchro_8BITS_%02d_files' % (i+1)))
+            dzi8_found = True
 
         # dzi 16 bits
-#        dzi = '%s_16BITS.dzi' % f[:-8]  # remove extension '.JP2.TIF' (8 chars)
-#        files = '%s_16BITS_files' % f[:-8]
-#        if not os.path.isfile(dzi):
-#            print('file %s not found' % dzi, file=sys.stderr)
-#        elif not os.path.isdir(files):
-#            print('directory %s not found' % files, file=sys.stderr)
-#        else:
-#            symlink_p(dzi, os.path.join(dest_dir, 'im_panchro_16BITS_%02d.dzi' % (i+1)))
-#            symlink_p(files, os.path.join(dest_dir, 'im_panchro_16BITS_%02d_files' % (i+1)))
+        dzi16_found = False
+        dzi16 = '%s_16BITS.dzi' % f[:-8]  # remove extension '.JP2.TIF' (8 chars)
+        files16 = '%s_16BITS_files' % f[:-8]
+        if os.path.isfile(dzi16) and os.path.isdir(files16):
+            symlink_p(dzi16, os.path.join(dest_dir, 'im_panchro_16BITS_%02d.dzi' % (i+1)))
+            symlink_p(files16, os.path.join(dest_dir, 'im_panchro_16BITS_%02d_files' % (i+1)))
+            dzi16_found = True
+
+        # print warning if neither 8bit nor 16bit dzi was found
+        if (not dzi8_found) and (not dzi16_found):
+            print('WARNING: no dzi file found for img %s' % f, file=sys.stderr)
 
     if print_cfg_ipol:
         print_cfg.main(dest_dir, len(list_of_paths))
