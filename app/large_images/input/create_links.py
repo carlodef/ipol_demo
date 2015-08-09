@@ -184,7 +184,7 @@ def main(src_dir, dst_dir='pleiades', print_cfg_ipol=False):
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
-        print('usage: %s src_dir [dst_dir (default pleiades)]' % sys.argv[0], file=sys.stderr)
+        print('\tusage: %s src_dir [dst_dir (default pleiades)] > index.cfg' % sys.argv[0], file=sys.stderr)
     elif len(sys.argv) == 2:
         main(sys.argv[1], print_cfg_ipol=True)
     else:
