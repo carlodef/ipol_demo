@@ -359,7 +359,7 @@ class app(base_app):
 
         run_time = time.time()
         p = self.run_proc(['s2p.sh', 'config.json'])
-        self.wait_proc(p, timeout=self.timeout)
+        self.wait_proc(p, timeout=10*self.timeout)
         self.cfg['info']['run_time'] = time.time() - run_time
         self.cfg.save()
 
