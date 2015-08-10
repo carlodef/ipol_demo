@@ -23,6 +23,14 @@
       %endif
 </%def>
 
+<!--Overwrite css style to make img thumbnails larger-->
+<style>
+form .select_input input[type="image"] {
+    width: 5cm;
+    height: 5cm;
+    background: white;
+    border: 1px solid #DDDDDD; }
+</style>
 
 %if inputd:
 <form action="${app.base_url + 'input_select'}" method="get">
@@ -30,24 +38,6 @@
 <!--<p>
 Click on an images to use it as the algorithm input.
 </p>-->
-<div style="max-height:60em; overflow:auto;">
-
-   <fieldset>
-      <legend>Triplets</legend>
-%for id in sorted(inputd.keys()):
-	%if inputd[id]['nb_img'] == 3:
-		%if 'hidden' not in inputd[id].keys():
-			<div class="select_input">
-			${imgflip(inputd[id]['tn_url'],inputd[id]['title'],id)}
-			##%for url in inputd[id]['tn_url']:
-			##%endfor
-            <span class="label">${inputd[id]['title'] | h}</br>${inputd[id]['date']}</br>${inputd[id]['satellite']}</span>
-			</div>
-		%endif
-	%endif
-%endfor
-   </fieldset>
-
 
    <fieldset>
       <legend>Pairs</legend>
@@ -63,10 +53,41 @@ Click on an images to use it as the algorithm input.
 		%endif
 	%endif
 %endfor
+   </fieldset><br><br>
+
+   <fieldset>
+      <legend>Triplets</legend>
+%for id in sorted(inputd.keys()):
+	%if inputd[id]['nb_img'] == 3:
+		%if 'hidden' not in inputd[id].keys():
+			<div class="select_input">
+			${imgflip(inputd[id]['tn_url'],inputd[id]['title'],id)}
+			##%for url in inputd[id]['tn_url']:
+			##%endfor
+            <span class="label">${inputd[id]['title'] | h}</br>${inputd[id]['date']}</br>${inputd[id]['satellite']}</span>
+			</div>
+		%endif
+	%endif
+%endfor
+   </fieldset><br><br>
+
+   <fieldset>
+      <legend>n-view sequences</legend>
+%for id in sorted(inputd.keys()):
+    %if inputd[id]['nb_img'] > 3:
+		%if 'hidden' not in inputd[id].keys():
+			<div class="select_input">
+			${imgflip(inputd[id]['tn_url'],inputd[id]['title'],id)}
+			##%for url in inputd[id]['tn_url']:
+			##%endfor
+            <span class="label">${inputd[id]['title'] | h}</br>${inputd[id]['date']}</br>${inputd[id]['satellite']}</span>
+			</div>
+		%endif
+	%endif
+%endfor
    </fieldset>
 
 
-</div>
 
 %if any([inputd[id].has_key('credit') for id in inputd]):
 <p style="font-size: 80%">
@@ -91,6 +112,6 @@ Click on an images to use it as the algorithm input.
 </div>
 %endif
 
-</div>
+</Div>
 </form>
 %endif
