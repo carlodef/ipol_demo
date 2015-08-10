@@ -184,8 +184,6 @@ class app(base_app):
         #    ar.add_info({"x": x, "y": y, "r": r, "n_bins": n_bins, "sigma":sigma})
         #    ar.save()
 
-        return self.tmpl_out("run.html")
-
     def run_algo(self, x, y, w, h, i, crop_whole_sequence):
         """
         """
