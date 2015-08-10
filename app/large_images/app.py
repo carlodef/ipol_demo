@@ -104,8 +104,9 @@ class app(base_app):
 
         # save paths to the tiff images
         # either one of the two keys dzi8 or dzi16 must exist
-        input_dict = config.file_dict(self.input_dir)
+        input_dict = config.file_dict(self2.input_dir)
         self2.cfg['param']['tif_paths'] = input_dict[input_id]['tif'].split()
+        self2.cfg['param']['nb_images'] = len(input_dict[input_id]['tif'].split())
         if input_dict[input_id].has_key('dzi8'):
             self2.cfg['param']['dzi_paths'] = input_dict[input_id]['dzi8'].split()
         else:
@@ -159,6 +160,7 @@ class app(base_app):
         h = self.cfg['param']['h']
         i = self.cfg['param']['img_index']
         crop_whole_sequence = self.cfg['param']['crop_whole_sequence']
+        n = self.cfg['param']['nb_images']
 
         # run the algorithm
         try:
@@ -173,28 +175,33 @@ class app(base_app):
         http.redir_303(self.base_url + 'result?key=%s' % self.key)
 
         # archive
-        #if self.cfg['meta']['original']:
-        #    ar = self.make_archive()
-        #    ar.add_file("input_0.orig.png", "original.png", info="uploaded image")
-        #    ar.add_file("input_0.png", "input.png", info="input image")
-        #    ar.add_file("histo_ac.png", info="a contrario detected modes")
-        #    ar.add_file("histo_lowe.png", info="lowe's maxima")
-        #    ar.add_file("output_ac.png", info="a contrario orientations")
-        #    ar.add_file("output_lowe.png", info="lowe's orientations")
-        #    ar.add_info({"x": x, "y": y, "r": r, "n_bins": n_bins, "sigma":sigma})
-        #    ar.save()
+        if True:
+            ar = self.make_archive()
+            ar.add_info({"x": x, "y": y, "w": w, "h": h, "img_index": i,
+                         "crop_whole_sequence": crop_whole_sequence})
+            ar.add_file("crop_%02d.png" % i, info="selected crop (8 bits)")
+            ar.add_file("crop_%02d.tif" % i, info="selected crop (16 bits)")
+            if crop_whole_sequence:
+                for k in xrange(1, n+1):
+                    if k != i:
+                        ar.add_file("crop_%02d.png" % k, info="corresponding crop (8 bits)")
+                        ar.add_file("crop_%02d.tif" % k, info="corresponding crop (16 bits)")
+            ar.save()
+
+        return
+
 
     def run_algo(self, x, y, w, h, i, crop_whole_sequence):
         """
         """
         tif_paths = ast.literal_eval(self.cfg['param']['tif_paths'])
         if crop_whole_sequence:
-            for i in xrange(1, len(tif_paths)+1):
-                utils.crop(os.path.join(self.input_dir, tif_paths[i-1]),
-                        os.path.join(self.work_dir, 'crop_%02d.tif' % i), x, y,
+            for k in xrange(1, len(tif_paths)+1):
+                utils.crop(os.path.join(self.input_dir, tif_paths[k-1]),
+                        os.path.join(self.work_dir, 'crop_%02d.tif' % k), x, y,
                         w, h)
-                utils.qauto(os.path.join(self.work_dir, 'crop_%02d.tif' % i),
-                        os.path.join(self.work_dir, 'crop_%02d.png' % i))
+                utils.qauto(os.path.join(self.work_dir, 'crop_%02d.tif' % k),
+                        os.path.join(self.work_dir, 'crop_%02d.png' % k))
         else:
             utils.crop(os.path.join(self.input_dir, tif_paths[i-1]),
                     os.path.join(self.work_dir, 'crop_%02d.tif' % i), x, y, w, h)
