@@ -37,6 +37,9 @@ class app(base_app):
         base_dir = os.path.dirname(os.path.abspath(__file__))
         base_app.__init__(self, base_dir)
 
+        # select the base_app steps to expose
+        app_expose(base_app.index)
+
 
     def build(self):
         """
@@ -48,28 +51,6 @@ class app(base_app):
                 os.path.join(self.input_dir, 'data'))
         return
 
-    @cherrypy.expose
-    def index(self):
-        """
-        demo presentation and input menu
-        """
-        # read the input index as a dict
-        input_dict = config.file_dict(self.input_dir)
-        tn_size = int(cherrypy.config.get('input.thumbnail.size', '192'))
-        # TODO: build via list-comprehension
-        for (input_id, input_info) in input_dict.items():
-            # convert the files to a list of file names
-            # by splitting at blank characters
-            # and generate thumbnails and thumbnail urls
-            fnames = input_info['prv'].split()
-            # generate thumbnails even for files in subdirectories of input
-            input_dict[input_id]['tn_url'] = [self.input_url +'/'+ os.path.dirname(f) + '/' +
-                        os.path.basename(thumbnail(self.input_dir + f, (tn_size, tn_size)))
-                        for f in fnames]
-            input_dict[input_id]['url'] = [self.input_url + os.path.basename(f)
-                                       for f in fnames]
-
-        return self.tmpl_out("input.html", inputd=input_dict)
 
     @cherrypy.expose
     def input_select(self, **kwargs):

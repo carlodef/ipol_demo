@@ -107,7 +107,7 @@ def main(dataset, n, out=sys.stdout):
     # print to stdout
     if dzi8_paths or dzi16_paths:
         print('[%s]' % dataset, file=out)
-        print('prv = ', prv_paths, file=out)
+        print('files = ', prv_paths, file=out)
         print('tif = ', tif_paths, file=out)
         if dzi8_paths:
             print('dzi8 = ', dzi8_paths, file=out)
