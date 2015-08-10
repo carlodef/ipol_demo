@@ -76,9 +76,10 @@ def main(dataset, n, out=sys.stdout):
         n: number of images in the dataset
         out: output stream
     """
-    # build lists of paths to dzi and previews files
+    # build lists of paths previews files, tif, rpc and dzi files
     prv_paths = ' '.join([os.path.join(dataset, 'prv_%02d.jpg' % (i+1)) for i in xrange(n)])
     tif_paths = ' '.join([os.path.join(dataset, 'im_panchro_%02d.tif' % (i+1)) for i in xrange(n)])
+    rpc_paths = ' '.join([os.path.join(dataset, 'rpc_%02d.xml' % (i+1)) for i in xrange(n)])
     dzi8_paths, dzi16_paths = None, None
     if os.path.isfile(os.path.abspath(os.path.join(dataset,
                                                    'im_panchro_8BITS_01.dzi'))):
@@ -109,6 +110,7 @@ def main(dataset, n, out=sys.stdout):
         print('[%s]' % dataset, file=out)
         print('files = ', prv_paths, file=out)
         print('tif = ', tif_paths, file=out)
+        print('rpc = ', rpc_paths, file=out)
         if dzi8_paths:
             print('dzi8 = ', dzi8_paths, file=out)
         if dzi16_paths:
