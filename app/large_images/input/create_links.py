@@ -182,7 +182,7 @@ def main(src_dir, dst_dir='pleiades', print_cfg_ipol=False):
         if os.path.isdir(dataset_abspath):
             if 'dataset_1' in os.listdir(dataset_abspath):  # the dataset has subdatasets (multidate)
                 for subdataset in os.listdir(dataset_abspath):
-                    if os.path.isdir(subdataset):
+                    if os.path.isdir(os.path.join(dataset_abspath, subdataset)):
                         l = list_images_in_dataset(os.path.join(dataset_abspath, subdataset))
                         mkdir_p(os.path.join(dst_dir, dataset, subdataset))
                         create_links(l, os.path.join(dst_dir, dataset, subdataset), print_cfg_ipol)
