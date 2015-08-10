@@ -12,6 +12,7 @@ import shutil
 import time
 import numpy as np
 import json
+import ast
 
 class app(base_app):
     """
@@ -35,6 +36,9 @@ class app(base_app):
         # setup the parent class
         base_dir = os.path.dirname(os.path.abspath(__file__))
         base_app.__init__(self, base_dir)
+
+        # select the base_app steps to expose
+        app_expose(base_app.index)
 
 
     def build(self):
@@ -83,28 +87,6 @@ class app(base_app):
 
         return
 
-    @cherrypy.expose
-    def index(self):
-        """
-        demo presentation and input menu
-        """
-        # read the input index as a dict
-        input_dict = config.file_dict(self.input_dir)
-        tn_size = int(cherrypy.config.get('input.thumbnail.size', '192'))
-        # TODO: build via list-comprehension
-        for (input_id, input_info) in input_dict.items():
-            # convert the files to a list of file names
-            # by splitting at blank characters
-            # and generate thumbnails and thumbnail urls
-            fnames = input_info['prv'].split()
-            # generate thumbnails even for files in subdirectories of input
-            input_dict[input_id]['tn_url'] = [self.input_url +'/'+ os.path.dirname(f) + '/' +
-                        os.path.basename(thumbnail(self.input_dir + f, (tn_size, tn_size)))
-                        for f in fnames]
-            input_dict[input_id]['url'] = [self.input_url + os.path.basename(f)
-                                       for f in fnames]
-
-        return self.tmpl_out("input.html", inputd=input_dict)
 
     @cherrypy.expose
     @init_app
@@ -112,24 +94,39 @@ class app(base_app):
         """
         use the selected available input images
         """
-        self.init_cfg()
+        # When we arrive here, self.key should be empty.
+        # If not, it means that the execution belongs to another thread
+        # and therefore we need to reuse the app object
+        key_is_empty = (self.key == "")
+        if key_is_empty:
+            # New execution: create new app object
+            self2 = base_app(self.base_dir)
+            self2.__class__ = self.__class__
+            self2.__dict__.update(self.__dict__)
+        else:
+            # Already known execution
+            self2 = self
+
+        self2.new_key()
+        self2.init_cfg()
+
+        # Add app to object pool
+        if key_is_empty:
+            pool = AppPool.get_instance() # Singleton pattern
+            pool.add_app(self2.key, self2)
 
         # get the dataset id
         # kwargs contains input_id.x and input_id.y
         input_id = kwargs.keys()[0].split('.')[0]
         assert input_id == kwargs.keys()[1].split('.')[0]
 
-        # create symlinks to the previews
+        # read the dictionary of inputs
         input_dict = config.file_dict(self.input_dir)
-        prv_files = input_dict[input_id]['prv'].split()
-        prv_files_abs = [os.path.join(self.input_dir, f) for f in prv_files]
-        for i, f in enumerate(prv_files_abs):
-            os.symlink(f, os.path.join(self.work_dir, 'prv_%02d.png' % (i+1)))
 
         # create symlinks to the full images and rpc files. There must be the
         # same number of image files and rpc files. The number of previews
         # doesn't matter.
-        img_files = input_dict[input_id]['img'].split()
+        img_files = input_dict[input_id]['tif'].split()
         rpc_files = input_dict[input_id]['rpc'].split()
         assert len(img_files) == len(rpc_files)
 
@@ -147,16 +144,30 @@ class app(base_app):
             clr_files_abs = [os.path.join(self.input_dir, f) for f in clr_files]
             os.symlink(img_files_abs[0], os.path.join(self.work_dir, 'img_01_clr.tif'))
 
+        # link to the preview files, needed by the archive
+        prv_files = input_dict[input_id]['files'].split()
+        prv_files_abs = [os.path.join(self.input_dir, f) for f in prv_files]
+        for i, f in enumerate(prv_files_abs):
+            os.symlink(f, os.path.join(self.work_dir, 'prv_%02d.png' % (i+1)))
+
         # save params of the dataset
         self.log("input selected : %s" % input_id)
         self.cfg['meta']['original'] = False
         self.cfg['meta']['input_id'] = input_id
         self.cfg['meta']['nb_img'] = len(img_files)
         self.cfg['meta']['color'] = input_dict[input_id]['color']
+
+        # either one of the two keys dzi8 or dzi16 must exist
+        self.cfg['param']['tif_paths'] = input_dict[input_id]['tif'].split()
+        if input_dict[input_id].has_key('dzi8'):
+            self.cfg['param']['dzi_paths'] = input_dict[input_id]['dzi8'].split()
+        else:
+            self.cfg['param']['dzi_paths'] = input_dict[input_id]['dzi16'].split()
         self.cfg.save()
 
-        # jump to the params page
+        # jump to the display page
         return self.params(key=self.key)
+
 
     @cherrypy.expose
     @init_app
@@ -239,13 +250,14 @@ class app(base_app):
 
 
     @init_app
-    def params(self, fnames=None, newrun=False, msg=None):
+    def params(self, newrun=False):
         """
         configure the algo execution
         """
         if newrun:
             self.clone_input()
-        return self.tmpl_out("params.html")
+        dzi_paths = ast.literal_eval(self.cfg['param']['dzi_paths'])
+        return self.tmpl_out("display.html", list_of_paths_to_dzi_files=dzi_paths)
 
 
     @cherrypy.expose
@@ -272,11 +284,10 @@ class app(base_app):
         if color == 'panchro_xs':
             self.cfg['param']['images'][0]['clr'] = "img_01_clr.tif"
         self.cfg['param']['roi'] = {}
-        self.cfg['param']['roi']['w'] = int(kwargs['roi_width'])
-        self.cfg['param']['roi']['h'] = int(kwargs['roi_height'])
-        self.cfg['param']['roi_preview'] = {}
-        self.cfg['param']['roi_preview']['x'] = int(kwargs['x'])
-        self.cfg['param']['roi_preview']['y'] = int(kwargs['y'])
+        self.cfg['param']['roi']['x'] = int(kwargs['x'])
+        self.cfg['param']['roi']['y'] = int(kwargs['y'])
+        self.cfg['param']['roi']['w'] = int(kwargs['w'])
+        self.cfg['param']['roi']['h'] = int(kwargs['h'])
         self.cfg['param']["matching_algorithm"] = str(kwargs['block_match_method'])
         self.cfg['param']['subsampling_factor'] = int(kwargs['zoom'])
         self.cfg['param']["subsampling_factor_registration"] = np.ceil(int(kwargs['zoom']) * 0.5)
@@ -286,9 +297,9 @@ class app(base_app):
         self.cfg['param']["epipolar_thresh"] = 0.5
         self.cfg['param']["use_pleiades_unsharpening"] = True
         self.cfg['param']["debug"] = False
-        self.cfg['param']["preview_coordinate_system"] = True
         self.cfg['param']["tile_size"] = 1000
         self.cfg['param']["disp_range_method"] = "sift"
+        self.cfg['param']["temporary_dir"] = "tmp"
         self.cfg.save()
 
         # write the parameters in a json file
@@ -321,20 +332,20 @@ class app(base_app):
 #        self.wait_proc(p, timeout=self.timeout)
 
         # archive: all experiments are archived
+        # WARNING: with the new IPOL lib/archive.py, you cannot archive files that are in subdirectories
         ar = self.make_archive()
         ar.add_file("config.json", info="input")
-        ar.add_file("prv_ref.png", "input.png", info="input")
-        ar.add_file("s2p_results/roi_ref_preview.png", info="input")
-        ar.add_file("s2p_results/roi_sec_preview.png", info="input")
-        ar.add_file("s2p_results/dem_preview.png", info="output")
+#        ar.add_file("prv_ref.png", "input.png", info="input")
+        ar.add_file("roi_ref_preview.png", info="input")
+        ar.add_file("roi_sec_0_preview.png", info="input")
+        ar.add_file("height_map_preview.png", info="output")
         ar.add_info({"roi": self.cfg['param']['roi'],
                      "input_id": self.cfg['meta']['input_id'],
                      "nb_img": self.cfg['param']['nb_img']})
 #        if self.cfg['meta']['color'] in ['panchro_xs', 'pansharpened']:
-#            ar.add_file("s2p_results/roi_color_ref_preview.png", info="output")
+#            ar.add_file("roi_color_ref_preview.png", info="output")
         ar.save()
 
-        return self.tmpl_out("run.html")
 
     def run_algo(self):
         """
@@ -355,8 +366,8 @@ class app(base_app):
         p = self.run_proc(['helper_convert_outputs.sh'])
         self.wait_proc(p, timeout=self.timeout)
 
-        p = self.run_proc(['helper_archive.sh', 'config.json'])
-        self.wait_proc(p, timeout=self.timeout)
+#        p = self.run_proc(['helper_archive.sh', 'config.json'])
+#        self.wait_proc(p, timeout=self.timeout)
         return
 
     @cherrypy.expose
