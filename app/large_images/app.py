@@ -95,26 +95,10 @@ class app(base_app):
             pool = AppPool.get_instance() # Singleton pattern
             pool.add_app(self2.key, self2)
 
-
         # get the dataset id
         # kwargs contains input_id.x and input_id.y
         input_id = kwargs.keys()[0].split('.')[0]
         assert input_id == kwargs.keys()[1].split('.')[0]
-
-#        # create symlinks to the full images and rpc files. There must be the
-#        # same number of image files and rpc files. The number of previews
-#        # doesn't matter.
-#        img_files = input_dict[input_id]['img'].split()
-#        img_files_abs = [os.path.join(self.input_dir, f) for f in img_files]
-#        for i in range(len(img_files)):
-#            os.symlink(img_files_abs[i], os.path.join(self.work_dir,
-#                'img_%02d.tif' % (i+1)))
-#
-#        # if it's an xs dataset, create a link to the clr reference image
-#        if 'clr' in input_dict[input_id]:
-#            clr_files = input_dict[input_id]['clr'].split()
-#            clr_files_abs = [os.path.join(self.input_dir, f) for f in clr_files]
-#            os.symlink(img_files_abs[0], os.path.join(self.work_dir, 'img_01_clr.tif'))
 
         # save paths to the tiff images
         # either one of the two keys dzi8 or dzi16 must exist
@@ -127,22 +111,21 @@ class app(base_app):
         self2.cfg.save()
 
         # jump to the display page
-        return self2.display(key=self2.key)
+        return self2.params(key=self2.key)
 
 
     @init_app
-    def display(self, **kwargs):
+    def params(self, **kwargs):
         """
         Render the display page
         """
-        print self.key
         dzi_paths = ast.literal_eval(self.cfg['param']['dzi_paths'])
         return self.tmpl_out("display.html", list_of_paths_to_dzi_files=dzi_paths)
 
 
     @cherrypy.expose
     @init_app
-    def run(self, x, y, w, h, i, crop_whole_sequence=False, **kwargs):
+    def wait(self, x, y, w, h, i, crop_whole_sequence=False, **kwargs):
         """
         """
         # convert strings to ints
@@ -157,7 +140,53 @@ class app(base_app):
         self.cfg['param']['crop_whole_sequence'] = crop_whole_sequence
         self.cfg.save()
 
-        # do the job
+        # call run method through http
+        http.refresh(self.base_url + 'run?key=%s' % self.key)
+        return self.tmpl_out("wait.html")
+
+
+    @cherrypy.expose
+    @init_app
+    def run(self, **kwargs):
+        """
+        """
+        # read the params
+        x = self.cfg['param']['x']
+        y = self.cfg['param']['y']
+        w = self.cfg['param']['w']
+        h = self.cfg['param']['h']
+        i = self.cfg['param']['img_index']
+        crop_whole_sequence = self.cfg['param']['crop_whole_sequence']
+
+        # run the algorithm
+        try:
+            run_time = time.time()
+            self.run_algo(x, y, w, h, i, crop_whole_sequence)
+            self.cfg['info']['run_time'] = time.time() - run_time
+            self.cfg.save()
+        except TimeoutError:
+            return self.error(errcode='timeout')
+        except RuntimeError:
+            return self.error(errcode='runtime')
+        http.redir_303(self.base_url + 'result?key=%s' % self.key)
+
+        # archive
+        #if self.cfg['meta']['original']:
+        #    ar = self.make_archive()
+        #    ar.add_file("input_0.orig.png", "original.png", info="uploaded image")
+        #    ar.add_file("input_0.png", "input.png", info="input image")
+        #    ar.add_file("histo_ac.png", info="a contrario detected modes")
+        #    ar.add_file("histo_lowe.png", info="lowe's maxima")
+        #    ar.add_file("output_ac.png", info="a contrario orientations")
+        #    ar.add_file("output_lowe.png", info="lowe's orientations")
+        #    ar.add_info({"x": x, "y": y, "r": r, "n_bins": n_bins, "sigma":sigma})
+        #    ar.save()
+
+        return self.tmpl_out("run.html")
+
+    def run_algo(self, x, y, w, h, i, crop_whole_sequence):
+        """
+        """
         tif_paths = ast.literal_eval(self.cfg['param']['tif_paths'])
         if crop_whole_sequence:
             for i in xrange(1, len(tif_paths)+1):
@@ -172,8 +201,7 @@ class app(base_app):
             utils.qauto(os.path.join(self.work_dir, 'crop_%02d.tif' % i),
                     os.path.join(self.work_dir, 'crop_%02d.png' % i))
 
-        http.redir_303(self.base_url + 'result?key=%s' % self.key)
-        return self.tmpl_out("run.html")
+        return
 
 
     @cherrypy.expose
