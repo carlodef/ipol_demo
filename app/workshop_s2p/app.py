@@ -354,8 +354,8 @@ class app(base_app):
         could also be called by a batch processor
         this one needs no parameter
         """
-        p = self.run_proc(['helper_convert_inputs.sh', 'config.json', 'prv_01.png'])
-        self.wait_proc(p, timeout=self.timeout)
+#        p = self.run_proc(['helper_convert_inputs.sh', 'config.json', 'prv_01.png'])
+#        self.wait_proc(p, timeout=self.timeout)
 
         run_time = time.time()
         p = self.run_proc(['s2p.sh', 'config.json'])
