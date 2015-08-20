@@ -193,7 +193,7 @@ order of 100 pixels when you flip between images.<br>-->
     // print the image index in the stereo sequence
     viewer.addHandler("page", function (data) {
         document.getElementById("currentpage").innerHTML = ( data.page + 1 ) + " of ${len(list_of_paths_to_dzi_files)}";
-        document.getElementById("img_index").value = data.page;
+        document.getElementById("img_index").value = data.page+1;
     });
 
     // print the current zoom level
