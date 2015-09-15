@@ -175,7 +175,26 @@ class app(base_app):
         """
         upload images and rpcs
         """
-        self.init_cfg()
+        # When we arrive here, self.key should be empty.
+        # If not, it means that the execution belongs to another thread
+        # and therefore we need to reuse the app object
+        key_is_empty = (self.key == "")
+        if key_is_empty:
+            # New execution: create new app object
+            self2 = base_app(self.base_dir)
+            self2.__class__ = self.__class__
+            self2.__dict__.update(self.__dict__)
+        else:
+            # Already known execution
+            self2 = self
+
+        self2.new_key()
+        self2.init_cfg()
+
+        # Add app to object pool
+        if key_is_empty:
+            pool = AppPool.get_instance() # Singleton pattern
+            pool.add_app(self2.key, self2)
 
         # receive the input files
         for i in range(2):
@@ -238,16 +257,19 @@ class app(base_app):
         """
         Process uploaded input data
         * check that images are valid TIFF files (TODO)
-        * generates jpg previews of the image files
+        * generates dzi (Deep Zoom Image) for the image files 
         """
-        import utils
-        prv1 = os.path.join(self.work_dir, "prv_01.png")
-        prv2 = os.path.join(self.work_dir, "prv_02.png")
+        script = os.path.join(self.base_dir, 'scripts',
+                              'create_8bits_dzi_from_tiff.sh')
         img1 = os.path.join(self.work_dir, "img_01.tif")
         img2 = os.path.join(self.work_dir, "img_02.tif")
-        utils.generate_preview(prv1, img1)
-        utils.generate_preview(prv2, img2)
-
+        os.system("/bin/bash %s %s" % (script, img1))
+        os.system("/bin/bash %s %s" % (script, img2))
+        self.cfg['param']['dzi_paths'] = []
+        self.cfg['param']['dzi_paths'].append(os.path.join("tmp", self.key,
+            "img_01_8BITS.dzi"))
+        self.cfg['param']['dzi_paths'].append(os.path.join("tmp", self.key,
+            "img_02_8BITS.dzi"))
 
     @init_app
     def params(self, newrun=False):

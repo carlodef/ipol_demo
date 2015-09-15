@@ -1,0 +1,1 @@
+/home/carlo/code/pleiades_conversion_scripts/create_8bits_dzi_from_tiff.sh
