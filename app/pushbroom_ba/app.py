@@ -1,66 +1,61 @@
-#-------------------------------------------------------------------------------
-# Attitude estimation for orbiting pushbroom cameras - IPOL demo
-# by Carlo de Franchis, Gabriele Facciolo, Enric Meinhardt
-# May 2015
-#
-# The javascript tool to plot points was copied from
-# Point alignment detection demo
-# by jose lezama, rafael grompone von gioi
-# October 23, 2013
-#-------------------------------------------------------------------------------
-import subprocess
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# pylint: disable=C0103
+
+"""
+Attitude refinement for orbiting pushbroom cameras - IPOL demo
+by Carlo de Franchis, Gabriele Facciolo, Enric Meinhardt
+May 2015
+
+The javascript tool to plot points was copied from
+Point alignment detection demo
+by Jose Lezama, Rafael Grompone von Gioi
+"""
+
 import cherrypy
 import os.path
 import json
 import time
 import pylab
-import cherrypy.lib.profiler
-
 
 from lib import base_app, http
 from lib.base_app import init_app, AppPool
 
-#-------------------------------------------------------------------------------
-# Demo main class
-#-------------------------------------------------------------------------------
 class app(base_app):
+    """
+    App object for the attitude refinement IPOL demo.
+    """
+
     # IPOL demo system configuration
     title = 'Attitude estimation for orbiting pushbroom cameras'
     xlink_article = 'http://boucantrin.ovh.hw.ipol.im/~carlo/2015_ipol_pushbroom_camera_estimation.pdf'
 
-    p = cherrypy.lib.profiler.Profiler("/tmp/kkprof")
 
-    #---------------------------------------------------------------------------
-    # set up application
-    #---------------------------------------------------------------------------
     def __init__(self):
-        # setup the parent class
         base_dir = os.path.dirname(os.path.abspath(__file__))
         base_app.__init__(self, base_dir)
 
 
     def build(self):
         """
-        update local copy of pushbroom_ba source from its git repository
+        Update local copy of pushbroom_ba source from its git repository.
         """
         if not os.path.isdir(self.bin_dir):
-            print 'bin directory not found, doing a git clone'
+            # bin directory not found, doing a git clone
             cmd = ("git clone -b ipol --depth 1"
                    " git@github.com:carlodef/pushbroom_calibration.git %s" % self.bin_dir)
             os.system(cmd)
         else:
-            print 'bin directory found, doing a git pull'
-            os.system("cd %s && pwd && git pull && cd -" % self.bin_dir)
+            # bin directory found, doing a git pull
+            os.system("cd %s && git pull && cd -" % self.bin_dir)
 
         return
 
-    # --------------------------------------------------------------------------
-    # INPUT STEP
-    # --------------------------------------------------------------------------
+
     @cherrypy.expose
     def index(self, **kwargs):
         """
-        use the selected available input images
+        Handle the key generation and redirect to the params method.
         """
         # When we arrive here, self.key should be empty.
         # If not, it means that the execution belongs to another thread
@@ -86,18 +81,18 @@ class app(base_app):
         # do my stuff
         try:
             prev_points = json.loads(kwargs['zzblank.prev_points'])
-        except:
+        except BaseException:
             prev_points = None
 
         return self2.params(key=self2.key, prev_points=prev_points)
 
-    #---------------------------------------------------------------------------
-    # generate point selection page
-    #---------------------------------------------------------------------------
+
     @cherrypy.expose
     @init_app
-    def params(self, newrun=False, msg=None, prev_points=None):
-
+    def params(self, newrun=False, prev_points=None):
+        """
+        Generate point selection page.
+        """
         # initialize parameters
         self.cfg['param'] = {'points': json.dumps([]), 'has_already_run': False}
         self.cfg.save()
@@ -108,10 +103,10 @@ class app(base_app):
 
         return self.tmpl_out('paramresult.html', prev_points=prev_points)
 
-    #---------------------------------------------------------------------------
-    # draw points
-    #---------------------------------------------------------------------------
-    def draw_points(self, pts_x, pts_y, width, height):
+    def draw_points(self, pts_x, pts_y):
+        """
+        Draw user-selected points in a png file.
+        """
         pylab.clf()
         pylab.plot(pts_x, [1-y for y in pts_y], marker='o', color='r', ls='')
         pylab.xlim(-.05, 1.05)
@@ -121,20 +116,21 @@ class app(base_app):
                       bbox_inches='tight')
 
 
-    #---------------------------------------------------------------------------
-    # input handling and run redirection
-    #---------------------------------------------------------------------------
     @cherrypy.expose
     @init_app
     def wait(self, **kwargs):
-        self.p.run(self._wait, **kwargs)
-
-    @init_app
-    def _wait(self, **kwargs):
-
+        """
+        Input handling and run redirection.
+        """
         # read points coordinates
-        points_x = kwargs['points_x'] if kwargs.has_key('points_x') else self.cfg['param']['points_x']
-        points_y = kwargs['points_y'] if kwargs.has_key('points_y') else self.cfg['param']['points_y']
+        if kwargs.has_key('points_x'):
+            points_x = kwargs['points_x']
+        else:
+            points_x = self.cfg['param']['points_x']
+        if kwargs.has_key('points_y'):
+            points_y = kwargs['points_y']
+        else:
+            points_y = self.cfg['param']['points_y']
 
         # convert strings to floats
         points_x = [float(x) for x in points_x.split(',')]
@@ -146,7 +142,7 @@ class app(base_app):
         self.cfg['param']['npts'] = len(self.cfg['param']['points'])
         self.cfg['param']['img_width'] = 512
         self.cfg['param']['img_height'] = 512
-        self.draw_points(points_x, points_y, 512, 512)
+        self.draw_points(points_x, points_y)
 
         # create a json file containing the parameters for the algo
         algo_params = {}
@@ -169,7 +165,8 @@ class app(base_app):
         algo_params['perturbation_degree'] = int(kwargs['perturbation_degree'])
 
         # normalized points coordinates
-        alts = [0 for a in points_x]
+        alts = [0] * len(points_x)
+        #alts = [0 for a in points_x]
         algo_params['points'] = zip(points_y, points_x, alts)
         algo_params['normalized_points'] = True
 
@@ -192,13 +189,13 @@ class app(base_app):
         http.refresh(self.base_url + 'run?key=%s' % self.key)
         return self.tmpl_out("wait.html")
 
-    #---------------------------------------------------------------------------
-    # run the algorithm
-    #---------------------------------------------------------------------------
+
     @cherrypy.expose
     @init_app
-    def run(self, **kwargs):
-
+    def run(self):
+        """
+        Run the algorithm.
+        """
         try:
             run_time = time.time()
             self.run_algo()
@@ -228,11 +225,11 @@ class app(base_app):
         http.redir_303(self.base_url + 'result?key=%s' % self.key)
         return self.tmpl_out("run.html")
 
-    #---------------------------------------------------------------------------
-    # core algorithm runner
-    # it could also be called by a batch processor, this one needs no parameter
-    #---------------------------------------------------------------------------
-    def run_algo(self):
+
+    def run_algo(self, params=None):
+        """
+        Core algorithm runner. It could also be called by a batch processor.
+        """
         stdout = open(os.path.join(self.work_dir, 'stdout.txt'), 'w')
         stderr = open(os.path.join(self.work_dir, 'stderr.txt'), 'w')
         p = self.run_proc(['run_single_image_problem.py', 'params.json',
@@ -242,12 +239,13 @@ class app(base_app):
         stderr.close()
         return
 
-    #---------------------------------------------------------------------------
-    # display the algorithm result
-    #---------------------------------------------------------------------------
+
     @cherrypy.expose
     @init_app
-    def result(self):
+    def result(self, public=None):
+        """
+        Display the algorithm result
+        """
 
         self.cfg['param']['has_already_run'] = True
         self.cfg.save()
@@ -255,10 +253,11 @@ class app(base_app):
         return self.tmpl_out('paramresult.html',
                              prev_points=self.cfg['param']['points'])
 
-    #---------------------------------------------------------------------------
-    # browser error
-    #---------------------------------------------------------------------------
+
     @cherrypy.expose
     @init_app
-    def browser_error(self, **kwargs):
+    def browser_error(self):
+        """
+        Browser error
+        """
         return self.tmpl_out('browser-error.html')
