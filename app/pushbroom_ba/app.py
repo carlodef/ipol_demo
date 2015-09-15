@@ -28,8 +28,7 @@ class app(base_app):
 
     # IPOL demo system configuration
     title = 'Attitude estimation for orbiting pushbroom cameras'
-    #xlink_article = 'http://boucantrin.ovh.hw.ipol.im/~carlo/2015_ipol_pushbroom_camera_estimation.pdf'
-    xlink_article = 'boucantrin.ovh.hw.ipol.im/~carlo/attitude_refinement.pdf'
+    xlink_article = 'http://boucantrin.ovh.hw.ipol.im/~carlo/2015_ipol_pushbroom_camera_estimation.pdf'
 
 
     def __init__(self):
@@ -124,10 +123,14 @@ class app(base_app):
         Input handling and run redirection.
         """
         # read points coordinates
-        points_x = kwargs['points_x'] if kwargs.has_key('points_x') \
-                                      else self.cfg['param']['points_x']
-        points_y = kwargs['points_y'] if kwargs.has_key('points_y') \
-                                      else self.cfg['param']['points_y']
+        if kwargs.has_key('points_x'):
+            points_x = kwargs['points_x']
+        else:
+            points_x = self.cfg['param']['points_x']
+        if kwargs.has_key('points_y'):
+            points_y = kwargs['points_y']
+        else:
+            points_y = self.cfg['param']['points_y']
 
         # convert strings to floats
         points_x = [float(x) for x in points_x.split(',')]
