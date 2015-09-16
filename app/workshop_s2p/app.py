@@ -363,7 +363,8 @@ class app(base_app):
         ar.add_file("height_map_preview.png", info="output")
         ar.add_info({"roi": self.cfg['param']['roi'],
                      "input_id": self.cfg['meta']['input_id'],
-                     "nb_img": self.cfg['param']['nb_img']})
+                     "nb_img": self.cfg['param']['nb_img'],
+                     "stereo_algo": self.cfg['param']['matching_algorithm']})
 #        if self.cfg['meta']['color'] in ['panchro_xs', 'pansharpened']:
 #            ar.add_file("roi_color_ref_preview.png", info="output")
         ar.save()
