@@ -34,7 +34,7 @@ Explore the image with zoom (mouse wheel, or click / shift+click) and pan (drag
 with left click or keyboard arrows). Select a crop by dragging with the right
 click. Only that crop will be processed by s2p.
 </p>
-Current crop coordinates (size is limited to 2000 x 2000 pixels) x, y, w, h:
+Current crop coordinates (size is limited to 1000 x 1000 pixels) x, y, w, h:
 <span id="Info">----</span>
 <!--Note that the images are not registered, thus there is a displacement of the
 order of 100 pixels when you flip between images.<br>-->
@@ -204,8 +204,8 @@ order of 100 pixels when you flip between images.<br>-->
     document.getElementById('image-display').querySelector('.openseadragon-canvas').focus();
 
     // max ROI dimensions, in pixels
-    var MAX_W = 2000;
-    var MAX_H = 2000;
+    var MAX_W = 1000;
+    var MAX_H = 1000;
 
     // first right-click coordinates in viewport and image space
     var viewportClick = new OpenSeadragon.Point(0., 0.);
