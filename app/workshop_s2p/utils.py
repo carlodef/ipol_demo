@@ -67,6 +67,26 @@ def image_size_tiffinfo(im):
         print "image_size_tiffinfo: the input file %s doesn't exist" % str(im)
 
 
+def image_size_identify(im):
+    """
+    Reads the width and height of any image, using identify (image magick).
+
+    Args:
+        im: path to the input image file
+    Returns:
+        a tuple of size 2, giving width and height
+    """
+    try:
+        with open(im):
+            # identify output example
+            # /tmp/lena.png PNG 512x512 512x512+0+0 8-bit sRGB 475KB 0.000u 0:00.000
+            p = subprocess.Popen(['identify', im], stdout=subprocess.PIPE, env=os.environ)
+            nc, nr = p.stdout.readline().split()[2].split('x')
+            return (nc, nr)
+    except IOError:
+        print "image_size_identify: the input file %s doesn't exist" % str(im)
+
+
 def image_zoom_gdal(im, f, out=None, w=None, h=None):
     """
     Zooms an image using gdal (cubic interpolation)

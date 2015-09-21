@@ -2,17 +2,22 @@
 s2p ipol demo
 """
 
-from lib import base_app, build, http, image, config, thumbnail
-from lib.misc import app_expose, ctime
-from lib.base_app import init_app
-import cherrypy
-from cherrypy import TimeoutError
 import os.path
 import shutil
 import time
 import numpy as np
+import glob
 import json
 import ast
+import cherrypy
+from cherrypy import TimeoutError
+
+from lib import base_app, build, http, image, config, thumbnail
+from lib.misc import app_expose, ctime
+from lib.base_app import init_app
+
+import utils
+
 
 class app(base_app):
     """
@@ -61,7 +66,10 @@ class app(base_app):
 
 
         # compile s2p 'c' folder
-        build.run("make -j -C %s" % s2p_dir, stdout=log_file)
+        try:
+            build.run("make -j -C %s" % s2p_dir, stdout=log_file)
+        except RuntimeError:
+            print 'build failed (see log file)'
 
         # Create bin dir (delete the previous one if exists)
         if os.path.isdir(self.bin_dir):
@@ -69,7 +77,6 @@ class app(base_app):
         os.mkdir(self.bin_dir)
 
         # copy scripts and s2p.py to bin dir
-        import glob
         for file in glob.glob(os.path.join(self.base_dir, 'scripts/*')):
             shutil.copy(file, self.bin_dir)
         shutil.copy(os.path.join(s2p_dir, 's2p.py'), self.bin_dir)
@@ -358,9 +365,12 @@ class app(base_app):
         ar = self.make_archive()
         ar.add_file("config.json", info="input")
 #        ar.add_file("prv_ref.png", "input.png", info="input")
-        ar.add_file("roi_ref_preview.png", info="input")
-        ar.add_file("roi_sec_0_preview.png", info="input")
-        ar.add_file("height_map_preview.png", info="output")
+        #ar.add_file("roi_ref_preview.png", info="input")
+        #ar.add_file("roi_sec_0_preview.png", info="input")
+        #ar.add_file("height_map_preview.png", info="output")
+        ar.add_file("rectified_ref_preview.png", info="input")
+        ar.add_file("rectified_sec_preview.png", info="input")
+        ar.add_file("rectified_disp_preview.png", info="output")
         ar.add_info({"roi": self.cfg['param']['roi'],
                      "input_id": self.cfg['meta']['input_id'],
                      "nb_img": self.cfg['param']['nb_img'],
@@ -399,8 +409,10 @@ class app(base_app):
         """
         display the algo results
         """
-        f = open(os.path.join(self.work_dir, "config.json"))
-        s2p_cfg = json.load(f)
-        f.close()
-        h = int(s2p_cfg['roi']['h'])
-        return self.tmpl_out("result.html", height=h)
+#        f = open(os.path.join(self.work_dir, "config.json"))
+#        s2p_cfg = json.load(f)
+#        f.close()
+#        h = int(s2p_cfg['roi']['h'])
+        nc, nr = utils.image_size_identify(os.path.join(self.work_dir,
+                                                       "rectified_ref_preview.png"))
+        return self.tmpl_out("result.html", height=nr)

@@ -6,17 +6,9 @@ export PATH=/usr/local/bin:/usr/bin:/bin:$PATH
 BINBIN=`dirname \`which s2p.py\``/bin
 export PATH=$BINBIN:$PATH
 
-qauto s2p_results/roi_ref.tif roi_ref_preview.png
-qauto s2p_results/roi_sec_0.tif roi_sec_0_preview.png
-qauto s2p_results/height_map.tif height_map_preview.png
 bin2asc s2p_results/cloud.ply > cloud_ascii.ply
 
-# some datasets don't have color images
-if [ -f s2p_results/roi_color_ref.tif ]; then
-    qauto s2p_results/roi_color_ref.tif s2p_results/roi_color_ref_preview.png
-fi
-
-# some datasets have only pairs (no left right subfolders)
+# produce previews for all the rectified images, diparity and height maps
 if [ -d s2p_results/left ] ; then
     for f in s2p_results/{left,right}/tile_*
     do
@@ -36,3 +28,12 @@ else
         wait
     done
 fi
+
+# get the path to the first tile (if it's a triplet, take the left dataset)
+FIRST_TILE=`find s2p_results -type d -name "tile_*" | head -1`
+echo "FIRST_TILE:" $FIRST_TILE
+
+# symlinks to the results of the first tile
+ln -s $FIRST_TILE/rectified_ref_preview.png
+ln -s $FIRST_TILE/rectified_sec_preview.png
+ln -s $FIRST_TILE/rectified_disp_preview.png
