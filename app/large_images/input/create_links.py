@@ -51,14 +51,14 @@ def list_images_in_dataset(f):
         a list. If the dataset contains only panchro images (P), then each item
         of the list is the absolute path to a panchro image. If the dataset
         contains both panchro (P) and multi-spectral images (MS), then each item
-        of the list is a tuple containing the absolute paths to the P image and MS
-        preview file.
+        of the list is a tuple containing the absolute paths to the P and MS tif
+        images.
     """
     # list ms images
     # the '-not \( -path *_files -prune \)' is to avoid entering in the dzi
     # folders, which contains tens of thousands jpeg files and make the process
     # very slow
-    p = subprocess.Popen("find %s -not \( -path *_files -prune \) -type f -name \"PREV*_MS_*.JPG\"" % f, shell=True, stdout=subprocess.PIPE)
+    p = subprocess.Popen("find %s -not \( -path *_files -prune \) -type f -name \"*_MS_*.JP2.TIF\"" % f, shell=True, stdout=subprocess.PIPE)
     ms_files = p.stdout.read().splitlines()
     p = subprocess.Popen("find %s -not \( -path *_files -prune \) -type f -name \"*_P_*.JP2.TIF\"" % f, shell=True, stdout=subprocess.PIPE)
     pan_files = p.stdout.read().splitlines()
@@ -113,21 +113,32 @@ def create_links(list_of_paths, dest_dir, print_cfg_ipol=False):
         dest_dir: directory where to create the symlinks for the dataset.
         print_cfg: set to True to print cfg file for IPOL demos on stdout.
     """
+    ms = False
     for i, f in enumerate(list_of_paths):
 
-        # preview file
-        if isinstance(f, tuple):  # we have the preview for the ms image
-            # enhance contrast
-            # os.system("/home/carlo/code/s2p/bin/qauto %s %s" % (f[1], os.path.join(dest_dir, os.path.basename(f[1]))))
-            shutil.copy(f[1], dest_dir)
-            symlink_p(os.path.abspath(os.path.join(dest_dir, os.path.basename(f[1]))),
-                       os.path.join(dest_dir, 'prv_%02d.jpg' % (i+1)))
+        if isinstance(f, tuple):  # we have the ms image
+            # tif ms
+            ms = True
+            symlink_p(f[1], os.path.join(dest_dir, 'im_ms_%02d.tif' % (i+1)))
+
+            # preview ms
+            tmp = copy_file_matching_pathname('PREVIEW_*.JPG', os.path.dirname(f[1]), dest_dir)
+            if tmp:
+                symlink_p(tmp, os.path.join(dest_dir, 'prv_%02d.jpg' % (i+1)))
+                # enhance contrast
+                # os.system("/home/carlo/code/s2p/bin/qauto %s %s" % (tmp, tmp)
+            else:
+                print('MS PREVIEW not found for %s' % f[1], file=sys.stderr)
             f = f[0]  # the path to ms preview is not needed anymore
-        else:
+
+        # pan preview (if no ms preview)
+        if not os.path.isfile(os.path.join(dest_dir, 'prv_%02d.jpg' % (i+1))):
             tmp = copy_file_matching_pathname('PREVIEW_*.JPG', os.path.dirname(f), dest_dir)
             if tmp:
                 symlink_p(tmp, os.path.join(dest_dir, 'prv_%02d.jpg' % (i+1)))
                 # os.system("/home/carlo/code/s2p/bin/qauto %s %s" % (tmp, tmp))
+            else:
+                print('PAN PREVIEW not found for %s' % f, file=sys.stderr)
 
         # dim
         tmp = copy_file_matching_pathname('DIM_*.XML', os.path.dirname(f), dest_dir)
@@ -165,7 +176,7 @@ def create_links(list_of_paths, dest_dir, print_cfg_ipol=False):
             print('WARNING: no dzi file found for img %s' % f, file=sys.stderr)
 
     if print_cfg_ipol:
-        print_cfg.main(dest_dir, len(list_of_paths))
+        print_cfg.main(dest_dir, len(list_of_paths), ms)
 
 
 def main(src_dir, dst_dir='pleiades', print_cfg_ipol=False):
