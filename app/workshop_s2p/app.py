@@ -149,7 +149,7 @@ class app(base_app):
         if 'clr' in input_dict[input_id]:
             clr_files = input_dict[input_id]['clr'].split()
             clr_files_abs = [os.path.join(self.input_dir, f) for f in clr_files]
-            os.symlink(img_files_abs[0], os.path.join(self.work_dir, 'img_01_clr.tif'))
+            os.symlink(clr_files_abs[0], os.path.join(self.work_dir, 'img_01_clr.tif'))
 
         # link to the preview files, needed by the archive
         prv_files = input_dict[input_id]['files'].split()
