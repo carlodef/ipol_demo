@@ -120,7 +120,7 @@ def main(dataset, n, ms=False, out=sys.stdout):
         print('tif = ', tif_paths, file=out)
         print('rpc = ', rpc_paths, file=out)
         if ms:
-            print('ms = ', ms_paths, file=out)
+            print('clr = ', ms_paths, file=out)
         if dzi8_paths:
             print('dzi8 = ', dzi8_paths, file=out)
         if dzi16_paths:
@@ -135,4 +135,7 @@ def main(dataset, n, ms=False, out=sys.stdout):
         print('date = %s' % date, file=out)
         print('satellite = Pleiades %s' % satellite, file=out)
         print('nb_img = %d' % n, file=out)
-        print('color = panchro', file=out)
+        if ms:
+            print('color = panchro_xs', file=out)
+        else:
+            print('color = panchro', file=out)
