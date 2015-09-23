@@ -12,7 +12,11 @@ def extract_date_from_pleiades_filename(filename):
     """
     """
     if os.path.isfile(filename):
-        date = re.split('_', os.path.basename(filename))[3]
+        try:
+            date = re.split('_', os.path.basename(filename))[3]
+        except IndexError:
+            print("non standard filename %s" % filename, file=sys.stderr)
+            return 'DD-MM-YYYY'
         # we assume that the date has the following format: 201210051030181
         return '%s-%s-%s' % (date[:4], date[4:6], date[6:8])
     else:
@@ -115,7 +119,7 @@ def main(dataset, n, ms=False, out=sys.stdout):
         print('files = ', prv_paths, file=out)
         print('tif = ', tif_paths, file=out)
         print('rpc = ', rpc_paths, file=out)
-        if ms_paths:
+        if ms:
             print('ms = ', ms_paths, file=out)
         if dzi8_paths:
             print('dzi8 = ', dzi8_paths, file=out)

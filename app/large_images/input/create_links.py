@@ -68,7 +68,11 @@ def list_images_in_dataset(f):
     else:
         out = []
         for ms in ms_files:
-            date_ms = re.split('_', os.path.basename(ms))[3]
+            try:
+                date_ms = re.split('_', os.path.basename(ms))[3]
+            except IndexError:
+                print("non standard filename in dataset %s" % f, file=sys.stderr)
+                return pan_files
             # search for the pan file with the same date
             matching_pan = None
             for pan in pan_files:
