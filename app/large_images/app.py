@@ -78,6 +78,12 @@ class app(base_app):
             pool = AppPool.get_instance() # Singleton pattern
             pool.add_app(self2.key, self2)
 
+        # custom roi_max, passed by the user directly in the URL
+        roi_max = 1000
+        if 'roi_max' in kwargs:
+            roi_max = int(kwargs['roi_max'])
+            kwargs.pop('roi_max')
+
         # get the dataset id
         # kwargs contains input_id.x and input_id.y
         input_id = kwargs.keys()[0].split('.')[0]
@@ -95,16 +101,16 @@ class app(base_app):
         self2.cfg.save()
 
         # jump to the display page
-        return self2.params(key=self2.key)
+        return self2.params(key=self2.key, roi_max=roi_max)
 
 
     @init_app
-    def params(self, **kwargs):
+    def params(self, roi_max=None, **kwargs):
         """
         Render the display page
         """
         dzi_paths = ast.literal_eval(self.cfg['param']['dzi_paths'])
-        return self.tmpl_out("display.html", list_of_paths_to_dzi_files=dzi_paths)
+        return self.tmpl_out("display.html", list_of_paths_to_dzi_files=dzi_paths, roi_max=roi_max)
 
 
     @cherrypy.expose
