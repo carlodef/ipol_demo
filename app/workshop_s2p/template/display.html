@@ -222,7 +222,7 @@ order of 100 pixels when you flip between images.<br>-->
     var fullScreen = false;
     var canvasPress = false;
     var roiSelected = false;
-    var currentImage = 0;
+    var currentImage = 1;
 
     // to know if we are currently fullscreen
     viewer.addHandler("full-page", function (data) {
@@ -231,6 +231,11 @@ order of 100 pixels when you flip between images.<br>-->
             console.log('entered fullpage')
         } else {
             console.log('exited fullpage')
+            // update the current image index from global variable 'currentImage'
+            document.getElementById("currentpage").innerHTML = currentImage + " of ${len(list_of_paths_to_dzi_files)}";
+            document.getElementById("img_index").value = currentImage;
+
+            // update the ROI definition
             if (roiSelected) {
                 console.log('a ROI was selected in fullpage')
                 document.getElementById("roi_x").value = imageRoi.x.toFixed(0);
@@ -247,8 +252,13 @@ order of 100 pixels when you flip between images.<br>-->
 
     // print the image index in the stereo sequence
     viewer.addHandler("page", function (data) {
-        document.getElementById("currentpage").innerHTML = ( data.page + 1 ) + " of ${len(list_of_paths_to_dzi_files)}";
-        document.getElementById("img_index").value = data.page+1;
+        if (!fullScreen) {
+            document.getElementById("currentpage").innerHTML = ( data.page + 1 ) + " of ${len(list_of_paths_to_dzi_files)}";
+            document.getElementById("img_index").value = data.page+1;
+        } else {
+            currentImage = data.page+1;
+            //console.log(currentImage)
+        }
     });
 
     // print the current zoom level
