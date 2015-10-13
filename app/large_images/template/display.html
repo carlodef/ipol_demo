@@ -27,7 +27,7 @@ click. The crops with the original 12-bit depth (stored as uint16 tiffs) can be
 downloaded to be further examined with a viewer that allows to explore the
 dynamic range interactively, such as <a href="https://github.com/gfacciol/pvflip">pvflip</a>.
 </p><p>
-Current crop coordinates (size is limited to 2000 x 2000 pixels) x, y, w, h:
+Current crop coordinates (size is limited to ${roi_max} x ${roi_max} pixels) x, y, w, h:
 <span id="Info">----</span>
 </p><p>
 <!--Note that the images are not registered, thus there is a displacement of the
@@ -164,8 +164,8 @@ order of 100 pixels when you flip between images.<br>-->
     document.getElementById('image-display').querySelector('.openseadragon-canvas').focus();
 
     // max ROI dimensions, in pixels
-    var MAX_W = 2000;
-    var MAX_H = 2000;
+    var MAX_W = ${roi_max};
+    var MAX_H = ${roi_max};
 
     // first right-click coordinates in viewport and image space
     var viewportClick = new OpenSeadragon.Point(0., 0.);
