@@ -225,9 +225,24 @@ order of 100 pixels when you flip between images.<br>-->
     var currentImage = 0;
 
     // to know if we are currently fullscreen
-    viewer.addHandler("pre-full-page", function (data) {
+    viewer.addHandler("full-page", function (data) {
         fullScreen = !fullScreen;
-        //console.log('entering/leaving fullpage')
+        if (data.fullPage) {
+            console.log('entered fullpage')
+        } else {
+            console.log('exited fullpage')
+            if (roiSelected) {
+                console.log('a ROI was selected in fullpage')
+                document.getElementById("roi_x").value = imageRoi.x.toFixed(0);
+                document.getElementById("roi_y").value = imageRoi.y.toFixed(0);
+                document.getElementById("roi_w").value = imageRoi.width.toFixed(0);
+                document.getElementById("roi_h").value = imageRoi.height.toFixed(0);
+                document.getElementById("Info").innerHTML = imageRoi.x.toFixed(0).concat(", ",
+                                                            imageRoi.y.toFixed(0), ", ",
+                                                            imageRoi.width.toFixed(0), ", ",
+                                                            imageRoi.height.toFixed(0));
+            }
+        }
     });
 
     // print the image index in the stereo sequence
