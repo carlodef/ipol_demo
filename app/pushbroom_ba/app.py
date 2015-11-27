@@ -5,7 +5,7 @@
 """
 Attitude refinement for orbiting pushbroom cameras - IPOL demo
 by Carlo de Franchis, Gabriele Facciolo, Enric Meinhardt
-May 2015
+May 2015. Revised November 2015.
 
 The javascript tool to plot points was copied from
 Point alignment detection demo
@@ -14,11 +14,17 @@ by Jose Lezama, Rafael Grompone von Gioi
 
 import cherrypy
 import os.path
+import shutil
+import glob
 import json
 import time
+import sys
+
+import matplotlib
+matplotlib.use('Agg')
 import pylab
 
-from lib import base_app, http
+from lib import base_app, http, build
 from lib.base_app import init_app, AppPool
 
 class app(base_app):
@@ -27,9 +33,10 @@ class app(base_app):
     """
 
     # IPOL demo system configuration
-    title = 'Attitude estimation for orbiting pushbroom cameras'
-    xlink_article = 'http://boucantrin.ovh.hw.ipol.im/~carlo/2015_ipol_pushbroom_camera_estimation.pdf'
-
+    title = 'Attitude Refinement for Orbiting Pushbroom Cameras'
+    xlink_article = 'http://www.ipol.im/pub/pre/146/preprint.pdf'
+    xlink_src = 'http://www.ipol.im/pub/pre/146/src_pushbroom.tar.gz'
+    xlink_src = 'http://dev.ipol.im/~carlo/src_pushbroom.tar.gz'
 
     def __init__(self):
         base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -37,6 +44,62 @@ class app(base_app):
 
 
     def build(self):
+        """
+        Download and install the source code published in IPOL with the paper.
+        """
+        # copy the src code of the paper in the bin directory
+        tgz_file = os.path.join(self.dl_dir, 'src_pushbroom.tar.gz')
+        build.download(self.xlink_src, tgz_file)
+        build.extract(tgz_file, self.src_dir)
+        if not os.path.isdir(self.bin_dir):
+            os.mkdir(self.bin_dir)
+        for f in os.listdir(os.path.join(self.src_dir, 'src_pushbroom')):
+            ff = os.path.join(self.src_dir, 'src_pushbroom', f)
+            if os.path.isfile(ff) and f.endswith('.py'):
+                shutil.copy(ff, self.bin_dir)
+
+        # check if the dependencies are met (cvxopt and numpy)
+        site_packages_dir = os.path.join(self.base_dir, 'lib', 'python2.7', 'site-packages')
+        sys.path.insert(0, site_packages_dir)
+        eggs = glob.glob(os.path.join(site_packages_dir, '*.egg'))
+        for egg in eggs:
+            sys.path.insert(0, egg)
+        try:
+            import cvxopt
+        except ImportError:
+            self._build_pkg('cvxopt-1.1.7')
+        try:
+            import numpy
+            if numpy.version.version != '1.9.2':
+                raise ImportWarning('this code requires numpy version 1.9.2')
+        except (ImportError, ImportWarning):
+            self._build_pkg('numpy-1.9.2', opts='--fcompiler=gnu95')
+        return
+
+
+    def _build_pkg(self, pkg_name, opts=''):
+        """
+        Compile a 3rdparty package from the sources shipped with the IPOL paper.
+        """
+        third_party_dir = os.path.join(self.src_dir, 'src_pushbroom', '3rdparty')
+        work_dir = os.path.join(third_party_dir, pkg_name, pkg_name)
+
+        # build
+        tgz_file = os.path.join(third_party_dir, '%s.tar.gz' % pkg_name)
+        log_build = os.path.join(self.base_dir, 'build-%s.log' % pkg_name)
+        build.extract(tgz_file, os.path.join(third_party_dir, pkg_name))
+        build.run('python setup.py build %s' % opts, log_build, cwd=work_dir)
+
+        # install
+        log_install = os.path.join(self.base_dir, 'install-%s.log' % pkg_name)
+        site_packages = os.path.join(self.base_dir, 'lib', 'python2.7', 'site-packages')
+        if not os.path.isdir(site_packages):
+            os.makedirs(site_packages)
+        build.run('python setup.py install --prefix=%s' % self.base_dir, log_install,
+                  cwd=work_dir, env={'PYTHONPATH': site_packages})
+
+
+    def build_from_git_repository(self):
         """
         Update local copy of pushbroom_ba source from its git repository.
         """
@@ -232,8 +295,11 @@ class app(base_app):
         """
         stdout = open(os.path.join(self.work_dir, 'stdout.txt'), 'w')
         stderr = open(os.path.join(self.work_dir, 'stderr.txt'), 'w')
+        site_packages = os.path.join(self.base_dir, 'lib', 'python2.7',
+                                     'site-packages')
         p = self.run_proc(['run_single_image_problem.py', 'params.json',
-                           'gcp.txt'], stdout=stdout, stderr=stderr)
+                           'gcp.txt'], stdout=stdout, stderr=stderr,
+                           env={'PYTHONPATH': site_packages})
         self.wait_proc(p)
         stdout.close()
         stderr.close()
