@@ -214,6 +214,7 @@ class app(base_app):
         self.cfg['param']['camera_type'] = kwargs['camera_type']
         self.cfg['param']['psi_x'] = kwargs['psi_x']
         self.cfg['param']['psi_y'] = kwargs['psi_y']
+        self.cfg['param']['gamma'] = kwargs['gamma']
         algo_params['camera'] = {}
         algo_params['camera']['instrument'] = kwargs['camera_type']
         algo_params['camera']['orbit'] = kwargs['camera_type']
