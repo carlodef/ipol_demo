@@ -72,13 +72,13 @@ function Popup(url) {
               ${radioAuto('camera_type', 'wv3','WorldView-3')}<br>
           </div>
 
-          <div style="float:left; width:300px;">
-              Initial pointing angles (degrees):<br>
+          <div style="float:left; width:230px;">
+              Initial pointing angles (deg):<br>
               <span style="float:left; margin-left:5px">
                   &Psi;<sub>x</sub> &nbsp; ${textareaAuto('psi_x','0.0', 'size="5"')} roll
               </span>
               <!-- code for slider -->
-              <div id="psi_x_slider" name="psi_x_slider" style="width:150px;float:left;margin-top:5px;margin-left:21px;font-size:10pt"></div>
+              <div id="psi_x_slider" name="psi_x_slider" style="width:70px;float:left;margin-top:5px;margin-left:21px;font-size:10pt"></div>
               <script type="text/javascript">
                   // Turn DIV slider into a slider linked to scale
                   $(document).ready(function() {
@@ -91,11 +91,28 @@ function Popup(url) {
                   &Psi;<sub>y</sub> &nbsp; ${textareaAuto('psi_y','0.0', 'size="5"')} pitch
               </span>
               <!-- code for slider -->
-              <div id="psi_y_slider" name="psi_y_slider" style="width:150px;float:left;margin-top:5px;margin-left:10px;font-size:10pt"></div>
+              <div id="psi_y_slider" name="psi_y_slider" style="width:70px;float:left;margin-top:5px;margin-left:10px;font-size:10pt"></div>
               <script type="text/javascript">
                   // Turn DIV slider into a slider linked to scale
                   $(document).ready(function() {
                       createLinkedSlider('#psi_y', '#psi_y_slider', -20, 20, 1);
+                  });
+              </script>
+              <div style="clear:both"></div>
+              <!-- end of code for slider -->
+          </div>
+
+          <div style="float:left; width:180px;">
+              Heading (deg):<br>
+              <span style="float:left; margin-left:5px">
+                  &gamma; &nbsp; ${textareaAuto('gamma','192', 'size="5"')}
+              </span>
+              <!-- code for slider -->
+              <div id="gamma_slider" name="gamma_slider" style="width:70px;float:left;margin-top:5px;margin-left:10px;font-size:10pt"></div>
+              <script type="text/javascript">
+                  // Turn DIV slider into a slider linked to scale
+                  $(document).ready(function() {
+                      createLinkedSlider('#gamma', '#gamma_slider', 162, 222, 2);
                   });
               </script>
               <div style="clear:both"></div>
@@ -108,7 +125,7 @@ function Popup(url) {
                   degree <i>d</i> ${textareaAuto('perturbation_degree','3', 'size="5"')}
               </span>
               <!-- code for slider -->
-              <div id="perturbation_degree_slider" name="perturbation_degree_slider" style="width:150px;float:left;margin-top:5px;margin-left:21px;font-size:10pt"></div>
+              <div id="perturbation_degree_slider" name="perturbation_degree_slider" style="width:120px;float:left;margin-top:5px;margin-left:21px;font-size:10pt"></div>
               <script type="text/javascript">
                   // Turn DIV slider into a slider linked to scale
                   $(document).ready(function() {
@@ -121,7 +138,7 @@ function Popup(url) {
                   amplitude <i>a</i> (&mu;rad) ${textareaAuto('perturbation_amplitude','40', 'size="5"')}
               </span>
               <!-- code for slider -->
-              <div id="perturbation_amplitude_slider" name="perturbation_amplitude_slider" style="width:150px;float:left;margin-top:5px;margin-left:21px;font-size:10pt"></div>
+              <div id="perturbation_amplitude_slider" name="perturbation_amplitude_slider" style="width:120px;float:left;margin-top:5px;margin-left:21px;font-size:10pt"></div>
               <script type="text/javascript">
                   // Turn DIV slider into a slider linked to scale
                   $(document).ready(function() {

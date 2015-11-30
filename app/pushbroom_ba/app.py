@@ -220,6 +220,7 @@ class app(base_app):
         algo_params['camera']['view'] = {}
         algo_params['camera']['view']['psi_x'] = float(kwargs['psi_x'])
         algo_params['camera']['view']['psi_y'] = float(kwargs['psi_y'])
+        algo_params['camera']['view']['gamma'] = float(kwargs['gamma'])
 
         # perturbation
         self.cfg['param']['perturbation_amplitude'] = kwargs['perturbation_amplitude']
