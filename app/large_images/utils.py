@@ -21,7 +21,8 @@ def qauto(tif_in, png_out):
     """
     Render a tif image to 8bit png  with qauto.
     """
-    p = subprocess.Popen(['/home/carlo/bin/qauto', tif_in, png_out])
+    p = subprocess.Popen([os.path.join(os.path.expanduser('~'), 'bin', 'qauto'),
+                          tif_in, png_out])
     p.wait()
 
 
