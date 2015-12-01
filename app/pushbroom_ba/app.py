@@ -47,7 +47,7 @@ class app(base_app):
         """
         Download and install the source code published in IPOL with the paper.
         """
-        # copy the src code of the paper in the bin directory
+        # copy the python src code of the paper in the bin directory
         tgz_file = os.path.join(self.dl_dir, 'src_pushbroom.tar.gz')
         build.download(self.xlink_src, tgz_file)
         build.extract(tgz_file, self.src_dir)
@@ -70,8 +70,8 @@ class app(base_app):
             self._build_pkg('cvxopt-1.1.7')
         try:
             import numpy
-            if numpy.version.version != '1.9.2':
-                raise ImportWarning('this code requires numpy version 1.9.2')
+            if numpy.version.version < '1.9.0':
+                raise ImportWarning('this code requires numpy version >= 1.9.0')
         except (ImportError, ImportWarning):
             self._build_pkg('numpy-1.9.2', opts='--fcompiler=gnu95')
         return
