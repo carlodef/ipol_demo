@@ -99,22 +99,6 @@ class app(base_app):
                   cwd=work_dir, env={'PYTHONPATH': site_packages})
 
 
-    def build_from_git_repository(self):
-        """
-        Update local copy of pushbroom_ba source from its git repository.
-        """
-        if not os.path.isdir(self.bin_dir):
-            # bin directory not found, doing a git clone
-            cmd = ("git clone -b ipol --depth 1"
-                   " git@github.com:carlodef/pushbroom_calibration.git %s" % self.bin_dir)
-            os.system(cmd)
-        else:
-            # bin directory found, doing a git pull
-            os.system("cd %s && git pull && cd -" % self.bin_dir)
-
-        return
-
-
     @cherrypy.expose
     def index(self, **kwargs):
         """
