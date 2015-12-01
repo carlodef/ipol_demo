@@ -36,7 +36,7 @@ class app(base_app):
     title = 'Attitude Refinement for Orbiting Pushbroom Cameras'
     xlink_article = 'http://www.ipol.im/pub/pre/146/preprint.pdf'
     xlink_src = 'http://www.ipol.im/pub/pre/146/src_pushbroom.tar.gz'
-    xlink_src = 'http://dev.ipol.im/~carlo/src_pushbroom.tar.gz'
+
 
     def __init__(self):
         base_dir = os.path.dirname(os.path.abspath(__file__))
