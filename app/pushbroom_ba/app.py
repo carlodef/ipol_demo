@@ -120,34 +120,29 @@ class app(base_app):
         """
         Handle the key generation and redirect to the params method.
         """
-        # When we arrive here, self.key should be empty.
+        # when we arrive here, self.key should be empty.
         # If not, it means that the execution belongs to another thread
         # and therefore we need to reuse the app object
         key_is_empty = (self.key == "")
         if key_is_empty:
-            # New execution: create new app object
+            # new execution: create new app object
             self2 = base_app(self.base_dir)
             self2.__class__ = self.__class__
             self2.__dict__.update(self.__dict__)
         else:
-            # Already known execution
+            # already known execution
             self2 = self
 
         self2.new_key()
         self2.init_cfg()
 
-        # Add app to object pool
+        # add app to object pool
         if key_is_empty:
-            pool = AppPool.get_instance() # Singleton pattern
+            pool = AppPool.get_instance()  # singleton pattern
             pool.add_app(self2.key, self2)
 
-        # do my stuff
-        try:
-            prev_points = json.loads(kwargs['zzblank.prev_points'])
-        except BaseException:
-            prev_points = None
-
-        return self2.params(key=self2.key, prev_points=prev_points)
+        # redirect to the params method
+        return self2.params(key=self2.key, prev_points=None)
 
 
     @cherrypy.expose
