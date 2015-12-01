@@ -102,31 +102,9 @@ class app(base_app):
     @cherrypy.expose
     def index(self):
         """
-        Handle the key generation and redirect to the params method.
+        Redirect to the params method directly, as this demo as no input data.
         """
-        # when we arrive here, self.key should be empty.
-        # If not, it means that the execution belongs to another thread
-        # and therefore we need to reuse the app object
-        key_is_empty = (self.key == "")
-        if key_is_empty:
-            # new execution: create new app object
-            self2 = base_app(self.base_dir)
-            self2.__class__ = self.__class__
-            self2.__dict__.update(self.__dict__)
-        else:
-            # already known execution
-            self2 = self
-
-        self2.new_key()
-        self2.init_cfg()
-
-        # add app to object pool
-        if key_is_empty:
-            pool = AppPool.get_instance()  # singleton pattern
-            pool.add_app(self2.key, self2)
-
-        # redirect to the params method
-        return self2.params(key=self2.key, prev_points=None)
+        return self.params()
 
 
     @cherrypy.expose
