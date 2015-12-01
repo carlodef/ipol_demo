@@ -100,7 +100,7 @@ class app(base_app):
 
 
     @cherrypy.expose
-    def index(self, **kwargs):
+    def index(self):
         """
         Handle the key generation and redirect to the params method.
         """
@@ -280,7 +280,7 @@ class app(base_app):
                                      'site-packages')
         p = self.run_proc(['run_single_image_problem.py', 'params.json',
                            'gcp.txt'], stdout=stdout, stderr=stderr,
-                           env={'PYTHONPATH': site_packages})
+                          env={'PYTHONPATH': site_packages})
         self.wait_proc(p)
         stdout.close()
         stderr.close()
