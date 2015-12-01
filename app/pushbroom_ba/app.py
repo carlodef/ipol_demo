@@ -25,7 +25,7 @@ matplotlib.use('Agg')
 import pylab
 
 from lib import base_app, http, build
-from lib.base_app import init_app, AppPool
+from lib.base_app import init_app
 
 class app(base_app):
     """
