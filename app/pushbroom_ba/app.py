@@ -107,7 +107,6 @@ class app(base_app):
         return self.params()
 
 
-    @cherrypy.expose
     @init_app
     def params(self, newrun=False, prev_points=None):
         """
@@ -187,9 +186,7 @@ class app(base_app):
         algo_params['perturbation_degree'] = int(kwargs['perturbation_degree'])
 
         # normalized points coordinates
-        alts = [0] * len(points_x)
-        #alts = [0 for a in points_x]
-        algo_params['points'] = zip(points_y, points_x, alts)
+        algo_params['points'] = zip(points_y, points_x)
         algo_params['normalized_points'] = True
 
         # noise parameters
