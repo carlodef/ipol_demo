@@ -209,6 +209,12 @@ class app(base_app):
             pool = AppPool.get_instance() # Singleton pattern
             pool.add_app(self2.key, self2)
 
+        # custom roi_max, passed by the user directly in the URL
+        roi_max = 1000
+        if 'roi_max' in kwargs:
+            roi_max = int(kwargs['roi_max'])
+            kwargs.pop('roi_max')
+
         # receive the input files
         for i in range(2):
             img_up = kwargs['img_%i' % (i+1)]
@@ -263,7 +269,7 @@ class app(base_app):
         self.cfg.save()
 
         # jump to the params page
-        return self.params(key=self.key)
+        return self.params(key=self.key, roi_max=roi_max)
 
 
     def process_input_files(self):
@@ -285,8 +291,9 @@ class app(base_app):
             "img_02_8BITS.dzi"))
 
 
+    @cherrypy.expose
     @init_app
-    def params(self, newrun=False, roi_max=None):
+    def params(self, newrun=False, roi_max=1000):
         """
         configure the algo execution
         """
