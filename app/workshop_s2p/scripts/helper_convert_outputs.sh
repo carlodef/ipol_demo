@@ -34,6 +34,6 @@ FIRST_TILE=`find s2p_results -type d -name "tile_*" | head -1`
 echo "FIRST_TILE:" $FIRST_TILE
 
 # symlinks to the results of the first tile
-ln -s $FIRST_TILE/rectified_ref_preview.png
-ln -s $FIRST_TILE/rectified_sec_preview.png
-ln -s $FIRST_TILE/rectified_disp_preview.png
+ln -fs $FIRST_TILE/rectified_ref_preview.png
+ln -fs $FIRST_TILE/rectified_sec_preview.png
+ln -fs $FIRST_TILE/rectified_disp_preview.png
