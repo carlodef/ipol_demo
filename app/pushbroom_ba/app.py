@@ -35,7 +35,8 @@ class app(base_app):
     # IPOL demo system configuration
     title = 'Attitude Refinement for Orbiting Pushbroom Cameras'
     xlink_article = 'http://www.ipol.im/pub/pre/146/preprint.pdf'
-    xlink_src = 'http://www.ipol.im/pub/pre/146/src_pushbroom.tar.gz'
+    xlink_src = 'http://www.ipol.im/pub/pre/146/pushbroom_attitude_refinement_20151203.tar.gz'
+#    xlink_src = 'http://dev.ipol.im/~carlo/pushbroom_attitude_refinement_20151203.tar.gz'
 
 
     def __init__(self):
@@ -53,8 +54,9 @@ class app(base_app):
         build.extract(tgz_file, self.src_dir)
         if not os.path.isdir(self.bin_dir):
             os.mkdir(self.bin_dir)
-        for f in os.listdir(os.path.join(self.src_dir, 'src_pushbroom')):
-            ff = os.path.join(self.src_dir, 'src_pushbroom', f)
+        src = os.path.join(self.src_dir, os.listdir(self.src_dir)[0])
+        for f in os.listdir(src):
+            ff = os.path.join(src, f)
             if os.path.isfile(ff) and f.endswith('.py'):
                 shutil.copy(ff, self.bin_dir)
 
@@ -253,9 +255,9 @@ class app(base_app):
         stderr = open(os.path.join(self.work_dir, 'stderr.txt'), 'w')
         site_packages = os.path.join(self.base_dir, 'lib', 'python2.7',
                                      'site-packages')
-        p = self.run_proc(['run_single_image_problem.py', 'params.json',
-                           'gcp.txt'], stdout=stdout, stderr=stderr,
-                          env={'PYTHONPATH': site_packages})
+        p = self.run_proc(['run_attitude_refinement_simulation.py',
+                           'params.json', 'gcp.txt'], stdout=stdout,
+                          stderr=stderr, env={'PYTHONPATH': site_packages})
         self.wait_proc(p)
         stdout.close()
         stderr.close()
