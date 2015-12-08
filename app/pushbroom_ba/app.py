@@ -49,7 +49,7 @@ class app(base_app):
         Download and install the source code published in IPOL with the paper.
         """
         # copy the python src code of the paper in the bin directory
-        tgz_file = os.path.join(self.dl_dir, 'src_pushbroom.tar.gz')
+        tgz_file = os.path.join(self.dl_dir, 'src.tar.gz')
         build.download(self.xlink_src, tgz_file)
         build.extract(tgz_file, self.src_dir)
         if not os.path.isdir(self.bin_dir):
@@ -61,7 +61,7 @@ class app(base_app):
                 shutil.copy(ff, self.bin_dir)
 
         # check if the dependencies are met (cvxopt and numpy)
-        site_packages_dir = os.path.join(self.base_dir, 'lib', 'python2.7', 'site-packages')
+        site_packages_dir = os.path.join(self.bin_dir, 'lib', 'python2.7', 'site-packages')
         sys.path.insert(0, site_packages_dir)
         eggs = glob.glob(os.path.join(site_packages_dir, '*.egg'))
         for egg in eggs:
@@ -83,7 +83,8 @@ class app(base_app):
         """
         Compile a 3rdparty package from the sources shipped with the IPOL paper.
         """
-        third_party_dir = os.path.join(self.src_dir, 'src_pushbroom', '3rdparty')
+        src_dir = os.path.join(self.src_dir, os.listdir(self.src_dir)[0])
+        third_party_dir = os.path.join(src_dir, '3rdparty')
         work_dir = os.path.join(third_party_dir, pkg_name, pkg_name)
 
         # build
@@ -94,10 +95,10 @@ class app(base_app):
 
         # install
         log_install = os.path.join(self.base_dir, 'install-%s.log' % pkg_name)
-        site_packages = os.path.join(self.base_dir, 'lib', 'python2.7', 'site-packages')
+        site_packages = os.path.join(self.bin_dir, 'lib', 'python2.7', 'site-packages')
         if not os.path.isdir(site_packages):
             os.makedirs(site_packages)
-        build.run('python setup.py install --prefix=%s' % self.base_dir, log_install,
+        build.run('python setup.py install --prefix=%s' % self.bin_dir, log_install,
                   cwd=work_dir, env={'PYTHONPATH': site_packages})
 
 
@@ -253,7 +254,7 @@ class app(base_app):
         """
         stdout = open(os.path.join(self.work_dir, 'stdout.txt'), 'w')
         stderr = open(os.path.join(self.work_dir, 'stderr.txt'), 'w')
-        site_packages = os.path.join(self.base_dir, 'lib', 'python2.7',
+        site_packages = os.path.join(self.bin_dir, 'lib', 'python2.7',
                                      'site-packages')
         p = self.run_proc(['run_attitude_refinement_simulation.py',
                            'params.json', 'gcp.txt'], stdout=stdout,
