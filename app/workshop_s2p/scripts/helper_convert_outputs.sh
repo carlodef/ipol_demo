@@ -6,8 +6,6 @@ export PATH=/usr/local/bin:/usr/bin:/bin:$PATH
 BINBIN=`dirname \`which s2p.py\``/bin
 export PATH=$BINBIN:$PATH
 
-bin2asc s2p_results/cloud.ply > cloud_ascii.ply
-
 # produce previews for all the rectified images, diparity and height maps
 if [ -d s2p_results/left ] ; then
     for f in s2p_results/{left,right}/tile_*/col_*
@@ -32,6 +30,9 @@ fi
 # get the path to the first tile (if it's a triplet, take the left dataset)
 FIRST_TILE=`find s2p_results -type d -name "col_*" | head -1`
 echo "FIRST_TILE:" $FIRST_TILE
+
+# convert the ply file of the first tile to ascii
+bin2asc $FIRST_TILE/cloud.ply > cloud_ascii.ply
 
 # symlinks to the results of the first tile
 ln -fs $FIRST_TILE/rectified_ref_preview.png
